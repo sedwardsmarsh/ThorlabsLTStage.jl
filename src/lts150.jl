@@ -38,9 +38,8 @@ function initialize_lts()
     @assert lts_lib != nothing "add python: python to top of config file then call load_python(). You must be on a windows computer to use this device"
     lts = lts_lib.LTS()
 
-    #stages = get(get_config(), "ThorlabsLTS150", "")
+    stages = get(get_config(), "ThorlabsLTS150", "")
     @info get_config()
-    return
 
     if isempty(stages)
         lts.init()
