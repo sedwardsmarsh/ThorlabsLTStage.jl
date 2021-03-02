@@ -54,3 +54,9 @@ function create_aliases(config; ignore=[])
         alias_print("$alias = $device")
     end
 end
+
+function alias_print(msg)
+    printstyled("[ Aliasing: ", color = :blue, bold = true)
+    println(msg)
+end
+

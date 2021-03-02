@@ -1,8 +1,8 @@
 module ThorlabsLTStage
 
 
-# import TcpInstruments: Configuration, create_aliases
-using TcpInstruments
+using TcpInstruments: Configuration#, create_aliases
+#import TcpInstruments
 
 export 
 
@@ -49,6 +49,7 @@ include("lts150.jl")
 #include("lts_c_binding.jl")
 
 function __init__()
+    load_config()
     if backend() == "python"
         init_python_lib()
     end
