@@ -122,8 +122,7 @@ class LTS:
 
         return self
 
-    # TODO
-    def init(self, serials):
+    def init_custom(self, serials):
         DeviceManagerCLI.BuildDeviceList()
 
         if len(serials) == 0:
