@@ -134,9 +134,9 @@ class LTS:
             print("Y: ", self.y_serial)
             print("Z: ", self.z_serial)
 
-            self.x_stage.init(self.x_serial)
-            self.y_stage.init(self.y_serial)
-            self.z_stage.init(self.z_serial)
+            self.x_stage.init(str(self.x_serial))
+            self.y_stage.init(str(self.y_serial))
+            self.z_stage.init(str(self.z_serial))
         else:
             raise Exception(str(len(d_list)) + " stages were detected: " + str(d_list))
 
