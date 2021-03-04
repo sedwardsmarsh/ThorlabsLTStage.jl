@@ -1,9 +1,5 @@
 module ThorlabsLTStage
 
-
-using TcpInstruments: Configuration#, create_aliases
-#import TcpInstruments
-
 export 
 
     get_config,

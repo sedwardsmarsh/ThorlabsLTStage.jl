@@ -1,20 +1,22 @@
-const lts_config = Configuration.Config(".lts_stage.yml")
+using InstrumentConfig
+
+const lts_config = InstrumentConfig.Config(".lts_stage.yml")
 
 function load_config()
-    Configuration.load_config(lts_config)
+    InstrumentConfig.load_config(lts_config)
     create_aliases(lts_config; ignore=["backend"])
 end
 
 function get_config()
-    return Configuration.get_config(lts_config)
+    return InstrumentConfig.get_config(lts_config)
 end
 
 function create_config(;dir=homedir())
-    Configuration.create_config(lts_config; dir=dir)
+    InstrumentConfig.create_config(lts_config; dir=dir)
 end
 
 function edit_config()
-    Configuration.edit_config(lts_config)
+    InstrumentConfig.edit_config(lts_config)
 end
 
 function backend(;v=true) 

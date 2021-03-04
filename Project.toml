@@ -4,6 +4,7 @@ authors = ["Esti Gajda", "Morten F. Rasmussen <10264458+mofii@users.noreply.gith
 version = "0.1.0"
 
 [deps]
+InstrumentConfig = "2ae464b0-21de-4247-9233-e7c17725eb53"
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
 TcpInstruments = "aaee30c5-7b57-4441-b61a-ab7186f11903"
