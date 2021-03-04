@@ -56,10 +56,7 @@ for configuration. Check out the package for more information.
 julia
 julia>using ThorlabsLTStage;
 julia>ThorlabsLTStage.create_config()
-julia>ThorlabsLTStage.edit_config()
 ```
-This will open the new example config file.
-Load python
 ```
 julia>load_python()
 ```
@@ -91,10 +88,9 @@ as the X stage followed by Y and Z.
 
 Lets say for your setup you want to change which stage is considered X, Y and Z.
 
-Create the following in your config file:
-```
-    ThorlabsLTStage.edit_config()
-```
+Edit your config file with your text editor or:
+` ThorlabsLTStage.edit_config() `
+ to look like the following:
 
 ```
 # Inside .lts_stage.yml
