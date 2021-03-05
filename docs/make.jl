@@ -6,7 +6,7 @@ DocMeta.setdocmeta!(ThorlabsLTStage, :DocTestSetup, :(using ThorlabsLTStage); re
 makedocs(;
     modules=[ThorlabsLTStage],
     authors="Morten F. Rasmussen <10264458+mofii@users.noreply.github.com> and contributors",
-    repo="https://github.com/mofii/ThorlabsLTStage.jl/blob/{commit}{path}#{line}",
+    repo="https://github.com/Orchard-Ultrasound-Innovation/ThorlabsLTStage.jl/blob/{commit}{path}#{line}",
     sitename="ThorlabsLTStage.jl",
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
@@ -19,5 +19,6 @@ makedocs(;
 )
 
 deploydocs(;
-    repo="github.com/mofii/ThorlabsLTStage.jl",
+    repo="github.com/Orchard-Ultrasound-Innovation/ThorlabsLTStage.jl",
+    devbranch="main",
 )

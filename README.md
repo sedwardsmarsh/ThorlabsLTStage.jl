@@ -67,7 +67,7 @@ use case you can also manually create this config file instead.
 ```
     echo "backend: python" > .lts_stage.yml
     julia
-    julia>using ThorlabsLTStage;
+    julia>using ThorlabsLTStage; ThorlabsLTStage.create_config()
     julia>load_python()
 ```
 
