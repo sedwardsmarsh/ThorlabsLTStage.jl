@@ -4,5 +4,5 @@ __pycache__
 *.jl.*.cov
 *.jl.cov
 *.jl.mem
-/Manifest.toml
+Manifest.toml
 /docs/build/
