@@ -2,10 +2,6 @@ module ThorlabsLTStage
 
 export 
 
-    get_config,
-    load_config,
-    create_config,
-    edit_config,
     backend,
     load_python,
 
@@ -43,12 +39,5 @@ include("python.jl")
 include("lts150.jl")
 
 #include("lts_c_binding.jl")
-
-function __init__()
-    load_config()
-    if backend() == "python"
-        init_python_lib()
-    end
-end
 
 end
