@@ -59,9 +59,9 @@ move_xyz(xyz, x, y, z) = xyz.lts.move_xyz(x, y, z)
 """
     pos_xyz(xyz)
 
-Returns location of x, y and z stages in the form of a Pair: (x, y, z)
+Returns location of x, y and z stages in the form of a Array: [x, y, z]
 """
-pos_xyz(xyz) = xyz.lts.pos_x(), xyz.lts.pos_y(), xyz.lts.pos_z()
+pos_xyz(xyz) = [xyz.lts.pos_x(), xyz.lts.pos_y(), xyz.lts.pos_z()]
 
 """
     move_x(xyz, x)

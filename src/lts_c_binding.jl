@@ -10,7 +10,7 @@ lib(x) = dlsym(shared_lib, x)
 Returns the number of microsteps in one milimeter for Thorlabs LTS150
 
 """
-microsteps_per_mm() = 49152
+microsteps_per_mm() = 409600
 
 """
 Returns the number of microsteps in one meter for Thorlabs LTS150
@@ -29,7 +29,7 @@ BuildDeviceList() = ccall(lib("TLI_BuildDeviceList"), Int, ())
 GetDeviceListSize() = ccall(lib("TLI_GetDeviceListSize"), Int, ())
 
 function GetDeviceList()
-    ccall(lib("TLI_BuildDeviceList"), Int, ())
+    BuildDeviceList()
     list_string = Ref{Cstring}()
     ccall(lib(:TLI_GetDeviceListByTypeExt), Int, (Ref{Cstring}, UInt32, Int64), list_string, 100, 45)
     serial_list = []
@@ -65,6 +65,7 @@ function Close(serial)
     ccall(lib(:ISC_Close), Int, (Cstring,), serial)
 end
 
+function test()
 serials = GetDeviceList()
 @info serials
 x, y, z = serials
@@ -80,13 +81,73 @@ for serial in serials
     sleep(3)
     """
 end
+end
 function move_to(serial, pos)
     @info ClearQueue(serial)
-    @info MoveTo(serial, microsteps_per_m(pos))
+    @info MoveTo(serial, pos)
 end
 function move_abs(serial, pos)
     @info ClearQueue(serial)
     @info "Moving $serial"
-    @info SetMoveAbs(serial, microsteps_per_m(pos))
+    @info SetMoveAbs(serial, pos)
     @info MoveAbs(serial)
+end
+
+struct Stage
+    serial::String
+    function Stage(serial)
+        stage = new(serial)
+        init(stage)
+        return stage
+    end
+end
+
+
+function init(stage::Stage)
+    OpenDevice(stage.serial)
+    sleep(1)
+    Poll(stage.serial, 200)
+    sleep(1)
+end
+
+function move(stage::Stage, pos)
+    ClearQueue(stage.serial)
+    status = MoveTo(stage.serial, microsteps_per_m(pos))
+    status == 0 && return
+    if status == 2
+        error("Error code 2: Device not found! Have you run BuildDeviceList()?")
+    else
+        error("Error code $status")
+    end
+end
+
+function home(stage::Stage)
+    move(stage, 0)
+end
+
+function pos(stage::Stage)
+    return GetPos(stage.serial)
+end
+
+struct LTS
+    x_stage::Stage
+    y_stage::Stage
+    z_stage::Stage
+end
+
+function LTS()
+    serials = GetDeviceList()
+    @info serials
+    if length(serials) == 0
+        return LTS(Stage(), Stage(), Stage())
+    elseif length(serials) == 3
+        x, y, z = serials
+        return LTS(Stage(x), Stage(y), Stage(z))
+    end
+end
+
+function move_xyz(lts::LTS, x, y, z)
+    move(lts.x_stage, x)
+    move(lts.y_stage, y)
+    move(lts.z_stage, z)
 end
