@@ -23,6 +23,18 @@ def test():
 def ParseDec(d):
     return float(str(d))
 
+def DeviceUnitsToMM(d):
+    return d / 409600
+
+def MMToDeviceUnits(d):
+    return d * 409600
+
+def MToDeviceUnits(m):
+    return MMToDeviceUnits(m * 1000)
+
+def DeviceUnitsToM(d):
+    return DeviceUnitsToMM(d) / 1000
+
 class Stage:
     def __init__(self):
         self.stage = 0
@@ -31,6 +43,8 @@ class Stage:
         self.is_enabled = False
         self.low_limit = -1
         self.high_limit = -1
+        self.min_limit = -1
+        self.max_limit = -1
 
     def init(self, serial):
         d = LongTravelStage.CreateLongTravelStage(serial)
@@ -45,16 +59,23 @@ class Stage:
         self.stage = d
         self.serial = serial
 
-    def move(self, pos):
-        if self.high_limit < self.low_limit:
-            raise Exception("Upper limit cannot be smaller than lower limit")
-        if self.low_limit >= 0:
-            if pos < self.low_limit:
-                pos = self.low_limit
+        self.low_limit = self.stage.get_MotorPositionLimits().MinValue
+        self.high_limit = self.stage.get_MotorPositionLimits().MaxValue
+        self.low_limit = DeviceUnitsToM(self.low_limit)
+        self.high_limit = DeviceUnitsToM(self.high_limit)
 
-        if self.high_limit >= 0:
-            if pos > self.high_limit:
-                pos = self.high_limit
+        self.max_limit = self.high_limit
+        self.min_limit = self.low_limit
+
+        #  lspx = (self.stage.GetLimitSwitchParams_DeviceUnit())
+        #  lspx = (self.stage.GetLimitSwitchParams())
+
+    def move(self, pos):
+        if pos < self.low_limit:
+            pos = self.low_limit
+
+        if pos > self.high_limit:
+            pos = self.high_limit
 
         self.force_move(pos * 1000)
 
@@ -81,8 +102,8 @@ class Stage:
         return self.low_limit, self.high_limit
 
     def remove_limits(self):
-        self.low_limit = -1
-        self.high_limit = -1
+        self.low_limit = self.min_limit
+        self.high_limit = self.max_limit
 
     def set_low_limit(self, lim):
         self.low_limit = lim
@@ -91,6 +112,13 @@ class Stage:
         self.high_limit = lim
 
     def set_limits(self, low, high):
+        if high < low:
+            raise Exception("Upper limit cannot be smaller than lower limit")
+        if self.max_limit < high:
+            raise Exception("Upper limit cannot be beyond physical limits")
+        if self.min_limit < low:
+            raise Exception("Lower limit cannot be beyond physical limits")
+
         self.set_low_limit(low)
         self.set_high_limit(high)
 
