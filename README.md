@@ -19,9 +19,11 @@ This guide explains how to setup a clean Windows 10 install.
 ### Install choco
 Start a new powershell as administrator.
 
-`Set-ExecutionPolicy -Scope CurrentUser`
+```
+Set-ExecutionPolicy -Scope CurrentUser
 
 Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+```
 
 ### Install git
 `choco install git`
