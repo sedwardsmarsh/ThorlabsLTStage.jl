@@ -54,14 +54,14 @@ function initialize_lts()
     lts150 = ThorlabsLTS150(lts)
 
     (low_x, low_y, low_z), (high_x, high_y, high_z) = get_limits(lts150)
-    low_x = get(stage_x, "lower_limit", low_x)
-    high_x = get(stage_x, "upper_limit", high_x)
+    low_x = get(x_stage, "lower_limit", low_x)
+    high_x = get(x_stage, "upper_limit", high_x)
 
-    low_y = get(stage_y, "lower_limit", low_y)
-    high_y = get(stage_y, "upper_limit", high_y)
+    low_y = get(y_stage, "lower_limit", low_y)
+    high_y = get(y_stage, "upper_limit", high_y)
 
-    low_z = get(stage_z, "lower_limit", low_z)
-    high_z = get(stage_z, "upper_limit", high_z)
+    low_z = get(z_stage, "lower_limit", low_z)
+    high_z = get(z_stage, "upper_limit", high_z)
 
     set_limits(lts150, (low_x, low_y, low_z), (high_x, high_y, high_z))
 end
