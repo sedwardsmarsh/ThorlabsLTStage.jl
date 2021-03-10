@@ -64,6 +64,8 @@ function initialize_lts()
     high_z = get(z_stage, "upper_limit", high_z)
 
     set_limits(lts150, (low_x, low_y, low_z), (high_x, high_y, high_z))
+
+    return lts150
 end
 
 """
