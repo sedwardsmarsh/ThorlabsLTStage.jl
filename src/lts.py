@@ -81,7 +81,12 @@ class Stage:
 
     def force_move(self, pos):
         self.is_moving = True
-        self.stage.MoveTo(Decimal(pos), self.isDone())
+        try:
+            self.stage.MoveTo(Decimal(pos), self.isDone())
+        except BaseException as e:
+            self.is_moving = False
+            print("An error has occurred. Can't move to position")
+            raise e
 
     def home(self):
         self.is_moving = True
