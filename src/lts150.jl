@@ -1,3 +1,5 @@
+import InstrumentConfig: initialize, terminate
+￼
 lts_lib = nothing
 
 function init_python_lib()
@@ -30,10 +32,6 @@ Returns:
    - ThorlabsLTS150: Device Handle 
 """
 function initialize(::Type{ThorlabsLTS150}) 
-    initialize_lts()
-end
-
-function initialize_lts() 
     @assert Sys.iswindows() "Windows is needed to connect to ThorlabsLTS150"
     @assert lts_lib != nothing "Call ThorlabsLTStage.load_config()"
     lts = lts_lib.LTS()
@@ -66,6 +64,10 @@ function initialize_lts()
     set_limits(lts150, (low_x, low_y, low_z), (high_x, high_y, high_z))
 
     return lts150
+end
+
+function terminate(lts::ThorlabsLTS150)
+    lts = nothing
 end
 
 """

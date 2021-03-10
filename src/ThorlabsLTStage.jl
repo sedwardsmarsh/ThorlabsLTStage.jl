@@ -6,7 +6,6 @@ export
     load_python,
 
     initialize,
-    initialize_lts,
     ThorlabsLTS150,
     move_x_abs,
     move_y_abs,
