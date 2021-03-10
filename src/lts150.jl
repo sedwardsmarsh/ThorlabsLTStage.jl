@@ -35,18 +35,35 @@ end
 
 function initialize_lts() 
     @assert Sys.iswindows() "Windows is needed to connect to ThorlabsLTS150"
-    @assert lts_lib != nothing "add python: python to top of config file then call load_python(). You must be on a windows computer to use this device"
+    @assert lts_lib != nothing "Call ThorlabsLTStage.load_config()"
     lts = lts_lib.LTS()
 
-    stages = get(get_config(), "ThorlabsLTS150", "")
+    stages = get(get_config(), "ThorlabsLTS150", Dict())
     @info get_config()
 
     if isempty(stages)
-        lts.init()
-    else
-        lts.init_custom([stages["X"], stages["Y"], stages["Z"]])
+        return ThorlabsLTS150(lts.init())
     end
-    ThorlabsLTS150(lts)
+
+    x_stage = stages["x"]
+    y_stage = stages["y"]
+    z_stage = stages["z"]
+    serials = map(s->s["serial"], [x_stage, y_stage, z_stage])
+    lts.init_custom(serials)
+
+    lts150 = ThorlabsLTS150(lts)
+
+    (low_x, low_y, low_z), (high_x, high_y, high_z) = get_limits(lts150)
+    low_x = get(stage_x, "lower_limit", low_x)
+    high_x = get(stage_x, "upper_limit", high_x)
+
+    low_y = get(stage_y, "lower_limit", low_y)
+    high_y = get(stage_y, "upper_limit", high_y)
+
+    low_z = get(stage_z, "lower_limit", low_z)
+    high_z = get(stage_z, "upper_limit", high_z)
+
+    set_limits(lts150, (low_x, low_y, low_z), (high_x, high_y, high_z))
 end
 
 """

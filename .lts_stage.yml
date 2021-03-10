@@ -2,7 +2,14 @@ backend: python
 
 ThorlabsLTS150:
   alias: lts150
-  X:  45140764
-  Y:  45141924
-  Z:  45146974
+  x:  
+    serial: 45140764
+    lower_limit: 0
+    upper_limit: .14
+  y:
+    serial: 45141924
+    lower_limit: 0
+    upper_limit: .29
+  z:
+    serial: 45146974
 

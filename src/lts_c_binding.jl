@@ -60,6 +60,23 @@ function Real2Device(serial::String, real::Float64)
     return device_unit
 end
 
+
+function Device2Real(serial::String, device_unit)
+    real = Ref{Float64}(0)
+    ccall(lib(:ISC_GetRealValueFromDeviceUnit), Int, (Cstring, Int, Ref{Float64}, Int), serial, device_unit, real, 0)
+    @info real
+    return real
+end
+
+function GetMotorTravelLimits(serial)
+    min = Ref{Cdouble}(0)
+    max = Ref{Cdouble}(0)
+    @info ccall(lib(:ISC_GetMotorTravelLimits), Int, (Cstring, Ref{Cdouble}, Ref{Cdouble}), serial, min, max)
+    @info (min, max)
+    return min, max
+end
+
+
 function Close(serial)
     ccall(lib(:ISC_StopPolling), Int, (Cstring,), serial)
     ccall(lib(:ISC_Close), Int, (Cstring,), serial)
