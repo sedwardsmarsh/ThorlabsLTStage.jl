@@ -187,8 +187,8 @@ pos_z(xyz) = xyz.lts.pos_z()
     set_limits(xyz, (x_low_lim, y_low_lim, z_low_lim), (x_high_lim, y_high_lim, z_high_lim))
 
 # Arguments
-- `low`: A Pair or an Array of three positions: (lts.x_low_limit, lts.y_low_limit, lts.z_low_limit)
-- `high`: A Pair or an Array of three positions: (lts.x_high_limit, lts.y_high_limit, lts.z_high_limit)
+- `low`: A Pair or an Array of three positions: `(lts.x_low_limit, lts.y_low_limit, lts.z_low_limit)`
+- `high`: A Pair or an Array of three positions: `(lts.x_high_limit, lts.y_high_limit, lts.z_high_limit)`
 
 """
 function set_limits(xyz, low, high)

@@ -66,11 +66,12 @@ The important line in the config is "backend: python"
 
 If you wanted to add this line but the rest of the config doesn't fit your
 use case you can also manually create this config file instead.
+
 ```
-    echo "backend: python" > .lts_stage.yml
-    julia
-    julia>using ThorlabsLTStage; ThorlabsLTStage.create_config()
-    julia>load_python()
+echo "backend: python" > .lts_stage.yml
+julia
+julia>using ThorlabsLTStage; ThorlabsLTStage.create_config()
+julia>load_python()
 ```
 
 
@@ -99,10 +100,16 @@ Edit your config file with your text editor or:
 backend: python
 
 ThorlabsLTS150:
-    X: desired-x-stage-serial-number
-    Y: desired-y-stage-serial-number
-    Z: desired-z-stage-serial-number
-
+  alias: lts150
+  x:  
+    serial: desired-x-stage-serial-number
+    lower_limit: 0 # meters
+    upper_limit: .15 # meters
+  y:
+    serial: desired-y-stage-serial-number 
+    # If no limits specified physical device limits will be used
+  z:
+    serial: desired-z-stage-serial-number 
 ```
 
 Now when you run 
