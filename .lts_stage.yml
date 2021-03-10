@@ -5,11 +5,9 @@ ThorlabsLTS150:
   x:  
     serial: 45140764
     lower_limit: 0
-    upper_limit: .0988
+    upper_limit: .15
   y:
-    serial: 45141924
-    lower_limit: 0
-    upper_limit: .29
-  z:
     serial: 45146974
+  z:
+    serial: 45141924
 
