@@ -90,7 +90,12 @@ class Stage:
 
     def home(self):
         self.is_moving = True
-        self.stage.Home(self.isDone())
+        try:
+            self.stage.Home(self.isDone())
+        except BaseException as e:
+            self.is_moving = False
+            print("An error has occurred. Can't home")
+            raise e
 
     def isDone(self):
         def isDoneHelper(taskID):
