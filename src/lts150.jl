@@ -1,5 +1,4 @@
 import InstrumentConfig: initialize, terminate
-￼
 lts_lib = nothing
 
 function init_python_lib()
