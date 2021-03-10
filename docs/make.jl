@@ -10,7 +10,7 @@ makedocs(;
     sitename="ThorlabsLTStage.jl",
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
-        canonical="https://mofii.github.io/ThorlabsLTStage.jl",
+        canonical="https://Orchard-Ultrasound-Innovation.github.io/ThorlabsLTStage.jl",
         assets=String[],
     ),
     pages=[
