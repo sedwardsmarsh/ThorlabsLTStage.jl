@@ -28,10 +28,26 @@ export
     get_limits_y,
     get_limits_z,
     clear_limits,
+
+    get_max_velocity,
+    get_max_velocity_x,
+    get_max_velocity_y,
     get_max_velocity_z,
+
     set_max_velocity_x,
+    set_max_velocity_y,
+    set_max_velocity_z,
+
     get_max_acceleration,
-    set_max_acceleration
+    get_max_acceleration_x,
+    get_max_acceleration_y,
+    get_max_acceleration_z,
+
+    set_max_acceleration_x,
+    set_max_acceleration_y,
+    set_max_acceleration_z,
+
+    terminate
 
 
 include("config.jl")

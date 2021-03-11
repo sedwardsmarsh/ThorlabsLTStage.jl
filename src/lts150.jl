@@ -49,23 +49,47 @@ function initialize(::Type{ThorlabsLTS150})
 
     lts150 = ThorlabsLTS150(lts)
 
+    # Set position limits from config
     (low_x, low_y, low_z), (high_x, high_y, high_z) = get_limits(lts150)
-    low_x = get(x_stage, "lower_limit", low_x)
-    high_x = get(x_stage, "upper_limit", high_x)
+    low_x = get(x_stage, "min_position", low_x)
+    high_x = get(x_stage, "max_position", high_x)
 
-    low_y = get(y_stage, "lower_limit", low_y)
-    high_y = get(y_stage, "upper_limit", high_y)
+    low_y = get(y_stage, "min_position", low_y)
+    high_y = get(y_stage, "max_position", high_y)
 
-    low_z = get(z_stage, "lower_limit", low_z)
-    high_z = get(z_stage, "upper_limit", high_z)
+    low_z = get(z_stage, "min_position", low_z)
+    high_z = get(z_stage, "max_position", high_z)
 
     set_limits(lts150, (low_x, low_y, low_z), (high_x, high_y, high_z))
+
+    # Set velocity limits from config
+    x_vel = get(x_stage, "max_velocity", get_max_velocity_x(lts150))
+    y_vel = get(y_stage, "max_velocity", get_max_velocity_y(lts150))
+    z_vel = get(z_stage, "max_velocity", get_max_velocity_z(lts150))
+    set_max_velocity_x(lts150, x_vel)
+    set_max_velocity_y(lts150, y_vel)
+    set_max_velocity_z(lts150, z_vel)
+
+    # Set acceleration limits from config
+    x_acc = get(
+        x_stage, "max_acceleration", get_max_acceleration_x(lts150)
+    )
+    y_acc = get(
+        y_stage, "max_acceleration", get_max_acceleration_y(lts150)
+    )
+    z_acc = get(
+        z_stage, "max_acceleration", get_max_acceleration_z(lts150)
+    )
+    set_max_acceleration_x(lts150, x_acc)
+    set_max_acceleration_y(lts150, y_acc)
+    set_max_acceleration_z(lts150, z_acc)
 
     return lts150
 end
 
 function terminate(lts::ThorlabsLTS150)
-    lts = nothing
+    lts.lts.close()
+    lts.lts = nothing
 end
 
 """
@@ -251,10 +275,10 @@ set_max_velocity_y(xyz, v) = xyz.lts.y_stage.set_max_velocity(v)
 set_max_velocity_z(xyz, v) = xyz.lts.z_stage.set_max_velocity(v)
 
 get_max_acceleration(xyz) = xyz.lts.get_max_acceleration()
-get_max_acceleration(xyz) = xyz.lts.x_stage.get_max_acceleration()
-get_max_acceleration(xyz) = xyz.lts.y_stage.get_max_acceleration()
-get_max_acceleration(xyz) = xyz.lts.z_stage.get_max_acceleration()
+get_max_acceleration_x(xyz) = xyz.lts.x_stage.get_max_acceleration()
+get_max_acceleration_y(xyz) = xyz.lts.y_stage.get_max_acceleration()
+get_max_acceleration_z(xyz) = xyz.lts.z_stage.get_max_acceleration()
 
-set_max_acceleration(xyz, a) = xyz.lts.x_stage.set_max_acceleration(a)
-set_max_acceleration(xyz, a) = xyz.lts.y_stage.set_max_acceleration(a)
-set_max_acceleration(xyz, a) = xyz.lts.z_stage.set_max_acceleration(a)
+set_max_acceleration_x(xyz, a) = xyz.lts.x_stage.set_max_acceleration(a)
+set_max_acceleration_y(xyz, a) = xyz.lts.y_stage.set_max_acceleration(a)
+set_max_acceleration_z(xyz, a) = xyz.lts.z_stage.set_max_acceleration(a)
