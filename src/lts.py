@@ -51,10 +51,10 @@ class Stage:
     def init(self, serial):
         d = LongTravelStage.CreateLongTravelStage(serial)
         d.Connect(serial)
-        sleep(0.5)
+        sleep(0.8)
         d.StartPolling(250)
         d.EnableDevice()
-        sleep(0.5)
+        sleep(0.8)
         self.is_enabled = True
         self.config = d.LoadMotorConfiguration(serial)
 
