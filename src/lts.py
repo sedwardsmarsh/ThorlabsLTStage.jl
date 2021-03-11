@@ -45,16 +45,18 @@ class Stage:
         self.high_limit = -1
         self.min_limit = -1
         self.max_limit = -1
+        self.config = None
+        self.speed_settings = None
 
     def init(self, serial):
         d = LongTravelStage.CreateLongTravelStage(serial)
-        sleep(1)
         d.Connect(serial)
-        sleep(1)
+        sleep(0.5)
+        d.StartPolling(250)
         d.EnableDevice()
-        sleep(1)
+        sleep(0.5)
         self.is_enabled = True
-        d.LoadMotorConfiguration(serial)
+        self.config = d.LoadMotorConfiguration(serial)
 
         self.stage = d
         self.serial = serial
@@ -66,9 +68,25 @@ class Stage:
 
         self.max_limit = self.high_limit
         self.min_limit = self.low_limit
+        self.speed_settings = self.stage.GetVelocityParams()
 
         #  lspx = (self.stage.GetLimitSwitchParams_DeviceUnit())
         #  lspx = (self.stage.GetLimitSwitchParams())
+
+    def get_max_velocity(self):
+        return ParseDec(self.speed_settings.get_MaxVelocity())
+
+    def get_max_acceleration(self):
+        return ParseDec(self.speed_settings.get_Acceleration())
+
+    def set_max_velocity(self, vel):
+        self.speed_settings.set_MaxVelocity(Decimal(vel))
+        self.stage.SetVelocityParams(self.speed_settings)
+
+    def set_max_acceleration(self, acc):
+        self.speed_settings.set_Acceleration(Decimal(acc))
+        self.stage.SetVelocityParams(self.speed_settings)
+
 
     def move(self, pos):
         if pos < self.low_limit:
@@ -182,6 +200,12 @@ class LTS:
 
     def serial(self):
         return self.x_stage.serial, self.y_stage.serial, self.z_stage.serial
+
+    def get_max_velocity(self):
+        return self.x_stage.get_max_velocity(), self.y_stage.get_max_velocity(), self.z_stage.get_max_velocity()
+
+    def get_max_acceleration(self):
+        return self.x_stage.get_max_acceleration(), self.y_stage.get_max_acceleration(), self.z_stage.get_max_acceleration()
 
     def move_x(self, pos):
         self.x_stage.move(pos)
