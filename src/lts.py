@@ -150,6 +150,16 @@ class Stage:
         self.set_low_limit(low)
         self.set_high_limit(high)
 
+    def info(self):
+        return self.config.get_DeviceSettingsName()
+
+    def print_info(self, msg=""):
+        print(msg, " ", self.serial, " ", self.info())
+
+    def close(self):
+        self.stage.StopPolling()
+        self.stage.ShutDown()
+
 class LTS:
     def __init__(self):
         self.x_stage = Stage()
@@ -159,20 +169,19 @@ class LTS:
     def init(self):
         DeviceManagerCLI.BuildDeviceList()
         d_list = DeviceManagerCLI.GetDeviceList(45)
-        print(d_list)
 
         if len(d_list) == 0:
             print("No Thorlabs LTS Device connected!")
             return
         elif len(d_list) == 3:
             self.x_serial, self.y_serial, self.z_serial = d_list
-            print("X: ", self.x_serial)
-            print("Y: ", self.y_serial)
-            print("Z: ", self.z_serial)
 
             self.x_stage.init(self.x_serial)
+            self.x_stage.print_info("X:")
             self.y_stage.init(self.y_serial)
+            self.y_stage.print_info("Y:")
             self.z_stage.init(self.z_serial)
+            self.z_stage.print_info("Z:")
         else:
             raise Exception(str(len(d_list)) + " stages were detected: " + str(d_list))
 
@@ -186,13 +195,13 @@ class LTS:
             return
         elif len(serials) == 3:
             self.x_serial, self.y_serial, self.z_serial = serials
-            print("X: ", self.x_serial)
-            print("Y: ", self.y_serial)
-            print("Z: ", self.z_serial)
 
             self.x_stage.init(str(self.x_serial))
+            self.x_stage.print_info("X:")
             self.y_stage.init(str(self.y_serial))
+            self.y_stage.print_info("Y:")
             self.z_stage.init(str(self.z_serial))
+            self.z_stage.print_info("Z:")
         else:
             raise Exception(str(len(d_list)) + " stages were detected: " + str(d_list))
 
@@ -273,4 +282,8 @@ class LTS:
     def wait(self):
         while self.x_stage.is_moving or self.y_stage.is_moving or self.z_stage.is_moving:
             sleep(0.1)
+
+    def close(self):
+        for stage in [self.x_stage, self.y_stage, self.z_stage]:
+            stage.close()
 

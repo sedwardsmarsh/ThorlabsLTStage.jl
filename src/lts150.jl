@@ -36,7 +36,6 @@ function initialize(::Type{ThorlabsLTS150})
     lts = lts_lib.LTS()
 
     stages = get(get_config(), "ThorlabsLTS150", Dict())
-    @info get_config()
 
     if isempty(stages)
         return ThorlabsLTS150(lts.init())
@@ -241,3 +240,21 @@ end
 function clear_limits(xyz)
     xyz.lts.remove_limits()
 end
+
+get_max_velocity(xyz) = xyz.lts.get_max_velocity()
+get_max_velocity_x(xyz) = xyz.lts.x_stage.get_max_velocity()
+get_max_velocity_y(xyz) = xyz.lts.y_stage.get_max_velocity()
+get_max_velocity_z(xyz) = xyz.lts.z_stage.get_max_velocity()
+
+set_max_velocity_x(xyz, v) = xyz.lts.x_stage.set_max_velocity(v)
+set_max_velocity_y(xyz, v) = xyz.lts.y_stage.set_max_velocity(v)
+set_max_velocity_z(xyz, v) = xyz.lts.z_stage.set_max_velocity(v)
+
+get_max_acceleration(xyz) = xyz.lts.get_max_acceleration()
+get_max_acceleration(xyz) = xyz.lts.x_stage.get_max_acceleration()
+get_max_acceleration(xyz) = xyz.lts.y_stage.get_max_acceleration()
+get_max_acceleration(xyz) = xyz.lts.z_stage.get_max_acceleration()
+
+set_max_acceleration(xyz, a) = xyz.lts.x_stage.set_max_acceleration(a)
+set_max_acceleration(xyz, a) = xyz.lts.y_stage.set_max_acceleration(a)
+set_max_acceleration(xyz, a) = xyz.lts.z_stage.set_max_acceleration(a)
