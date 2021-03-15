@@ -29,9 +29,10 @@ BuildDeviceList() = ccall(lib("TLI_BuildDeviceList"), Int, ())
 GetDeviceListSize() = ccall(lib("TLI_GetDeviceListSize"), Int, ())
 
 function GetDeviceList()
+    lts_identifier = 45 # Hard coded to only detect ThorlabsLTS
     BuildDeviceList()
     list_string = Ref{Cstring}()
-    ccall(lib(:TLI_GetDeviceListByTypeExt), Int, (Ref{Cstring}, UInt32, Int64), list_string, 100, 45)
+    ccall(lib(:TLI_GetDeviceListByTypeExt), Int, (Ref{Cstring}, UInt32, Int64), list_string, 100, lts_identifier)
     serial_list = []
     p = ccall(:strtok, Cstring, (Ref{Cstring}, Cstring), list_string, ",")
     while p != C_NULL
@@ -41,101 +42,195 @@ function GetDeviceList()
     return serial_list
 end
 
-OpenDevice(serial::String) = ccall(lib(:ISC_Open), Int, (Cstring,), serial)
+LoadSettings(serial::String) = ccall(lib(:ISC_LoadSettings), Bool, (Cstring,), serial)
+
+function OpenDevice(serial::String) 
+    err = ccall(lib(:ISC_Open), Cshort, (Cstring,), serial)
+    @info "Open $err"
+    return err
+end
 
 Poll(serial, sec) = ccall(lib(:ISC_StartPolling), Int, (Cstring, Int), serial, sec)
 
+Enable(serial) = ccall(lib(:ISC_EnableChannel), Cshort, (Cstring,), serial)
+
 ClearQueue(serial) = ccall(lib(:ISC_ClearMessageQueue), Int, (Cstring,), serial)
+
 MoveTo(serial::String, pos::Int) = ccall(lib(:ISC_MoveToPosition), Int, (Cstring,Int), serial, pos)
+
 SetMoveAbs(serial::String, pos::Int) = ccall(lib(:ISC_SetMoveAbsolutePosition), Int, (Cstring,Int), serial, pos)
+
 MoveAbs(serial::String) = ccall(lib(:ISC_MoveAbsolute), Int, (Cstring,), serial)
 
 GetPos(serial) = ccall(lib(:ISC_GetPosition), Int, (Cstring,), serial)
 
-
-function Real2Device(serial::String, real::Float64)
-    device_unit = Ref{Int}(0)
-    ccall(lib(:ISC_GetDeviceUnitFromRealValue), Int, (Cstring, Float64, Ref{Int}, Int), serial, real, device_unit, 0)
-    @info device_unit
-    return device_unit
+function GetDeviceUnitFromRealValue(serial::String, real, unit_enum)
+    @assert unit_enum in [0, 1, 2] "unit_enum must be either 0 for position, 1 for speed, 2 for acceleration"
+    device_unit = Ref{Cint}(0)
+    err = ccall(lib(:ISC_GetDeviceUnitFromRealValue), Cshort, (Cstring, Cdouble, Ref{Cint}, Cint), serial, real, device_unit, unit_enum)
+    err != 0 && error("Error code: $err")
+    return device_unit[]
 end
 
+function GetRealValueFromDeviceUnit(serial::String, device_unit, unit_enum)
+    @assert unit_enum in [0, 1, 2] "unit_enum must be either 0 for position, 1 for speed, 2 for acceleration"
+    real = Ref{Cdouble}(0)
+    err = ccall(lib(:ISC_GetRealValueFromDeviceUnit), Cshort, (Cstring, Int, Ref{Cdouble}, Int), serial, device_unit, real, unit_enum)
+    err != 0 && error("Error code: $err")
+    return real[]
+end
 
-function Device2Real(serial::String, device_unit)
-    real = Ref{Float64}(0)
-    ccall(lib(:ISC_GetRealValueFromDeviceUnit), Int, (Cstring, Int, Ref{Float64}, Int), serial, device_unit, real, 0)
-    @info real
-    return real
+function DeviceUnitToMilimeters(serial::String, device_unit)
+    return GetRealValueFromDeviceUnit(serial, device_unit, 0)
+end
+
+function MilimetersToDeviceUnit(serial::String, mm)
+    GetDeviceUnitFromRealValue(serial, mm, 0)
+end
+
+function MetersToDeviceUnit(serial::String, m)
+    return MilimetersToDeviceUnit(serial, m * 1000)
+end
+
+function DeviceUnitToMeters(serial::String, device_unit)
+    return DeviceUnitToMilimeters(serial, device_unit) / 1000
+end
+
+function VelocityToDeviceUnit(serial::String, vel)
+    return GetDeviceUnitFromRealValue(serial, vel, 1)
+end
+
+function DeviceUnitToVelocity(serial::String, device_unit)
+    return GetRealValueFromDeviceUnit(serial, device_unit, 1)
+end
+
+function AccelerationToDeviceUnit(serial::String, acc)
+    return GetDeviceUnitFromRealValue(serial, acc, 2)
+end
+
+function DeviceUnitToAcceleration(serial::String, device_unit)
+    return GetRealValueFromDeviceUnit(serial, device_unit, 2)
 end
 
 function GetMotorTravelLimits(serial)
     min = Ref{Cdouble}(0)
     max = Ref{Cdouble}(0)
-    @info ccall(lib(:ISC_GetMotorTravelLimits), Int, (Cstring, Ref{Cdouble}, Ref{Cdouble}), serial, min, max)
-    @info (min, max)
-    return min, max
+    err = ccall(lib(:ISC_GetMotorTravelLimits), Cshort, (Cstring, Ref{Cdouble}, Ref{Cdouble}), serial, min, max)
+    err != 0 && error("Error GetMotorTravelLimits code: $err")
+    return min[], max[]
 end
 
+function GetVelParams(serial)
+    acc = Ref{Cint}(0)
+    vel = Ref{Cint}(0)
+    err = ccall(lib(:ISC_GetVelParams), Cshort, (Cstring, Ref{Cint}, Ref{Cint}), serial, acc, vel)
+    err != 0 && error("Error GetVelParams code: $err")
+    return acc[], vel[]
+end
+
+function SetVelParams(serial, acc, vel)
+    err = ccall(lib(:ISC_SetVelParams), Cshort, (Cstring, Cint, Cint), serial, acc, vel)
+    err != 0 && error("Error code: $err")
+    return true
+end
+
+function GetVelocity(serial)
+    acc, vel = GetVelParams(serial)
+    return DeviceUnitToVelocity(serial, vel)
+end
+
+function SetVelocity(serial, vel)
+    vel = VelocityToDeviceUnit(serial, vel)
+    acc, _ = GetVelParams(serial)
+    SetVelParams(serial, acc, vel)
+end
+
+function GetAcceleration(serial)
+    acc, vel = GetVelParams(serial)
+    acc = DeviceUnitToAcceleration(serial, acc)
+    return round(acc; digits=4)
+end
+
+function SetAcceleration(serial, acc)
+    acc = AccelerationToDeviceUnit(serial, acc)
+    _, vel = GetVelParams(serial)
+    SetVelParams(serial, acc, vel)
+end
 
 function Close(serial)
     ccall(lib(:ISC_StopPolling), Int, (Cstring,), serial)
     ccall(lib(:ISC_Close), Int, (Cstring,), serial)
 end
 
-function test()
-serials = GetDeviceList()
-@info serials
-x, y, z = serials
-for serial in serials
-    @info OpenDevice(serial)
-    sleep(3)
-    @info Poll(serial, 200)
-    sleep(3)
-    """
-    @info ClearQueue(serial)
-    @info SetMoveAbs(serial, 0)
-    @info MoveAbs(serial)
-    sleep(3)
-    """
-end
-end
-function move_to(serial, pos)
-    @info ClearQueue(serial)
-    @info MoveTo(serial, pos)
-end
-function move_abs(serial, pos)
-    @info ClearQueue(serial)
-    @info "Moving $serial"
-    @info SetMoveAbs(serial, pos)
-    @info MoveAbs(serial)
+function WaitForMessage(serial)
+    msgType = Ref{Cint}(2)
+    msgID = Ref{Cint}(0)
+    msgData = Ref{Int64}(0)
+    successful = ccall(lib(:ISC_WaitForMessage), Bool, (Cstring, Ref{Cint}, Ref{Cint}, Ref{Int64}), serial, msgType, msgID, msgData)
+    @info successful
+    @info msgType
+    @info msgID
+    @info msgData
+    return msgType[], msgID[]
+    while (msgType[] != 2 || msgID[] != 0)
+        ccall(lib(:ISC_WaitForMessage), Bool, (Cstring, Ref{Cint}, Ref{Cint}, Ref{Clong}), serial, msgType, msgID, msgData)
+    end
+        
 end
 
-struct Stage
+function move_abs(serial::String, pos)
+    pos = microsteps_per_m(pos)
+    ClearQueue(serial)
+    SetMoveAbs(serial, pos)
+    MoveAbs(serial)
+end
+
+function init(stage)
+    err = OpenDevice(stage.serial)
+    while err != 0
+        BuildDeviceList()
+        sleep(1)
+        err = OpenDevice(stage.serial)
+    end
+    sleep(1)
+    sleep(3.5)
+    @info "About to load settings"
+    @info LoadSettings(stage.serial)
+    Poll(stage.serial, 200)
+    Enable(stage.serial)
+    @info "Enabling $(stage.serial)"
+end
+
+mutable struct Stage
     serial::String
+    min_pos::Float64
+    max_pos::Float64
+    lower_limit::Float64
+    upper_limit::Float64
+    is_moving::Bool
     function Stage(serial)
         stage = new(serial)
         init(stage)
+        finalizer(s->Close(s.serial), stage)
+        stage.min_pos, stage.max_pos = GetMotorTravelLimits(serial)
+        stage.lower_limit = stage.min_pos
+        stage.upper_limit = stage.max_pos
+        stage.is_moving = false
         return stage
     end
 end
 
-
-function init(stage::Stage)
-    OpenDevice(stage.serial)
-    sleep(1)
-    Poll(stage.serial, 200)
-    sleep(1)
-end
-
-function move(stage::Stage, pos)
-    ClearQueue(stage.serial)
-    status = MoveTo(stage.serial, microsteps_per_m(pos))
-    status == 0 && return
-    if status == 2
-        error("Error code 2: Device not found! Have you run BuildDeviceList()?")
-    else
-        error("Error code $status")
+function pause(stage::Stage, position)
+    while !isapprox(pos(stage), position)
+        sleep(0.1)
     end
+    stage.is_moving = false
+end
+function move(stage::Stage, position; block=true)
+    stage.is_moving = true
+    move_abs(stage.serial, position)
+    block && pause(stage, position)
+    return
 end
 
 function home(stage::Stage)
@@ -143,7 +238,7 @@ function home(stage::Stage)
 end
 
 function pos(stage::Stage)
-    return GetPos(stage.serial)
+    return DeviceUnitToMeters(stage.serial, GetPos(stage.serial))
 end
 
 struct LTS
@@ -164,7 +259,44 @@ function LTS()
 end
 
 function move_xyz(lts::LTS, x, y, z)
-    move(lts.x_stage, x)
-    move(lts.y_stage, y)
-    move(lts.z_stage, z)
+    move(lts, x, y, z)
+end
+
+function close(stage::Stage)
+    Close(stage.serial)
+end
+
+function close(stage::LTS)
+    close(lts.x_stage)
+    close(lts.y_stage)
+    close(lts.z_stage)
+end
+
+function get_acceleration(stage::Stage)
+    return GetAcceleration(stage.serial)
+end
+
+function set_acceleration(stage::Stage, acc)
+    return SetAcceleration(stage.serial, acc)
+end
+
+function get_velocity(stage::Stage)
+    return GetVelocity(stage.serial)
+end
+
+function set_velocity(stage::Stage, vel)
+    return SetVelocity(stage.serial, vel)
+end
+
+function pos(lts::LTS)
+    return [pos(lts.x_stage), pos(lts.y_stage), pos(lts.z_stage)]
+end
+
+function move(lts::LTS, x, y, z)
+    move(lts.x_stage, x; block=false)
+    move(lts.y_stage, y; block=false)
+    move(lts.z_stage, z; block=false)
+    pause(lts.x_stage, x)
+    pause(lts.y_stage, y)
+    pause(lts.z_stage, z)
 end

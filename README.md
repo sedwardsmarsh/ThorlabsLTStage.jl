@@ -102,14 +102,18 @@ backend: python
 ThorlabsLTS150:
   alias: lts150
   x:  
-    serial: desired-x-stage-serial-number
-    lower_limit: 0 # meters
-    upper_limit: .15 # meters
+    serial: 45140764 # or whatever your desired serial number is
+    min_position: 0
+    max_position: .15 # in meters
+    max_velocity: 20
+    max_acceleration: 20
   y:
-    serial: desired-y-stage-serial-number 
-    # If no limits specified physical device limits will be used
+    serial: 45146974
+    max_velocity: 3
+    max_acceleration: 5
   z:
-    serial: desired-z-stage-serial-number 
+    serial: 45141924
+    # If no limits specified physical device limits will be used
 ```
 
 Now when you run 
