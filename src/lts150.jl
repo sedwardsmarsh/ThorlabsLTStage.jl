@@ -97,7 +97,9 @@ end
 
 Simulatenously moves x, y and z stage to desired location
 """
-move_xyz(xyz, x, y, z) = xyz.lts.move_xyz(x, y, z)
+function move_xyz(xyz, x, y, z) 
+    safe_move(xyz, xyz.lts.move_xyz, x, y, z)
+end
 
 """
     pos_xyz(xyz)
@@ -106,26 +108,33 @@ Returns location of x, y and z stages in the form of a Array: [x, y, z]
 """
 pos_xyz(xyz) = [xyz.lts.pos_x(), xyz.lts.pos_y(), xyz.lts.pos_z()]
 
+
 """
     move_x(xyz, x)
 
 Moves x stage to desired absolute location
 """
-move_x_abs(xyz, x) = xyz.lts.move_x(x)
+function move_x_abs(xyz, x) 
+    safe_move(xyz, xyz.lts.move_x, x)
+end
 
 """
     move_y(xyz, y)
 
 Moves y stage to desired absolute location
 """
-move_y_abs(xyz, y) = xyz.lts.move_y(y)
+function move_y_abs(xyz, y) 
+    safe_move(xyz, xyz.lts.move_y, y)
+end
 
 """
     move_z(xyz, z)
 
 Moves z stage to desired absolute location
 """
-move_z_abs(xyz, z) = xyz.lts.move_z(z)
+function move_z_abs(xyz, z) 
+    safe_move(xyz, xyz.lts.move_z, z)
+end
 
 """
     move_x(xyz, x)
@@ -282,3 +291,30 @@ get_max_acceleration_z(xyz) = xyz.lts.z_stage.get_max_acceleration()
 set_max_acceleration_x(xyz, a) = xyz.lts.x_stage.set_max_acceleration(a)
 set_max_acceleration_y(xyz, a) = xyz.lts.y_stage.set_max_acceleration(a)
 set_max_acceleration_z(xyz, a) = xyz.lts.z_stage.set_max_acceleration(a)
+
+# TODO: Eventually this should be a part of stage movement
+function safe_move(xyz, move_func, x, y, z)
+    try
+        move_func(x, y, z)
+    catch err
+        if isa(err, InterruptException) 
+            move_xyz(xyz, pos_xyz(xyz)...)
+            print("Stopping device")
+        else
+            rethrow(err)
+        end
+    end
+end
+
+function safe_move(xyz, move_func, position)
+    try
+        move_func(position)
+    catch err
+        if isa(err, InterruptException) 
+            move_xyz(xyz, pos_xyz(xyz)...)
+            print("Stopping device")
+        else
+            rethrow(err)
+        end
+    end
+end
