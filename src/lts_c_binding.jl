@@ -44,6 +44,8 @@ end
 
 LoadSettings(serial::String) = ccall(lib(:ISC_LoadSettings), Bool, (Cstring,), serial)
 
+LoadNamedSettings(serial::String, name) = ccall(lib(:ISC_LoadNamedSettings), Bool, (Cstring,Cstring), serial, name)
+
 function OpenDevice(serial::String) 
     err = ccall(lib(:ISC_Open), Cshort, (Cstring,), serial)
     @info "Open $err"
@@ -192,11 +194,11 @@ function init(stage)
         sleep(1)
         err = OpenDevice(stage.serial)
     end
+    Poll(stage.serial, 50)
     sleep(1)
-    sleep(3.5)
     @info "About to load settings"
+    @info LoadNamedSettings(stage.serial, "HS LTS150 150mm Stage")
     @info LoadSettings(stage.serial)
-    Poll(stage.serial, 200)
     Enable(stage.serial)
     @info "Enabling $(stage.serial)"
 end
