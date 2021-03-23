@@ -46,7 +46,7 @@ As of this document any version of python above 3.6.3 will not work
 Download & Install [Kinesis](https://www.thorlabs.com/software_pages/ViewSoftwarePage.cfm?Code=Motion_Control&viewtab=0)
 
 ### Install ThorlabsLTSStage
-```
+```julia
 pkg> add https://github.com/Orchard-Ultrasound-Innovation/ThorlabsLTStage.jl
 ```
 
@@ -54,24 +54,24 @@ This project uses [InstrumentConfig.jl](https://github.com/Orchard-Ultrasound-In
 for configuration. Check out the package for more information.
 
 ### Specify python location in your config file
-```
+```julia
 julia
-julia>using ThorlabsLTStage;
-julia>ThorlabsLTStage.create_config()
+julia> using ThorlabsLTStage;
+julia> ThorlabsLTStage.create_config()
 ```
-```
-julia>load_python()
+```julia
+julia> load_python()
 ```
 The important line in the config is "backend: python"
 
 If you wanted to add this line but the rest of the config doesn't fit your
 use case you can also manually create this config file instead.
 
-```
+```julia
 echo "backend: python" > .lts_stage.yml
 julia
-julia>using ThorlabsLTStage; ThorlabsLTStage.create_config()
-julia>load_python()
+julia> using ThorlabsLTStage; ThorlabsLTStage.create_config()
+julia> load_python()
 ```
 
 
@@ -79,9 +79,9 @@ julia>load_python()
 As of right now the only supported device is the Thorlabs LTS150
 
 To connect to it:
-```
+```julia
 julia
-julia>using ThorlabsLTStage; ThorlabsLTStage.load_config()
+julia> using ThorlabsLTStage; ThorlabsLTStage.load_config()
 lts = initialize(ThorlabsLTS150)
 ```
 
@@ -95,7 +95,7 @@ Edit your config file with your text editor or:
 ` ThorlabsLTStage.edit_config() `
  to look like the following:
 
-```
+```yml
 # Inside .lts_stage.yml
 backend: python
 
@@ -117,7 +117,7 @@ ThorlabsLTS150:
 ```
 
 Now when you run 
-```
+```julia
 lts = initialize(ThorlabsLTS150)
 ```
 the current stages will be configured as X, Y and Z
@@ -140,10 +140,10 @@ Note: All positions are in meters
 
 For all the available commands use:
 
-`help>ThorlabsLTS150`
+`help> ThorlabsLTS150`
 
 ## Example
-```
+```julia
 lts = initialize(ThorlabsLTS150)
 
 move_xyz(lts, 0.1, 0.1, 0.1)
