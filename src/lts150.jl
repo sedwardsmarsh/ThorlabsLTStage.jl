@@ -31,8 +31,8 @@ Returns:
    - ThorlabsLTS150: Device Handle 
 """
 function initialize(::Type{ThorlabsLTS150}) 
-    @assert Sys.iswindows() "Windows is needed to connect to ThorlabsLTS150"
-    @assert lts_lib != nothing "Call ThorlabsLTStage.load_config()"
+    !Sys.iswindows() && error("Windows is needed to connect to ThorlabsLTS150")
+    lts_lib == nothing && error("Call ThorlabsLTStage.load_config()")
     lts = lts_lib.LTS()
 
     stages = get(get_config(), "ThorlabsLTS150", Dict())

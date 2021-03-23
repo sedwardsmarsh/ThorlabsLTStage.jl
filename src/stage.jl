@@ -58,8 +58,8 @@ struct LTS150_5D <: LTS150
 end
 
 function initialize(::Type{T}) where T <: LTS150
-    @assert Sys.iswindows() "Windows is needed to connect to ThorlabsLTS150"
-    @assert lts_lib != nothing "Call ThorlabsLTStage.load_config()"
+    !Sys.iswindows() && error("Windows is needed to connect to ThorlabsLTS150")
+    lts_lib == nothing && error("Call ThorlabsLTStage.load_config()")
     stages = get(get_config(), "ThorlabsLTS150", Dict())
     if isempty(stages)
         device_list = get_connected_stages()

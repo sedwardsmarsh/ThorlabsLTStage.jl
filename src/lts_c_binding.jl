@@ -66,8 +66,14 @@ MoveAbs(serial::String) = ccall(lib(:ISC_MoveAbsolute), Int, (Cstring,), serial)
 
 GetPos(serial) = ccall(lib(:ISC_GetPosition), Int, (Cstring,), serial)
 
+function check_conversion_type(unit_enum)
+    if !(unit_enum in [0, 1, 2]) 
+        error("unit_enum must be either 0 for position, 1 for speed, 2 for acceleration")
+    end
+end
+
 function GetDeviceUnitFromRealValue(serial::String, real, unit_enum)
-    @assert unit_enum in [0, 1, 2] "unit_enum must be either 0 for position, 1 for speed, 2 for acceleration"
+    check_conversion_type(unit_enum)
     device_unit = Ref{Cint}(0)
     err = ccall(lib(:ISC_GetDeviceUnitFromRealValue), Cshort, (Cstring, Cdouble, Ref{Cint}, Cint), serial, real, device_unit, unit_enum)
     err != 0 && error("Error code: $err")
@@ -75,7 +81,7 @@ function GetDeviceUnitFromRealValue(serial::String, real, unit_enum)
 end
 
 function GetRealValueFromDeviceUnit(serial::String, device_unit, unit_enum)
-    @assert unit_enum in [0, 1, 2] "unit_enum must be either 0 for position, 1 for speed, 2 for acceleration"
+    check_conversion_type(unit_enum)
     real = Ref{Cdouble}(0)
     err = ccall(lib(:ISC_GetRealValueFromDeviceUnit), Cshort, (Cstring, Int, Ref{Cdouble}, Int), serial, device_unit, real, unit_enum)
     err != 0 && error("Error code: $err")
@@ -301,4 +307,36 @@ function move(lts::LTS, x, y, z)
     pause(lts.x_stage, x)
     pause(lts.y_stage, y)
     pause(lts.z_stage, z)
+end
+
+const Word = UInt16
+const Dword = UInt32
+function GetHardwareInfo(serial)
+    modelNo = Ref{UInt32}()
+    sizeOfModelNo = 12
+    type = Ref{Word}()
+    numChannels = Ref{Word}()
+    notes = Ref{Cstring}()
+    sizeOfNotes = 50
+    firmwareVersion = Ref{Dword}()
+    hardwareVersion = Ref{Word}()
+    modificationState = Ref{Word}()
+
+    param_types = (Cstring, Ref{UIn32}, Dword, Ref{Word}, Ref{Word}, Ref{Cstring}, Dword, Ref{Dword}, Ref{Word}, Ref{Word},)
+
+    params= (serial, modelNo, sizeOfModelNo, type, numChannels, notes, sizeOfNotes, firmwareVersion, hardwareVersion, modificationState)
+
+    err = ccall(
+        lib(:ISC_GetHardwareInfo), Int,
+        (Cstring, Ref{UInt8}, Dword, Ref{Word}, Ref{Word}, Ref{Cstring}, Dword, Ref{Dword}, Ref{Word}, Ref{Word},),
+        serial, modelNo, sizeOfModelNo, type, numChannels, notes, sizeOfNotes, firmwareVersion, hardwareVersion, modificationState)
+
+    @info modelNo[]
+    @info unsafe_string(modelNo[])
+
+    for i in params
+        @info i
+    end
+
+    return params
 end
