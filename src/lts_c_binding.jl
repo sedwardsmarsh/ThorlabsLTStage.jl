@@ -218,10 +218,9 @@ function init(stage)
     Poll(stage.serial, 50)
     sleep(1)
     @info "About to load settings"
-    @info LoadNamedSettings(stage.serial, "HS LTS150 150mm Stage")
-    @info LoadSettings(stage.serial)
-    Enable(stage.serial)
-    @info "Enabling $(stage.serial)"
+    @info "" LoadNamedSettings(stage.serial, "HS LTS150 150mm Stage")
+    @info "" LoadSettings(stage.serial)
+    @info "" Enable(stage.serial)
 end
 
 mutable struct Stage
@@ -327,7 +326,7 @@ end
 const Word = UInt16
 const Dword = UInt32
 function GetHardwareInfo(serial)
-    modelNo = Ref{UInt32}()
+    modelNo = Ref{Cstring}()
     sizeOfModelNo = 12
     type = Ref{Word}()
     numChannels = Ref{Word}()
@@ -337,9 +336,11 @@ function GetHardwareInfo(serial)
     hardwareVersion = Ref{Word}()
     modificationState = Ref{Word}()
 
+    params= (serial, modelNo, sizeOfModelNo, type, numChannels, notes, sizeOfNotes, firmwareVersion, hardwareVersion, modificationState)
+
     err = ccall(
         lib(:ISC_GetHardwareInfo), Int,
-        (Cstring, Cstring, Dword, Ref{Word}, Ref{Word}, Ref{Cstring}, Dword, Ref{Dword}, Ref{Word}, Ref{Word},),
+        (Cstring, Ref{Cstring}, Dword, Ref{Word}, Ref{Word}, Ref{Cstring}, Dword, Ref{Dword}, Ref{Word}, Ref{Word},),
         serial, modelNo, sizeOfModelNo, type, numChannels, notes, sizeOfNotes, firmwareVersion, hardwareVersion, modificationState)
 
     @info modelNo[]
