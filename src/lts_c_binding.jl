@@ -337,13 +337,9 @@ function GetHardwareInfo(serial)
     hardwareVersion = Ref{Word}()
     modificationState = Ref{Word}()
 
-    param_types = (Cstring, Ref{UIn32}, Dword, Ref{Word}, Ref{Word}, Ref{Cstring}, Dword, Ref{Dword}, Ref{Word}, Ref{Word},)
-
-    params= (serial, modelNo, sizeOfModelNo, type, numChannels, notes, sizeOfNotes, firmwareVersion, hardwareVersion, modificationState)
-
     err = ccall(
         lib(:ISC_GetHardwareInfo), Int,
-        (Cstring, Ref{UInt8}, Dword, Ref{Word}, Ref{Word}, Ref{Cstring}, Dword, Ref{Dword}, Ref{Word}, Ref{Word},),
+        (Cstring, Cstring, Dword, Ref{Word}, Ref{Word}, Ref{Cstring}, Dword, Ref{Dword}, Ref{Word}, Ref{Word},),
         serial, modelNo, sizeOfModelNo, type, numChannels, notes, sizeOfNotes, firmwareVersion, hardwareVersion, modificationState)
 
     @info modelNo[]
