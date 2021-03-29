@@ -63,7 +63,6 @@ LoadNamedSettings(serial::String, name) = ccall(lib(:ISC_LoadNamedSettings), Boo
 
 function OpenDevice(serial::String) 
     err = ccall(lib(:ISC_Open), Cshort, (Cstring,), serial)
-    @info "Open $err"
     return err
 end
 
@@ -80,6 +79,38 @@ SetMoveAbs(serial::String, pos::Int) = ccall(lib(:ISC_SetMoveAbsolutePosition), 
 MoveAbs(serial::String) = ccall(lib(:ISC_MoveAbsolute), Int, (Cstring,), serial)
 
 GetPos(serial) = ccall(lib(:ISC_GetPosition), Int, (Cstring,), serial)
+
+const Word = UInt16
+const Dword = UInt32
+function GetHardwareInfo(serial)
+    modelNo = Vector{UInt8}(undef, 256) # MAXHOSTNAMELEN
+    sizeOfModelNo = sizeof(modelNo)
+
+    type = Ref{Word}()
+    numChannels = Ref{Word}()
+
+    notes = Vector{UInt8}(undef, 256) # MAXHOSTNAMELEN
+    sizeOfNotes = sizeof(notes)
+
+    firmwareVersion = Ref{Dword}()
+    hardwareVersion = Ref{Word}()
+    modificationState = Ref{Word}()
+
+    params= (serial, modelNo, sizeOfModelNo, type, numChannels, notes, sizeOfNotes, firmwareVersion, hardwareVersion, modificationState)
+
+    err = ccall(
+        lib(:ISC_GetHardwareInfo), Int,
+        (Cstring, Ptr{UInt8}, Csize_t, Ref{Word}, Ref{Word}, Ptr{UInt8}, Csize_t, Ref{Dword}, Ref{Word}, Ref{Word},),
+        serial, modelNo, sizeOfModelNo, type, numChannels, notes, sizeOfNotes, firmwareVersion, hardwareVersion, modificationState)
+
+    modelNo[end] = 0 # ensure null-termination
+    model = GC.@preserve modelNo unsafe_string(pointer(modelNo))
+
+    notes[end] = 0 # ensure null-termination
+    note = GC.@preserve notes unsafe_string(pointer(notes))
+
+    return model, note
+end
 
 function check_conversion_type(unit_enum)
     if !(unit_enum in [0, 1, 2]) 
@@ -201,12 +232,14 @@ function WaitForMessage(serial)
         
 end
 
-function move_abs(serial::String, pos)
+function MoveAbsolute(serial::String, pos)
     pos = microsteps_per_m(pos)
     ClearQueue(serial)
     SetMoveAbs(serial, pos)
     MoveAbs(serial)
 end
+
+
 
 function init(stage)
     err = OpenDevice(stage.serial)
@@ -215,16 +248,25 @@ function init(stage)
         sleep(1)
         err = OpenDevice(stage.serial)
     end
+    model, _ = GetHardwareInfo(stage.serial)
+    setting_name = if model == "LTS150"
+        "HS LTS150 150mm Stage"
+    elseif model == "LTS300"
+        "HS LTS300 300mm Stage"
+    else
+        error("Model name unrecognized: $model")
+    end
     Poll(stage.serial, 50)
-    sleep(1)
-    @info "About to load settings"
-    @info "" LoadNamedSettings(stage.serial, "HS LTS150 150mm Stage")
-    @info "" LoadSettings(stage.serial)
-    @info "" Enable(stage.serial)
+    sleep(1.2)
+    LoadNamedSettings(stage.serial, setting_name)
+    LoadSettings(stage.serial)
+    Enable(stage.serial)
+    return setting_name
 end
 
 mutable struct Stage
     serial::String
+    info::String
     min_pos::Float64
     max_pos::Float64
     lower_limit::Float64
@@ -232,7 +274,7 @@ mutable struct Stage
     is_moving::Bool
     function Stage(serial)
         stage = new(serial)
-        init(stage)
+        stage.info = init(stage)
         finalizer(s->Close(s.serial), stage)
         stage.min_pos, stage.max_pos = GetMotorTravelLimits(serial)
         stage.lower_limit = stage.min_pos
@@ -242,15 +284,49 @@ mutable struct Stage
     end
 end
 
+lower_limit(stage::Stage) = stage.lower_limit
+
+function lower_limit!(stage::Stage, limit) 
+    if upper_limit(stage) > stage.max_pos
+        error("Min Position of $(stage.min_pos). Limit $(lower_limit(stage)) cannot be set")
+    end
+    stage.lower_limit  = limit
+end
+
+upper_limit(stage::Stage) = stage.upper_limit
+
+function upper_limit!(stage::Stage, limit) 
+    if upper_limit(stage) > stage.max_pos
+        error("Max Position of $(stage.max_pos). Limit $(upper_limit(stage)) cannot be set")
+    end
+    stage.upper_limit  = limit
+end
+
+function limits!(stage::Stage, lower, upper)
+    if upper < lower
+        error("Upper limit ($upper) is less than lower limit ($lower)")
+    end
+    lower_limit!(stage, lower)
+    upper_limit!(stage, upper)
+end
+
+limits(stage::Stage) = lower_limit(stage), upper_limit(stage)
+
+reset_limits(stage::Stage) = limits!(stage, stage.min_pos, stage.max_pos)
+
 function pause(stage::Stage, position)
     while !isapprox(pos(stage), position)
         sleep(0.1)
     end
     stage.is_moving = false
 end
+
 function move(stage::Stage, position; block=true)
+    if position < lower_limit(stage) || position > upper_limit(stage)
+        error("Position $position is outside of the current set limits $([stage.lower_limit, stage.upper_limit])")
+    end
     stage.is_moving = true
-    move_abs(stage.serial, position)
+    MoveAbsolute(stage.serial, position)
     block && pause(stage, position)
     return
 end
@@ -263,35 +339,8 @@ function pos(stage::Stage)
     return DeviceUnitToMeters(stage.serial, GetPos(stage.serial))
 end
 
-struct LTS
-    x_stage::Stage
-    y_stage::Stage
-    z_stage::Stage
-end
-
-function LTS()
-    serials = GetDeviceList()
-    @info serials
-    if length(serials) == 0
-        return LTS(Stage(), Stage(), Stage())
-    elseif length(serials) == 3
-        x, y, z = serials
-        return LTS(Stage(x), Stage(y), Stage(z))
-    end
-end
-
-function move_xyz(lts::LTS, x, y, z)
-    move(lts, x, y, z)
-end
-
 function close(stage::Stage)
     Close(stage.serial)
-end
-
-function close(stage::LTS)
-    close(lts.x_stage)
-    close(lts.y_stage)
-    close(lts.z_stage)
 end
 
 function get_acceleration(stage::Stage)
@@ -310,6 +359,42 @@ function set_velocity(stage::Stage, vel)
     return SetVelocity(stage.serial, vel)
 end
 
+
+struct LTS
+    x_stage::Stage
+    y_stage::Stage
+    z_stage::Stage
+end
+
+function LTS()
+    serials = GetDeviceList()
+    num_stages = length(serials)
+    if num_stages == 0
+        return LTS(Stage(), Stage(), Stage())
+    elseif num_stages == 3
+        x, y, z = serials
+
+        x_stage = Stage(x)
+        println("X Stage: $(x_stage.serial) $(x_stage.info)")
+
+        y_stage = Stage(y)
+        println("Y Stage: $(y_stage.serial) $(y_stage.info)")
+
+        z_stage = Stage(z)
+        println("Z Stage: $(z_stage.serial) $(z_stage.info)")
+
+        return LTS(x_stage, y_stage, z_stage)
+    else
+        error("$num_stages unexpectedly found: $serials")
+    end
+end
+
+stages(lts::LTS) = (lts.x_stage, lts.y_stage, lts.z_stage)
+
+function move_xyz(lts::LTS, x, y, z)
+    move(lts, x, y, z)
+end
+
 function pos(lts::LTS)
     return [pos(lts.x_stage), pos(lts.y_stage), pos(lts.z_stage)]
 end
@@ -323,32 +408,27 @@ function move(lts::LTS, x, y, z)
     pause(lts.z_stage, z)
 end
 
-const Word = UInt16
-const Dword = UInt32
-function GetHardwareInfo(serial)
-    modelNo = Ref{Cstring}()
-    sizeOfModelNo = 12
-    type = Ref{Word}()
-    numChannels = Ref{Word}()
-    notes = Ref{Cstring}()
-    sizeOfNotes = 50
-    firmwareVersion = Ref{Dword}()
-    hardwareVersion = Ref{Word}()
-    modificationState = Ref{Word}()
-
-    params= (serial, modelNo, sizeOfModelNo, type, numChannels, notes, sizeOfNotes, firmwareVersion, hardwareVersion, modificationState)
-
-    err = ccall(
-        lib(:ISC_GetHardwareInfo), Int,
-        (Cstring, Ref{Cstring}, Dword, Ref{Word}, Ref{Word}, Ref{Cstring}, Dword, Ref{Dword}, Ref{Word}, Ref{Word},),
-        serial, modelNo, sizeOfModelNo, type, numChannels, notes, sizeOfNotes, firmwareVersion, hardwareVersion, modificationState)
-
-    @info modelNo[]
-    @info unsafe_string(modelNo[])
-
-    for i in params
-        @info i
-    end
-
-    return params
+function limits(lts::LTS)
+    s = stages(lts)
+    return map(lower_limit, s), map(upper_limit, s)
 end
+
+function limits!(lts::LTS, lower, upper)
+    limits!(lts.x_stage, lower[1], upper[1])
+    limits!(lts.y_stage, lower[2], upper[2])
+    limits!(lts.z_stage, lower[3], upper[3])
+end
+
+set_limits(lts::LTS, lower, upper) = limits!(lts, lower, upper)
+
+get_limits(lts::LTS) = limits(lts)
+
+reset_limits(lts::LTS) = map(reset_limits, stages(lts))
+
+function close(lts::LTS)
+    close(lts.x_stage)
+    close(lts.y_stage)
+    close(lts.z_stage)
+    return true
+end
+
