@@ -1,8 +1,23 @@
 using Libdl
+using Pkg.Artifacts
+
+
 
 const ISM_LIB = "Thorlabs.MotionControl.IntegratedStepperMotors.dll"
-const path = raw"C:\Program Files\Thorlabs\Kinesis"
-const shared_lib = dlopen(joinpath(path, ISM_LIB))
+const DEFAULT_PATH = raw"C:\Program Files\Thorlabs\Kinesis"
+
+function path()
+    try
+        return joinpath(artifact"kinesis", ISM_LIB) 
+    catch
+        @info "Cannot locate artifact"
+        return joinpath(DEFAULT_PATH, ISM_LIB)
+    end
+end
+
+const shared_lib = dlopen(path())
+
+@info shared_lib
 
 lib(x) = dlsym(shared_lib, x)
 
