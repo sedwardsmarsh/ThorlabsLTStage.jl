@@ -16,6 +16,7 @@ end
 const shared_lib = Ref{Ptr{Nothing}}()
 
 function lib(x)
+    !Sys.iswindows && error("Non Windows Machine Detected")
     global shared_lib
     if shared_lib[] == C_NULL
         kinesis_dll = dlopen(path())
