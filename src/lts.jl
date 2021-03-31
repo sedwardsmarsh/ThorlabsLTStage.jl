@@ -1,5 +1,5 @@
-include("_lts.py")
-include("lts3d.py")
+include("_lts.jl")
+include("lts3d.jl")
 
 function LTS(serials = GetDeviceList())
     num_stages = length(serials)

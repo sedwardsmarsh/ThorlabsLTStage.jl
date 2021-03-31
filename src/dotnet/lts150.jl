@@ -19,7 +19,7 @@ function init_python_lib()
         return
 
     end
-    lts_lib = pyimport("dotnet/lts")
+    lts_lib = pyimport("lts")
 end
 
 """
