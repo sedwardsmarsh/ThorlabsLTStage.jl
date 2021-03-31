@@ -28,9 +28,7 @@ function LTS(serials = GetDeviceList())
 end
 
 function initialize(::Type{LTS})
-    !Sys.iswindows() && error("Windows is needed to connect to ThorlabsLTS150")
-
-    stages = get(get_config(), "ThorlabsLTS150", Dict())
+    stages = get(get_config(), "ThorlabsLTS", Dict())
     if isempty(stages)
         return LTS()
     end

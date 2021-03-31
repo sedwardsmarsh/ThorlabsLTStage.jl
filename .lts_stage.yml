@@ -1,17 +1,16 @@
 backend: python
 
-ThorlabsLTS150:
+ThorlabsLTS:
   alias: lts150
   x:  
     serial: 45140764
-    min_position: 0
-    max_position: .15
+    min_position: 0 # meters
+    max_position: .15 
     max_velocity: 20
     max_acceleration: 20
   y:
     serial: 45146974
-    max_velocity: 3
-    max_acceleration: 5
+    max_velocity: 3 # mm s^-1
+    max_acceleration: 5 # mm s^-2
   z:
     serial: 45141924
-

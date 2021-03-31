@@ -2,7 +2,7 @@ include("_stage.jl")
 
 const Speed = Union{typeof(mm/s), typeof(m/s)}
 
-get_limits(s::Stage) = limits(s)
+get_limits(s::Stage) = limits(s) .* m
 
 function set_limits(s::Stage, min::Unitful.Length, max::Unitful.Length) 
     limits!(s, raw_meters(min), raw_meters(max))
