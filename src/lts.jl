@@ -1,7 +1,9 @@
 include("_lts.jl")
 include("lts3d.jl")
 
-import InstrumentConfig: initialize, terminate
+import InstrumentConfig: initialize,terminate
+
+terminate(lts::T) where T <: LTS = close!(lts)
 
 function LTS(serials = GetDeviceList())
     num_stages = length(serials)
@@ -64,5 +66,3 @@ function initialize(::Type{LTS})
     setup(lts.z, z_stage)
     return lts
 end
-
-terminate(lts::Type{T}) where T <: LTS = close!(lts)

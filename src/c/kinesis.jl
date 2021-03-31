@@ -238,7 +238,7 @@ end
 function MoveAbs(serial::String, pos)
     pos = microsteps_per_m(pos)
     ClearQueue(serial)
-    SetMoveAbsolutePostion(serial, pos)
+    SetMoveAbsolutePosition(serial, pos)
     MoveAbsolute(serial)
 end
 
