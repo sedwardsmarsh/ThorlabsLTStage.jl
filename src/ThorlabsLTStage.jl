@@ -1,5 +1,7 @@
 module ThorlabsLTStage
 
+using Unitful
+
 export 
 
     backend,
@@ -49,14 +51,23 @@ export
 
     terminate
 
+const m = u"m"
+const mm = u"mm"
+const s = u"s"
+-->(a, b) = uconvert(b, a)
+raw_meters(a) = ustrip(a --> m)
+
+
+include("c/bindings.jl") # C API BACKEND
 
 include("config.jl")
 include("models.jl")
 
-using PyCall
-include("python.jl")
-include("lts150.jl")
+# C API BACKEND
+include("stage.jl")
+include("lts.jl")
 
-#include("lts_c_binding.jl")
+# DOT NET API BACKEND
+include("dotnet/bindings.jl")
 
 end
