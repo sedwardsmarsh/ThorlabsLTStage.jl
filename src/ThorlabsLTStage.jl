@@ -11,7 +11,7 @@ export move_x_rel, move_y_rel, move_z_rel
 export move_xyz, pos_xyz
 export pos_x, pos_y, pos_z
 export home, home_x, home_y, home_z
-export set_limits, get_limits,
+export set_limits, get_limits
 export get_limits_x, get_limits_y, get_limits_z, clear_limits
 export get_max_velocity
 export get_max_velocity_x, get_max_velocity_y, get_max_velocity_z
