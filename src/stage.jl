@@ -12,13 +12,13 @@ home(s::Stage) = home!(s)
 
 pos(s::Stage) = position(s)
 
-get_max_velocity(s::Stage) = velocity(s) * mm/s
+get_max_velocity(st::Stage) = velocity(st) * mm/s
 
-set_max_velocity(s::Stage, max::Speed) = velocity!(s, ustrip(max --> mm/s))
+set_max_velocity(st::Stage, max::Speed) = velocity!(st, ustrip(max --> mm/s))
 
-get_max_acceleration(s::Stage) = velocity(s) * mm/s
+get_max_acceleration(st::Stage) = acceleration(st) * mm/s^2
 
-set_max_acceleration(s::Stage, max::typeof(mm/s^2)) = acceleration!(s, ustrip(max))
+set_max_acceleration(st::Stage, max::typeof(mm/s^2)) = acceleration!(st, ustrip(max))
 
 move_abs(s::Stage, position::Unitful.Length) = move_abs!(s, raw_meters(position))
 

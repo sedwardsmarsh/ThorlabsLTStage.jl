@@ -45,3 +45,6 @@ home(lts) = home_xyz(lts)
 home_x(lts) = home(lts.x)
 home_y(lts) = home(lts.y)
 home_z(lts) = home(lts.z)
+
+get_max_velocity(lts) = map(get_max_velocity, stages(lts))
+get_max_acceleration(lts) = map(get_max_acceleration, stages(lts))

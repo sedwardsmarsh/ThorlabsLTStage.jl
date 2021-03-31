@@ -121,7 +121,7 @@ function init(stage)
     end
     @info setting_name
     Poll(stage.serial, 50)
-    sleep(1.2)
+    sleep(2.5)
     LoadNamedSettings(stage.serial, setting_name)
     @info "LoadNamed"
     LoadSettings(stage.serial)
