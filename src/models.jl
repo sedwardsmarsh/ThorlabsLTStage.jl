@@ -89,7 +89,7 @@ mutable struct Stage
     upper_limit::Float64
     is_moving::Bool
     function Stage(serial)
-        stage = new(serial, "", NaN, NaN, NaN, NaN, false)
+        stage = new("$serial", "", NaN, NaN, NaN, NaN, false)
         stage.info = init(stage)
         finalizer(s->Close(s.serial), stage)
         stage.min_pos, stage.max_pos = GetMotorTravelLimits(serial)
