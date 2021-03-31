@@ -92,7 +92,7 @@ Note: All positions are in meters
 
 For all the available commands use:
 
-`help> ThorlabsLTS150`
+`help> LTS_3D`
 
 ## Example
 ```julia
@@ -256,7 +256,7 @@ Now when you run
 ```julia
 lts = initialize(ThorlabsLTS150)
 ```
-the current stages will be configured as X, Y and Z
+the correct stages will be configured as X, Y and Z
 
 ## Controlling the XYZ Stage
 Move a single axis to a certain position:

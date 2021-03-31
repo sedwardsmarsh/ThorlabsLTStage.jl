@@ -20,11 +20,11 @@
 - `get_limits_x(xyz)`
 - `get_limits_y(xyz)`
 - `get_limits_z(xyz)`
-- `clear_limits(xyz)`
+- `reset_limits(xyz)`
 """
 
 get_limits(lts) = limits(lts)
-set_limits(lts, lower, upper) = limits!(lts, lower, upper)
+set_limits(lts, lower, upper) = limits!(lts, raw_meters(lower), raw_meters(upper))
 
 move_xyz(lts, x, y, z) = move(lts, x, y, z)
 

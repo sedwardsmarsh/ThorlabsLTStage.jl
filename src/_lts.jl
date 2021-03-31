@@ -9,20 +9,18 @@ end
 
 function limits(lts::T) where T <: LTS
     s = stages(lts)
-    return map(lower_limit, s), map(upper_limit, s)
+    return map(x->lower_limit(x)*m, s), map(x->upper_limit(x)*m, s)
 end
 
-function limits!(lts::LTS_2D, lower, upper)
-    limits!(lts.x_stage, lower[1], upper[1])
-    limits!(lts.y_stage, lower[2], upper[2])
 
-    return nothing
-end
-
-function limits!(lts::LTS_3D, lower, upper)
-    limits!(lts.x_stage, lower[1], upper[1])
-    limits!(lts.y_stage, lower[2], upper[2])
-    limits!(lts.z_stage, lower[3], upper[3])
+function limits!(lts::T, lower, upper) where T <: LTS
+    s = stages(lts)
+    num_stages = size(s)
+    size(lower) != num_stages && error("Expected $(num_stages) elements in $lower")
+    size(upper) != num_stages && error("Expected $(num_stages) elements in $upper")
+    for i in 1:num_stages
+        set_limits(s[i], lower[i], upper[i])
+    end
 
     return nothing
 end

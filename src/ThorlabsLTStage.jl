@@ -20,6 +20,8 @@ export get_max_acceleration
 export get_max_acceleration_x, get_max_acceleration_y, get_max_acceleration_z
 export set_max_acceleration_x, set_max_acceleration_y, set_max_acceleration_z
 
+export pos, reset_limits
+
 const m = u"m"
 const mm = u"mm"
 const s = u"s"
@@ -37,6 +39,8 @@ include("models.jl")
 # C API BACKEND
 include("stage.jl")
 include("lts.jl")
+
+include("emulator/fake_lts.jl")
 
 # DOT NET API BACKEND
 include("dotnet/bindings.jl")

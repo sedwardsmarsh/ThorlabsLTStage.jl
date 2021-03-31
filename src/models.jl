@@ -133,6 +133,31 @@ struct LTS_2D <: LTS
     y::Stage
 end
 
+"""
+# Available functions
+- `move_xyz(xyz, x, y, z)` 
+- `pos_xyz(xyz, x, y, z)` 
+- `move_x_abs(xyz, x)`
+- `move_y_abs(xyz, y)`
+- `move_z_abs(xyz, z)`
+- `move_x_rel(xyz, x)`
+- `move_y_rel(xyz, y)`
+- `move_z_rel(xyz, z)`
+- `pos_xyz(xyz)`
+- `pos_x(xyz)`
+- `pos_y(xyz)`
+- `pos_z(xyz)`
+- `home(xyz)`
+- `home_x(xyz)`
+- `home_y(xyz)`
+- `home_z(xyz)`
+- `set_limits(xyz, low, high)`
+- `get_limits(xyz)`
+- `get_limits_x(xyz)`
+- `get_limits_y(xyz)`
+- `get_limits_z(xyz)`
+- `reset_limits(xyz)`
+"""
 struct LTS_3D <: LTS
     x::Stage
     y::Stage
