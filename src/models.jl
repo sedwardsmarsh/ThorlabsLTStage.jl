@@ -108,7 +108,10 @@ function init(stage)
         sleep(1)
         err = OpenDevice(stage.serial)
     end
+    sleep(1)
+    @info "Opened"
     model, _ = GetHardwareInfo(stage.serial)
+    @info model
     setting_name = if model == "LTS150"
         "HS LTS150 150mm Stage"
     elseif model == "LTS300"
@@ -116,10 +119,13 @@ function init(stage)
     else
         error("Model name unrecognized: $model")
     end
+    @info setting_name
     Poll(stage.serial, 50)
     sleep(1.2)
     LoadNamedSettings(stage.serial, setting_name)
+    @info "LoadNamed"
     LoadSettings(stage.serial)
+    @info "LoadSettings"
     Enable(stage.serial)
     return setting_name
 end
