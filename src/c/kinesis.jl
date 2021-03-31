@@ -17,11 +17,11 @@ const shared_lib = Ref{Ptr{Nothing}}()
 
 function lib(x)
     global shared_lib
-    if !isassigned(shared_lib)
+    if shared_lib[] == C_NULL
         kinesis_dll = dlopen(path())
-        shared_lib[] = kinesis_dll
+        shared_lib = kinesis_dll
     end
-    dlsym(shared_lib[], x)
+    dlsym(shared_lib, x)
 end
 
 """
