@@ -1,11 +1,12 @@
+upper_limit(stage::Stage) = stage.upper_limit
+lower_limit(stage::Stage) = stage.lower_limit
+
 function lower_limit!(stage::Stage, limit) 
     if upper_limit(stage) > stage.max_pos
         error("Min Position of $(stage.min_pos). Limit $(lower_limit(stage)) cannot be set")
     end
     stage.lower_limit  = limit
 end
-
-upper_limit(stage::Stage) = stage.upper_limit
 
 function upper_limit!(stage::Stage, limit) 
     if upper_limit(stage) > stage.max_pos
