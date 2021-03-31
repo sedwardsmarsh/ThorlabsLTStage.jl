@@ -65,4 +65,4 @@ function initialize(::Type{LTS})
     return lts
 end
 
-terminate(lts::Type{LTS}) = close!(lts)
+terminate(lts::Type{T}) where T <: LTS = close!(lts)

@@ -77,7 +77,7 @@ ClearQueue(serial) = ccall(lib(:ISC_ClearMessageQueue), Int, (Cstring,), serial)
 
 MoveTo(serial::String, pos::Int) = ccall(lib(:ISC_MoveToPosition), Int, (Cstring,Int), serial, pos)
 
-SetMoveAbssolutePosition(serial::String, pos::Int) = ccall(lib(:ISC_SetMoveAbsolutePosition), Int, (Cstring,Int), serial, pos)
+SetMoveAbsolutePosition(serial::String, pos::Int) = ccall(lib(:ISC_SetMoveAbsolutePosition), Int, (Cstring,Int), serial, pos)
 
 MoveAbsolute(serial::String) = ccall(lib(:ISC_MoveAbsolute), Int, (Cstring,), serial)
 

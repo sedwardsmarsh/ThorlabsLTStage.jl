@@ -1,13 +1,13 @@
 stages(lts::LTS_3D) = (lts.x, lts.y, lts.z)
 
-function close!(lts::LTS)
+function close!(lts::T) where T <: LTS
     s = stages(lts)
     map(close!, s)
 
     return nothing
 end
 
-function limits(lts::LTS)
+function limits(lts::T) where T <: LTS
     s = stages(lts)
     return map(lower_limit, s), map(upper_limit, s)
 end
@@ -40,6 +40,6 @@ end
 
 home_xyz(lts::LTS_3D) = move(lts, 0, 0, 0)
 
-pos(lts::LTS) = [map(pos, stages(lts))...]
+pos(lts::T) where T <:  LTS = [map(pos, stages(lts))...]
 
-reset_limits(lts::LTS) = map(reset_limits, stages(lts))
+reset_limits(lts::T) where T <: LTS = map(reset_limits, stages(lts))
