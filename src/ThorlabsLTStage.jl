@@ -24,7 +24,7 @@ const m = u"m"
 const mm = u"mm"
 const s = u"s"
 -->(a, b) = uconvert(b, a)
-raw_meters(a) = ustrip(a --> m)
+raw_meters(a) = Float64(ustrip(a --> m))
 
 
 include("c/bindings.jl") # C API BACKEND
