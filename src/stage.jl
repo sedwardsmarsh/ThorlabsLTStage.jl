@@ -14,7 +14,7 @@ pos(s::Stage) = position(s)
 
 get_max_velocity(s::Stage) = velocity(s) * mm/s
 
-set_max_velocity(s::Stage, max::Speed) = velocity!(s, ustrip(max --> mm/s)
+set_max_velocity(s::Stage, max::Speed) = velocity!(s, ustrip(max --> mm/s))
 
 get_max_acceleration(s::Stage) = velocity(s) * mm/s
 
