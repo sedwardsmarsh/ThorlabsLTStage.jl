@@ -13,9 +13,16 @@ function path()
     end
 end
 
-const shared_lib = dlopen(path())
+const shared_lib = Ref{Ptr{Nothing}}()
 
-lib(x) = dlsym(shared_lib, x)
+function lib(x)
+    global shared_lib
+    if !isassigned(shared_lib)
+        kinesis_dll = dlopen(path())
+        shared_lib[] = kinesis_dll
+    end
+    dlsym(shared_lib[], x)
+end
 
 """
 Returns the number of microsteps in one milimeter for Thorlabs LTS150
