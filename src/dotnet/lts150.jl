@@ -97,7 +97,7 @@ end
 
 Simulatenously moves x, y and z stage to desired location
 """
-function move_xyz(xyz, x, y, z) 
+function move_xyz(xyz::ThorlabsLTS150, x, y, z) 
     safe_move(xyz, xyz.lts.move_xyz, x, y, z)
 end
 
@@ -106,7 +106,7 @@ end
 
 Returns location of x, y and z stages in the form of a Array: [x, y, z]
 """
-pos_xyz(xyz) = [xyz.lts.pos_x(), xyz.lts.pos_y(), xyz.lts.pos_z()]
+pos_xyz(xyz::ThorlabsLTS150) = [xyz.lts.pos_x(), xyz.lts.pos_y(), xyz.lts.pos_z()]
 
 
 """
@@ -114,7 +114,7 @@ pos_xyz(xyz) = [xyz.lts.pos_x(), xyz.lts.pos_y(), xyz.lts.pos_z()]
 
 Moves x stage to desired absolute location
 """
-function move_x_abs(xyz, x) 
+function move_x_abs(xyz::ThorlabsLTS150, x) 
     safe_move(xyz, xyz.lts.move_x, x)
 end
 
@@ -123,7 +123,7 @@ end
 
 Moves y stage to desired absolute location
 """
-function move_y_abs(xyz, y) 
+function move_y_abs(xyz::ThorlabsLTS150, y) 
     safe_move(xyz, xyz.lts.move_y, y)
 end
 
@@ -132,7 +132,7 @@ end
 
 Moves z stage to desired absolute location
 """
-function move_z_abs(xyz, z) 
+function move_z_abs(xyz::ThorlabsLTS150, z) 
     safe_move(xyz, xyz.lts.move_z, z)
 end
 
@@ -144,7 +144,7 @@ Moves x stage forward or backwards.
 A positive number will move it forwards along the x axis while
 a negative number will move it backwards.
 """
-move_x_rel(xyz, x) = xyz.lts.move_x(x + xyz.lts.pos_x())
+move_x_rel(xyz::ThorlabsLTS150, x) = xyz.lts.move_x(x + xyz.lts.pos_x())
 
 """
     move_y(xyz, y)
@@ -154,7 +154,7 @@ Moves y stage forward or backwards.
 A positive number will move it forwards along the y axis while
 a negative number will move it backwards.
 """
-move_y_rel(xyz, y) = xyz.lts.move_y(y + xyz.lts.pos_y())
+move_y_rel(xyz::ThorlabsLTS150, y) = xyz.lts.move_y(y + xyz.lts.pos_y())
 
 """
     move_z(xyz, z)
@@ -164,56 +164,56 @@ Moves z stage forward or backwards.
 A positive number will move it forwards along the z axis while
 a negative number will move it backwards.
 """
-move_z_rel(xyz, z) = xyz.lts.move_z(z + xyz.lts.pos_z())
+move_z_rel(xyz::ThorlabsLTS150, z) = xyz.lts.move_z(z + xyz.lts.pos_z())
 
 """
     home(xyz)
 
 This will home the x, y and z stages at the same time
 """
-home(xyz) = xyz.lts.home_xyz()
+home(xyz::ThorlabsLTS150) = xyz.lts.home_xyz()
 
 """
     home_x(xyz)
 
 This will home the x stage
 """
-home_x(xyz) = xyz.lts.home_x() 
+home_x(xyz::ThorlabsLTS150) = xyz.lts.home_x() 
 
 """
     home_y(xyz)
 
 This will home the y stage
 """
-home_y(xyz) = xyz.lts.home_y() 
+home_y(xyz::ThorlabsLTS150) = xyz.lts.home_y() 
 
 """
     home_z(xyz)
 
 This will home the z stage
 """
-home_z(xyz) = xyz.lts.home_z() 
+home_z(xyz::ThorlabsLTS150) = xyz.lts.home_z() 
 
 """
     pos_x(xyz)
 
 Returns the current position of x stage
 """
-pos_x(xyz) = xyz.lts.pos_x()
+pos_x(xyz::ThorlabsLTS150) = xyz.lts.pos_x()
 
 """
     pos_y(xyz)
 
 Returns the current position of y stage
 """
-pos_y(xyz) = xyz.lts.pos_y()
+pos_y(xyz::ThorlabsLTS150) = xyz.lts.pos_y()
 
 """
     pos_z(xyz)
 
 Returns the current position of z stage
 """
-pos_z(xyz) = xyz.lts.pos_z()
+pos_z(xyz::ThorlabsLTS150) = xyz.lts.pos_z()
 
 """
     set_limits(xyz, (x_low_lim, y_low_lim, z_low_lim), (x_high_lim, y_high_lim, z_high_lim))
@@ -223,7 +223,7 @@ pos_z(xyz) = xyz.lts.pos_z()
 - `high`: A Pair or an Array of three positions: `(lts.x_high_limit, lts.y_high_limit, lts.z_high_limit)`
 
 """
-function set_limits(xyz, low, high)
+function set_limits(xyz::ThorlabsLTS150, low, high)
     if length(low) != 3 || length(high) != 3
         error("Cannot set device to these limits\nUse `help>set_limits` to see example of proper inputs")
     end
@@ -236,7 +236,7 @@ Returns
     (lts.x_low_limit, lts.y_low_limit, lts.z_low_limit),
        (lts.x_high_limit, lts.y_high_limit, lts.z_high_limit)
 """
-function get_limits(xyz)
+function get_limits(xyz::ThorlabsLTS150)
     return xyz.lts.get_limits()
 end
 
@@ -245,7 +245,7 @@ Returns
 
     (x_low_limit, x_high_limit)
 """
-function get_limits_x(xyz)
+function get_limits_x(xyz::ThorlabsLTS150)
     low, high = xyz.lts.get_limits()
     return low[1], high[1]
 end
@@ -255,7 +255,7 @@ Returns
 
     (y_low_limit, y_high_limit)
 """
-function get_limits_y(xyz)
+function get_limits_y(xyz::ThorlabsLTS150)
     low, high = xyz.lts.get_limits()
     return low[2], high[2]
 end
@@ -265,32 +265,32 @@ Returns
 
     (z_low_limit, z_high_limit)
 """
-function get_limits_z(xyz)
+function get_limits_z(xyz::ThorlabsLTS150)
     low, high = xyz.lts.get_limits()
     return low[3], high[3]
 end
 
-function clear_limits(xyz)
+function clear_limits(xyz::ThorlabsLTS150)
     xyz.lts.remove_limits()
 end
 
-get_max_velocity(xyz) = xyz.lts.get_max_velocity()
-get_max_velocity_x(xyz) = xyz.lts.x_stage.get_max_velocity()
-get_max_velocity_y(xyz) = xyz.lts.y_stage.get_max_velocity()
-get_max_velocity_z(xyz) = xyz.lts.z_stage.get_max_velocity()
+get_max_velocity(xyz::ThorlabsLTS150) = xyz.lts.get_max_velocity()
+get_max_velocity_x(xyz::ThorlabsLTS150) = xyz.lts.x_stage.get_max_velocity()
+get_max_velocity_y(xyz::ThorlabsLTS150) = xyz.lts.y_stage.get_max_velocity()
+get_max_velocity_z(xyz::ThorlabsLTS150) = xyz.lts.z_stage.get_max_velocity()
 
-set_max_velocity_x(xyz, v) = xyz.lts.x_stage.set_max_velocity(v)
-set_max_velocity_y(xyz, v) = xyz.lts.y_stage.set_max_velocity(v)
-set_max_velocity_z(xyz, v) = xyz.lts.z_stage.set_max_velocity(v)
+set_max_velocity_x(xyz::ThorlabsLTS150, v) = xyz.lts.x_stage.set_max_velocity(v)
+set_max_velocity_y(xyz::ThorlabsLTS150, v) = xyz.lts.y_stage.set_max_velocity(v)
+set_max_velocity_z(xyz::ThorlabsLTS150, v) = xyz.lts.z_stage.set_max_velocity(v)
 
-get_max_acceleration(xyz) = xyz.lts.get_max_acceleration()
-get_max_acceleration_x(xyz) = xyz.lts.x_stage.get_max_acceleration()
-get_max_acceleration_y(xyz) = xyz.lts.y_stage.get_max_acceleration()
-get_max_acceleration_z(xyz) = xyz.lts.z_stage.get_max_acceleration()
+get_max_acceleration(xyz::ThorlabsLTS150) = xyz.lts.get_max_acceleration()
+get_max_acceleration_x(xyz::ThorlabsLTS150) = xyz.lts.x_stage.get_max_acceleration()
+get_max_acceleration_y(xyz::ThorlabsLTS150) = xyz.lts.y_stage.get_max_acceleration()
+get_max_acceleration_z(xyz::ThorlabsLTS150) = xyz.lts.z_stage.get_max_acceleration()
 
-set_max_acceleration_x(xyz, a) = xyz.lts.x_stage.set_max_acceleration(a)
-set_max_acceleration_y(xyz, a) = xyz.lts.y_stage.set_max_acceleration(a)
-set_max_acceleration_z(xyz, a) = xyz.lts.z_stage.set_max_acceleration(a)
+set_max_acceleration_x(xyz::ThorlabsLTS150, a) = xyz.lts.x_stage.set_max_acceleration(a)
+set_max_acceleration_y(xyz::ThorlabsLTS150, a) = xyz.lts.y_stage.set_max_acceleration(a)
+set_max_acceleration_z(xyz::ThorlabsLTS150, a) = xyz.lts.z_stage.set_max_acceleration(a)
 
 # TODO: Eventually this should be a part of stage movement
 function safe_move(xyz, move_func, x, y, z)

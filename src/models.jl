@@ -1,7 +1,7 @@
 """
 # Available Functions
 
-- `initialize_lts` 
+- `initialize` 
 - `move_xyz(xyz, x, y, z)` 
 - `pos_xyz(xyz, x, y, z)` 
 - `move_x_abs(xyz, x)`
@@ -75,6 +75,99 @@ move_x_abs(lts, 5)
 ```
 
 """
-mutable struct ThorlabsLTS150
+mutable struct ThorlabsLTS150 # Python
     lts
 end
+
+# C API
+mutable struct Stage
+    serial::String
+    info::String
+    min_pos::Float64
+    max_pos::Float64
+    lower_limit::Float64
+    upper_limit::Float64
+    is_moving::Bool
+    function Stage(serial)
+        serial = "$serial"
+        stage = new(serial, "", NaN, NaN, NaN, NaN, false)
+        stage.info = init(stage)
+        finalizer(s->Close(s.serial), stage)
+        stage.min_pos, stage.max_pos = GetMotorTravelLimits(serial)
+        stage.lower_limit = stage.min_pos
+        stage.upper_limit = stage.max_pos
+        stage.is_moving = false
+        return stage
+    end
+end
+
+function init(stage)
+    err = OpenDevice(stage.serial)
+    while err != 0
+        BuildDeviceList()
+        sleep(1)
+        err = OpenDevice(stage.serial)
+    end
+    sleep(1)
+    model, _ = GetHardwareInfo(stage.serial)
+    setting_name = if model == "LTS150"
+        "HS LTS150 150mm Stage"
+    elseif model == "LTS300"
+        "HS LTS300 300mm Stage"
+    else
+        error("Model name unrecognized: $model")
+    end
+    Poll(stage.serial, 50)
+    sleep(3.5)
+    ClearQueue(stage.serial)
+    LoadNamedSettings(stage.serial, setting_name)
+    LoadSettings(stage.serial)
+    Enable(stage.serial)
+    return setting_name
+end
+
+abstract type LTS end
+
+struct LTS_2D <: LTS
+    x::Stage
+    y::Stage
+end
+
+struct LTS_3D <: LTS
+    x::Stage
+    y::Stage
+    z::Stage
+end
+
+struct LTS_5D <: LTS
+    x::Stage
+    y::Stage
+    z::Stage
+    a::Stage
+    b::Stage
+end
+
+"""
+- `move_xyz(xyz, x, y, z)` 
+- `pos_xyz(xyz, x, y, z)` 
+- `move_x_abs(xyz, x)`
+- `move_y_abs(xyz, y)`
+- `move_z_abs(xyz, z)`
+- `move_x_rel(xyz, x)`
+- `move_y_rel(xyz, y)`
+- `move_z_rel(xyz, z)`
+- `pos_xyz(xyz)`
+- `pos_x(xyz)`
+- `pos_y(xyz)`
+- `pos_z(xyz)`
+- `home(xyz)`
+- `home_x(xyz)`
+- `home_y(xyz)`
+- `home_z(xyz)`
+- `set_limits(xyz, low, high)`
+- `get_limits(xyz)`
+- `get_limits_x(xyz)`
+- `get_limits_y(xyz)`
+- `get_limits_z(xyz)`
+- `clear_limits(xyz)`
+"""
