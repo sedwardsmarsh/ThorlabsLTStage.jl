@@ -26,6 +26,8 @@ const s = u"s"
 -->(a, b) = uconvert(b, a)
 raw_meters(a) = Float64(ustrip(a --> m))
 
+export -->, m, mm, s
+
 
 include("c/bindings.jl") # C API BACKEND
 
