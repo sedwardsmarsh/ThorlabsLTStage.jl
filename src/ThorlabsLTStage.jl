@@ -5,7 +5,7 @@ using Unitful
 export backend, load_python
 
 export initialize, terminate
-export ThorlabsLTS150
+export ThorlabsLTS150, LTS, LTS150_3D, LTS150_2D
 export move_x_abs, move_y_abs, move_z_abs
 export move_x_rel, move_y_rel, move_z_rel
 export move_xyz, pos_xyz
