@@ -11,8 +11,9 @@ export move_x_rel, move_y_rel, move_z_rel
 export move_xyz, pos_xyz
 export pos_x, pos_y, pos_z
 export home, home_x, home_y, home_z
-export set_limits, get_limits
-export get_limits_x, get_limits_y, get_limits_z, clear_limits
+export set_limits, get_limits, clear_limits
+export get_limits_x, get_limits_y, get_limits_z
+export set_limits_x, set_limits_y, set_limits_z
 export get_max_velocity
 export get_max_velocity_x, get_max_velocity_y, get_max_velocity_z
 export set_max_velocity_x, set_max_velocity_y, set_max_velocity_z
@@ -25,10 +26,10 @@ export pos, reset_limits
 const m = u"m"
 const mm = u"mm"
 const s = u"s"
--->(a, b) = uconvert(b, a)
+-->(a::Unitful.AbstractQuantity, b::Unitful.Units) = uconvert(b, a)
 raw_meters(a) = Float64(ustrip(a --> m))
 
-export -->, m, mm, s
+export -->
 
 
 include("c/bindings.jl") # C API BACKEND

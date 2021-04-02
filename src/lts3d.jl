@@ -24,7 +24,15 @@
 """
 
 get_limits(lts) = limits(lts)
-set_limits(lts, lower, upper) = limits!(lts, raw_meters(lower), raw_meters(upper))
+set_limits(lts, lower, upper) = limits!(lts, raw_meters.(lower), raw_meters.(upper))
+
+get_limits_x(lts) = get_limits(lts.x)
+get_limits_y(lts) = get_limits(lts.y)
+get_limits_z(lts) = get_limits(lts.z)
+
+set_limits_x(lts, l, u) = set_limits(lts.x, l, u)
+set_limits_y(lts, l, u) = set_limits(lts.y, l, u)
+set_limits_z(lts, l, u) = set_limits(lts.z, l, u)
 
 move_xyz(lts, x, y, z) = move(lts, x, y, z)
 
