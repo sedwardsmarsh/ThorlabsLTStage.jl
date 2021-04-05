@@ -42,7 +42,7 @@ move_rel(s::FakeStage, position::Unitful.Length) = move_abs(s, pos(s) + position
 lower_limit(s::FakeStage) = s.lower_limit
 upper_limit(s::FakeStage) = s.upper_limit 
 
-get_limits(s::FakeStage) = s.lower_limit, s.upper_limit
+get_limits(s::FakeStage) = s.lower_limit * m, s.upper_limit * m
 
 function set_limits(s::FakeStage, lower, upper) 
     s.lower_limit = ustrip(lower)
