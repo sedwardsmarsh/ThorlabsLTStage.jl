@@ -5,6 +5,8 @@ const ISM_LIB = "Thorlabs.MotionControl.IntegratedStepperMotors.dll"
 const DEFAULT_PATH = raw"C:\Program Files\Thorlabs\Kinesis"
 
 function path()
+    # TODO: Make artifacts work
+    if false
     try
         art_path = joinpath(artifact"kinesis", ISM_LIB) 
         kinesis_dll = dlopen(path())
@@ -14,6 +16,8 @@ function path()
         @info "Cannot locate artifact"
         return joinpath(DEFAULT_PATH, ISM_LIB)
     end
+    end
+    return joinpath(DEFAULT_PATH, ISM_LIB)
 end
 
 const shared_lib = Ref{Ptr{Nothing}}()
