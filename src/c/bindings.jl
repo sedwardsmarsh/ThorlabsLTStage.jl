@@ -6,7 +6,10 @@ const DEFAULT_PATH = raw"C:\Program Files\Thorlabs\Kinesis"
 
 function path()
     try
-        return joinpath(artifact"kinesis", ISM_LIB) 
+        art_path = joinpath(artifact"kinesis", ISM_LIB) 
+        kinesis_dll = dlopen(path())
+        dlsym(kinesis_dll, :ISC_Open)
+        return art_path
     catch
         @info "Cannot locate artifact"
         return joinpath(DEFAULT_PATH, ISM_LIB)
