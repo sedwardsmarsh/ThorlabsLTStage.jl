@@ -2,5 +2,5 @@
 git-tree-sha1 = "7bcf9d668d08635d5828248fcfab7939c1195c98"
 
     [[kinesis.download]]
-    sha256 = "1cc3dd0dfef52c84dfb8563f65b5473f9b49b1001548081c210816231812b217"
+    sha256 = "21c77e5daf6a3b52691e30fb69a3f33e731791ff9e25a65817270a7ea0d5a305"
     url = "https://github.com/Orchard-Ultrasound-Innovation/ThorlabsLTStage.jl/releases/download/artifacts.1/kinesis-windows.tar.gz"

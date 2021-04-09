@@ -239,6 +239,7 @@ function WaitForMessage(serial)
 end
 
 function MoveAbs(serial::String, pos)
+    # TODO: Use Meters to Device units then delete microsteps_per_m
     pos = microsteps_per_m(pos)
     ClearQueue(serial)
     SetMoveAbsolutePosition(serial, pos)
