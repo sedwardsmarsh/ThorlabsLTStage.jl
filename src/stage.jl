@@ -10,7 +10,7 @@ end
 
 home(s::Stage) = home!(s)
 
-pos(s::Stage) = position(s)
+pos(s::Stage) = position(s) * m
 
 get_max_velocity(st::Stage) = velocity(st) * mm/s
 
