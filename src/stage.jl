@@ -25,3 +25,9 @@ move_abs(s::Stage, position::Unitful.Length) = move_abs!(s, raw_meters(position)
 move_rel(s::Stage, position::Unitful.Length) = move_rel!(s, raw_meters(position))
 
 reset_limits(stage::Stage) = limits!(stage, stage.min_pos, stage.max_pos)
+
+function travel_limits(stage::Stage)
+    lower, upper = GetMotorTravelLimits(stage.serial)
+    return m(lower * mm), m(upper * mm)
+end
+

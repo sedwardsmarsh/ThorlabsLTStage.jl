@@ -1,6 +1,7 @@
 module ThorlabsLTStage
 
 using Unitful
+using Unitful: m, mm, s
 
 export backend, load_python
 
@@ -23,13 +24,8 @@ export set_max_acceleration_x, set_max_acceleration_y, set_max_acceleration_z
 
 export pos, reset_limits
 
-const m = u"m"
-const mm = u"mm"
-const s = u"s"
 -->(a::Unitful.AbstractQuantity, b::Unitful.Units) = uconvert(b, a)
 raw_meters(a) = Float64(ustrip(a --> m))
-
-export -->
 
 
 include("c/bindings.jl") # C API BACKEND

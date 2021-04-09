@@ -93,7 +93,7 @@ mutable struct Stage
         stage = new(serial, "", NaN, NaN, NaN, NaN, false)
         stage.info = init(stage)
         finalizer(s->Close(s.serial), stage)
-        stage.min_pos, stage.max_pos = GetMotorTravelLimits(serial)
+        stage.min_pos, stage.max_pos = raw_meters.(travel_limits(stage))
         stage.lower_limit = stage.min_pos
         stage.upper_limit = stage.max_pos
         stage.is_moving = false
@@ -118,7 +118,7 @@ function init(stage)
         error("Model name unrecognized: $model")
     end
     Poll(stage.serial, 50)
-    sleep(3.5)
+    sleep(6.5)
     ClearQueue(stage.serial)
     LoadNamedSettings(stage.serial, setting_name)
     LoadSettings(stage.serial)
