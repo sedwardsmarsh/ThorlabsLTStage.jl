@@ -69,7 +69,7 @@ ClearQueue(serial) = ccall(lib(:ISC_ClearMessageQueue), Int, (Cstring,), serial)
 
 MoveTo(serial::String, pos::Int) = ccall(lib(:ISC_MoveToPosition), Int, (Cstring,Int), serial, pos)
 
-SetMoveAbsolutePosition(serial::String, pos::Int) = ccall(lib(:ISC_SetMoveAbsolutePosition), Int, (Cstring,Int), serial, pos)
+SetMoveAbsolutePosition(serial::String, pos::Int64) = ccall(lib(:ISC_SetMoveAbsolutePosition), Int, (Cstring,Int), serial, pos)
 
 MoveAbsolute(serial::String) = ccall(lib(:ISC_MoveAbsolute), Int, (Cstring,), serial)
 
@@ -115,8 +115,8 @@ end
 
 function GetDeviceUnitFromRealValue(serial::String, real, unit_enum)
     check_conversion_type(unit_enum)
-    device_unit = Ref{Cint}(0)
-    err = ccall(lib(:ISC_GetDeviceUnitFromRealValue), Cshort, (Cstring, Cdouble, Ref{Cint}, Cint), serial, real, device_unit, unit_enum)
+    device_unit = Ref{Int64}(0)
+    err = ccall(lib(:ISC_GetDeviceUnitFromRealValue), Cshort, (Cstring, Cdouble, Ref{Int64}, Cint), serial, real, device_unit, unit_enum)
     err != 0 && error("Error code: $err")
     return device_unit[]
 end
