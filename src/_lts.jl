@@ -15,9 +15,9 @@ end
 
 function limits!(lts::T, lower, upper) where T <: LTS
     s = stages(lts)
-    num_stages = size(s)
-    size(lower) != num_stages && error("Expected $(num_stages) elements in $lower")
-    size(upper) != num_stages && error("Expected $(num_stages) elements in $upper")
+    num_stages = length(s)
+    length(lower) != num_stages && error("Expected $(num_stages) elements in $lower")
+    length(upper) != num_stages && error("Expected $(num_stages) elements in $upper")
     for i in 1:num_stages
         set_limits(s[i], lower[i], upper[i])
     end
@@ -41,3 +41,15 @@ home_xyz(lts::LTS_3D) = move(lts, 0, 0, 0)
 pos(lts::T) where T <:  LTS = [map(pos, stages(lts))...]
 
 reset_limits(lts::T) where T <: LTS = map(reset_limits, stages(lts))
+
+function Base.show(io::IO, ::MIME"text/plain", lts::T) where T <: LTS
+   println(io, "Thorlabs LTS")
+   function p_stage(io, s)
+       print(io, " ")
+       Base.show(io, s)
+       println() 
+   end
+   p_stage(io, lts.x)
+   p_stage(io, lts.y)
+   p_stage(io, lts.z)
+end

@@ -1,10 +1,7 @@
 using InstrumentConfig
 
-const EXAMPLE_FILE = "https://raw.githubusercontent.com/Orchard-Ultrasound-Innovation/ThorlabsLTStage.jl/main/.lts_stage.yml"
-
-const lts_config = InstrumentConfig.Config(".lts_stage.yml";
-                                           example = EXAMPLE_FILE)
-
+const lts_config = InstrumentConfig.Config(".lts_stage.yml",
+                                           @__MODULE__)
 function load_config()
     InstrumentConfig.load_config(lts_config)
     create_aliases(lts_config; ignore=["backend"])

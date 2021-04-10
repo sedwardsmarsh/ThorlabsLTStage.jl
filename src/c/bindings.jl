@@ -5,12 +5,19 @@ const ISM_LIB = "Thorlabs.MotionControl.IntegratedStepperMotors.dll"
 const DEFAULT_PATH = raw"C:\Program Files\Thorlabs\Kinesis"
 
 function path()
+    # TODO: Make artifacts work
+    if false
     try
-        return joinpath(artifact"kinesis", ISM_LIB) 
+        art_path = joinpath(artifact"kinesis", ISM_LIB) 
+        kinesis_dll = dlopen(path())
+        dlsym(kinesis_dll, :ISC_Open)
+        return art_path
     catch
         @info "Cannot locate artifact"
         return joinpath(DEFAULT_PATH, ISM_LIB)
     end
+    end
+    return joinpath(DEFAULT_PATH, ISM_LIB)
 end
 
 const shared_lib = Ref{Ptr{Nothing}}()
@@ -22,7 +29,7 @@ function lib(x)
         kinesis_dll = dlopen(path())
         shared_lib[] = kinesis_dll
     end
-    dlsym(shared_lib[], x)
+    return dlsym(shared_lib[], x)
 end
 
 """
@@ -50,15 +57,17 @@ GetDeviceListSize() = ccall(lib("TLI_GetDeviceListSize"), Int, ())
 function GetDeviceList()
     lts_identifier = 45 # Hard coded to only detect ThorlabsLTS
     BuildDeviceList()
-    list_string = Ref{Cstring}()
-    ccall(lib(:TLI_GetDeviceListByTypeExt), Int, (Ref{Cstring}, UInt32, Int64), list_string, 100, lts_identifier)
-    serial_list = []
-    p = ccall(:strtok, Cstring, (Ref{Cstring}, Cstring), list_string, ",")
-    while p != C_NULL
-        push!(serial_list, unsafe_string(p))
-        p = ccall(:strtok, Cstring, (Cstring, Cstring), C_NULL, ",")
+    GetDeviceListSize()
+    list_string = Vector{UInt8}(undef, 256) # MAXHOSTNAMELEN
+    size_list_string = sizeof(list_string)
+    err = ccall(lib(:TLI_GetDeviceListByTypeExt), Int, (Ptr{UInt8}, Csize_t, Int64), list_string, size_list_string, lts_identifier)
+    if err != 0
+        @info "GetDeviceError: $err"
+        return err
     end
-    return serial_list
+    list_string[end] = 0 # ensure null-termination
+    serials = GC.@preserve list_string unsafe_string(pointer(list_string))
+    return [filter(!isempty, split(serials, ','))...]
 end
 
 LoadSettings(serial::String) = ccall(lib(:ISC_LoadSettings), Bool, (Cstring,), serial)
@@ -237,6 +246,7 @@ function WaitForMessage(serial)
 end
 
 function MoveAbs(serial::String, pos)
+    # TODO: Use Meters to Device units then delete microsteps_per_m
     pos = microsteps_per_m(pos)
     ClearQueue(serial)
     SetMoveAbsolutePosition(serial, pos)

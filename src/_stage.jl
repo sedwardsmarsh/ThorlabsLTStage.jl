@@ -26,16 +26,20 @@ end
 limits(stage::Stage) = lower_limit(stage), upper_limit(stage)
 
 function pause(stage::Stage, position)
-    while !isapprox(pos(stage), position)
+    while !isapprox(position(stage), position)
         sleep(0.1)
     end
     stage.is_moving = false
 end
 
-function move_abs!(stage::Stage, position; block=true)
+function check_limits(stage, position)
     if position < lower_limit(stage) || position > upper_limit(stage)
         error("Position $position is outside of the current set limits $([stage.lower_limit, stage.upper_limit])")
     end
+end
+
+function move_abs!(stage::Stage, position; block=true)
+    check_limits(stage, position)
     stage.is_moving = true
     MoveAbs(stage.serial, position)
     block && pause(stage, position)
@@ -44,7 +48,7 @@ end
 
 function move_rel!(stage::Stage, position; block=true)
     p = pos(stage)
-    move_abs(stage, p + position; block=block)
+    move_abs!(stage, p + position; block=block)
 end
 
 function home!(stage::Stage)
