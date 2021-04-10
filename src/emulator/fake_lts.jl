@@ -25,13 +25,13 @@ pos(s::FakeStage) = s.pos
 
 get_max_velocity(st::FakeStage) = st.max_velocity
 
-set_max_velocity(st::FakeStage, max::Speed) = st.max_velocity = max --> mm/s
+set_max_velocity(st::FakeStage, max::Unitful.Velocity) = st.max_velocity = max --> mm/s
 
 get_max_acceleration(st::FakeStage) = st.max_acceleration
 
 set_max_acceleration(st::FakeStage, max::typeof(mm/s^2)) = st.max_acceleration = max
 
-function move_abs(s::FakeStage, position::Unitful.Length) 
+function move_abs(s::FakeStage, position::Unitful.Length)
     pos = Float64(position --> m)
     check_limits(s, raw_meters(pos))
     s.pos = pos
@@ -40,16 +40,16 @@ end
 move_rel(s::FakeStage, position::Unitful.Length) = move_abs(s, pos(s) + position)
 
 lower_limit(s::FakeStage) = s.lower_limit
-upper_limit(s::FakeStage) = s.upper_limit 
+upper_limit(s::FakeStage) = s.upper_limit
 
 get_limits(s::FakeStage) = s.lower_limit * m, s.upper_limit * m
 
-function set_limits(s::FakeStage, lower, upper) 
+function set_limits(s::FakeStage, lower, upper)
     s.lower_limit = ustrip(lower)
     s.upper_limit = ustrip(upper)
 end
 
-function reset_limits(stage::FakeStage) 
+function reset_limits(stage::FakeStage)
     stage.upper_limit = stage.max_pos
     stage.lower_limit = stage.min_pos
 end
