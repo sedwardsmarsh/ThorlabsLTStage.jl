@@ -32,24 +32,6 @@ function lib(x)
     return dlsym(shared_lib[], x)
 end
 
-"""
-Returns the number of microsteps in one milimeter for Thorlabs LTS150
-
-"""
-microsteps_per_mm() = 409600
-
-"""
-Returns the number of microsteps in one meter for Thorlabs LTS150
-
-"""
-microsteps_per_m() = microsteps_per_mm() * 1000
-
-"""
-Returns the number of microsteps in x meters for Thorlabs LTS150
-
-"""
-microsteps_per_m(x)::Int = x * microsteps_per_m()
-
 BuildDeviceList() = ccall(lib("TLI_BuildDeviceList"), Int, ())
 
 GetDeviceListSize() = ccall(lib("TLI_GetDeviceListSize"), Int, ())
@@ -246,8 +228,7 @@ function WaitForMessage(serial)
 end
 
 function MoveAbs(serial::String, pos)
-    # TODO: Use Meters to Device units then delete microsteps_per_m
-    pos = microsteps_per_m(pos)
+    pos = MetersToDeviceUnit(serial, pos)
     ClearQueue(serial)
     SetMoveAbsolutePosition(serial, pos)
     MoveAbsolute(serial)
