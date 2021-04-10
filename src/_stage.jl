@@ -26,7 +26,7 @@ end
 limits(stage::Stage) = lower_limit(stage), upper_limit(stage)
 
 function pause(stage::Stage, position)
-    while !isapprox(pos(stage), position)
+    while !isapprox(position(stage), position)
         sleep(0.1)
     end
     stage.is_moving = false
