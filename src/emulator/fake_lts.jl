@@ -25,14 +25,14 @@ pos(s::FakeStage) = s.pos
 
 get_max_velocity(st::FakeStage) = st.max_velocity
 
-set_max_velocity(st::FakeStage, max::Unitful.Velocity) = st.max_velocity = max --> mm/s
+set_max_velocity(st::FakeStage, max::Unitful.Velocity) = st.max_velocity = uconvert(mm/s, max)
 
 get_max_acceleration(st::FakeStage) = st.max_acceleration
 
-set_max_acceleration(st::FakeStage, max::Unitful.Acceleration) = st.max_acceleration = max -->mm/s^2
+set_max_acceleration(st::FakeStage, max::Unitful.Acceleration) = st.max_acceleration = uconvert(mm/s^2, max)
 
 function move_abs(s::FakeStage, position::Unitful.Length)
-    pos = Float64(position --> m)
+    pos = Float64(uconvert(m, position))
     check_limits(s, raw_meters(pos))
     s.pos = pos
 end

@@ -12,11 +12,11 @@ pos(s::Stage) = position(s) * m
 
 get_max_velocity(st::Stage) = velocity(st) * mm/s
 
-set_max_velocity(st::Stage, max::Unitful.Velocity) = velocity!(st, ustrip(max --> mm/s))
+set_max_velocity(st::Stage, max::Unitful.Velocity) = velocity!(st, ustrip(uconvert(mm/s, max)))
 
 get_max_acceleration(st::Stage) = acceleration(st) * mm/s^2
 
-set_max_acceleration(st::Stage, max::Unitful.Acceleration) = acceleration!(st, ustrip(max --> mm/s^2))
+set_max_acceleration(st::Stage, max::Unitful.Acceleration) = acceleration!(st, ustrip(uconvert(mm/s^2, max)))
 
 move_abs(s::Stage, position::Unitful.Length) = move_abs!(s, raw_meters(position))
 
@@ -28,4 +28,3 @@ function travel_limits(stage::Stage)
     lower, upper = GetMotorTravelLimits(stage.serial)
     return m(lower * mm), m(upper * mm)
 end
-

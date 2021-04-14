@@ -24,8 +24,7 @@ export set_max_acceleration_x, set_max_acceleration_y, set_max_acceleration_z
 
 export pos, reset_limits
 
--->(a::Unitful.AbstractQuantity, b::Unitful.Units) = uconvert(b, a)
-raw_meters(a) = Float64(ustrip(a --> m))
+raw_meters(a) = Float64(ustrip(uconvert(m, a)))
 
 
 include("c/bindings.jl") # C API BACKEND
