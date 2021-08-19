@@ -34,9 +34,8 @@ As of right now the only supported device are Thorlabs LTS150 or LTS300 stages
 
 To connect to them:
 ```julia
-julia
 julia> using ThorlabsLTStage
-lts = initialize(LTS)
+julia> lts = initialize(LTS)
 ```
 
 This will print the serial numbers of all the LTS150 and LTS300 stages connected to the computer and then connect to them. 
