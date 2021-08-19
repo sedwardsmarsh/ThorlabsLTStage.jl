@@ -24,8 +24,8 @@ The C API is preferred however at the moment it may be a bit buggier.
 ## Using the C Backend
 ```julia
 pkg> add ThorlabsLTStage
-julia> using ThorlabsLTSStage
-julia> lts = initialize(LTS)
+julia> using ThorlabsLTStage
+julia> lts = initialize()
 ```
 ### Using this package
 The C Backend now uses units from Unitful.jl
@@ -36,7 +36,7 @@ To connect to them:
 ```julia
 julia
 julia> using ThorlabsLTStage
-lts = initialize(LTS)
+julia> lts = initialize()
 ```
 
 This will print the serial numbers of all the LTS150 and LTS300 stages connected to the computer and then connect to them. 
@@ -70,7 +70,7 @@ ThorlabsLTS:
 
 Now when you run 
 ```julia
-lts = initialize(LTS)
+julia> lts = initialize()
 ```
 the current stages will be configured as X, Y and Z
 
@@ -98,7 +98,7 @@ For all the available commands use:
 ```julia
 using Unitful
 
-lts = initialize(ThorlabsLTS150)
+lts = initialize()
 
 move_xyz(lts, 0.1u"m", 0.1u"m", 0.1u"m")
 
@@ -146,8 +146,8 @@ reset_limits(lts)
 
 
 ## Using the Python Backend
-If you are having trouble with the C backend you can
-use the Python Backend however it may be deprecated in the future.
+<details>
+<summary>If you are having trouble with the C backend you can use the Python Backend. However, it may be deprecated in the future.</summary>
 
 ## Prerequisites
 This guide explains how to setup a clean Windows 10 install.
@@ -326,6 +326,4 @@ clear_limits(lts)
 # Don't do this
 move_x_abs(lts, 5)
 ```
-
-
-
+</details>
