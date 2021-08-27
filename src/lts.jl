@@ -28,6 +28,7 @@ function LTS(serials = GetDeviceList())
 end
 
 function initialize(::Type{LTS})
+    BuildDeviceList()
     stages = get(get_config(), "ThorlabsLTS", Dict())
     if isempty(stages)
         return LTS()

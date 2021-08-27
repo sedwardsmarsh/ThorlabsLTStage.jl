@@ -102,13 +102,11 @@ mutable struct Stage
 end
 
 function init(stage)
+    is_connected = check_is_connected(stage.serial)
+    println("Stage $(stage.serial) connection status: $(is_connected)")
     err = OpenDevice(stage.serial)
-    while err != 0
-        BuildDeviceList()
-        sleep(1)
-        err = OpenDevice(stage.serial)
-    end
-    sleep(1)
+    is_connected = check_is_connected(stage.serial)
+    println("Stage $(stage.serial) connection status: $(is_connected)")
     model, _ = GetHardwareInfo(stage.serial)
     setting_name = if model == "LTS150"
         "HS LTS150 150mm Stage"
@@ -120,8 +118,10 @@ function init(stage)
     Poll(stage.serial, 50)
     sleep(6.5)
     ClearQueue(stage.serial)
+    println("Loading settings")
     LoadNamedSettings(stage.serial, setting_name)
     LoadSettings(stage.serial)
+    println("Settings loaded")
     Enable(stage.serial)
     return setting_name
 end
