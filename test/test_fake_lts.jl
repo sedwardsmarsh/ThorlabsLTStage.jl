@@ -18,84 +18,99 @@ end
     @safetestset "move_along_x_axis" begin
         using ..SetupTestFakeLts
         lts = ThorlabsLTStage.initialize(ThorlabsLTStage.FakeLTS)
-        move_abs = ThorlabsLTStage.move_x_abs
-        move_rel = ThorlabsLTStage.move_x_rel
-        pos_axis = ThorlabsLTStage.pos_x
         ThorlabsLTStage.home(lts)
-        @test ThorlabsLTStage.pos(lts) == [0m, 0m, 0m]
 
-        @test_throws ErrorException("Position 0.151 is outside of the current set limits [0.0, 0.15]") move_abs(lts, .151m)
+        ThorlabsLTStage.move_x_abs(lts, 0.15m)
+        @test ThorlabsLTStage.pos_x(lts) == 150mm
 
-        move_abs(lts, .15m)
-        @test pos_axis(lts) == 150mm
-        @test pos_axis(lts) == .15m
-
-        @test_throws ErrorException("Position 0.151 is outside of the current set limits [0.0, 0.15]") move_rel(lts, 1mm)
-
-        move_rel(lts, -1mm)
-        @test pos_axis(lts) == 149mm
-        @test pos_axis(lts) == .149m
-
-        ThorlabsLTStage.move_xyz(lts, .1m, .1m, 1mm)
-        @test ThorlabsLTStage.pos(lts) == [0.1m, 0.1m, 0.001m]
+        ThorlabsLTStage.move_x_rel(lts, -1mm)
+        @test ThorlabsLTStage.pos_x(lts) == 149mm
     end
+
 
     @safetestset "move_along_y_axis" begin
         using ..SetupTestFakeLts
         lts = ThorlabsLTStage.initialize(ThorlabsLTStage.FakeLTS)
-        move_abs = ThorlabsLTStage.move_y_abs
-        move_rel = ThorlabsLTStage.move_y_rel
-        pos_axis = ThorlabsLTStage.pos_y
         ThorlabsLTStage.home(lts)
-        @test ThorlabsLTStage.pos(lts) == [0m, 0m, 0m]
 
-        @test_throws ErrorException("Position 0.151 is outside of the current set limits [0.0, 0.15]") move_abs(lts, .151m)
+        ThorlabsLTStage.move_y_abs(lts, 0.15m)
+        @test ThorlabsLTStage.pos_y(lts) == 150mm
 
-        move_abs(lts, .15m)
-        @test pos_axis(lts) == 150mm
-        @test pos_axis(lts) == .15m
-
-        @test_throws ErrorException("Position 0.151 is outside of the current set limits [0.0, 0.15]") move_rel(lts, 1mm)
-
-        move_rel(lts, -1mm)
-        @test pos_axis(lts) == 149mm
-        @test pos_axis(lts) == .149m
-
-        ThorlabsLTStage.move_xyz(lts, .1m, .1m, 1mm)
-        @test ThorlabsLTStage.pos(lts) == [0.1m, 0.1m, 0.001m]
+        ThorlabsLTStage.move_y_rel(lts, -1mm)
+        @test ThorlabsLTStage.pos_y(lts) == 149mm
     end
+
 
     @safetestset "move_along_z_axis" begin
         using ..SetupTestFakeLts
         lts = ThorlabsLTStage.initialize(ThorlabsLTStage.FakeLTS)
-        move_abs = ThorlabsLTStage.move_z_abs
-        move_rel = ThorlabsLTStage.move_z_rel
-        pos_axis = ThorlabsLTStage.pos_z
         ThorlabsLTStage.home(lts)
-        @test ThorlabsLTStage.pos(lts) == [0m, 0m, 0m]
 
-        @test_throws ErrorException("Position 0.151 is outside of the current set limits [0.0, 0.15]") move_abs(lts, .151m)
+        ThorlabsLTStage.move_z_abs(lts, 0.15m)
+        @test ThorlabsLTStage.pos_z(lts) == 150mm
 
-        move_abs(lts, .15m)
-        @test pos_axis(lts) == 150mm
-        @test pos_axis(lts) == .15m
-
-        @test_throws ErrorException("Position 0.151 is outside of the current set limits [0.0, 0.15]") move_rel(lts, 1mm)
-
-        move_rel(lts, -1mm)
-        @test pos_axis(lts) == 149mm
-        @test pos_axis(lts) == .149m
-
-        ThorlabsLTStage.move_xyz(lts, .1m, .1m, 1mm)
-        @test ThorlabsLTStage.pos(lts) == [0.1m, 0.1m, 0.001m]
+        ThorlabsLTStage.move_z_rel(lts, -1mm)
+        @test ThorlabsLTStage.pos_z(lts) == 149mm
     end
 
-    @safetestset "test_movement_limits" begin
+    
+    @safetestset "move_along_all_three_axes" begin
         using ..SetupTestFakeLts
         lts = ThorlabsLTStage.initialize(ThorlabsLTStage.FakeLTS)
+        ThorlabsLTStage.home(lts)
+
+        ThorlabsLTStage.move_xyz(lts, 14mm, 15mm, 16mm)
+        @test ThorlabsLTStage.pos(lts) == [14mm, 15mm, 16mm]
+    end
+
+
+    @safetestset "movement_limits_in_x_axis" begin
+        using ..SetupTestFakeLts
+        lts = ThorlabsLTStage.initialize(ThorlabsLTStage.FakeLTS)
+
+        @test ThorlabsLTStage.pos(lts) == [0m, 0m, 0m]
         @test ThorlabsLTStage.get_limits(lts) == ((0m, 0m, 0m), (0.15m, 0.15m, 0.15m))
-        ThorlabsLTStage.set_limits(lts,(0m, 0m, 0m), (0.1m, 0.1m, 0.1m))
-        @test ThorlabsLTStage.get_limits(lts) == ((0m, 0m, 0m), (0.1m, 0.1m, 0.1m))
-        @test_throws ErrorException("Position 0.101 is outside of the current set limits [0.0, 0.1]") ThorlabsLTStage.move_x_abs(lts, 101mm)
+        @test_throws ErrorException ThorlabsLTStage.move_x_rel(lts, -1mm)
+        @test_throws ErrorException ThorlabsLTStage.move_x_rel(lts, 151mm)
+        ThorlabsLTStage.move_x_abs(lts, 11mm)
+
+        ThorlabsLTStage.home(lts)
+        ThorlabsLTStage.set_limits(lts,(0m, 0m, 0m), (0.01m, 0.01m, 0.01m))
+        @test ThorlabsLTStage.get_limits(lts) == ((0mm, 0mm, 0mm), (10mm, 10mm, 10mm))
+        @test_throws ErrorException("Position 0.011 is outside of the current set limits [0.0, 0.01]") ThorlabsLTStage.move_x_abs(lts, 11mm)
+    end
+
+
+    @safetestset "movement_limits_in_y_axis" begin
+        using ..SetupTestFakeLts
+        lts = ThorlabsLTStage.initialize(ThorlabsLTStage.FakeLTS)
+
+        @test ThorlabsLTStage.pos(lts) == [0m, 0m, 0m]
+        @test ThorlabsLTStage.get_limits(lts) == ((0m, 0m, 0m), (0.15m, 0.15m, 0.15m))
+        @test_throws ErrorException ThorlabsLTStage.move_y_rel(lts, -1mm)
+        @test_throws ErrorException ThorlabsLTStage.move_y_rel(lts, 151mm)
+        ThorlabsLTStage.move_y_abs(lts, 21mm)
+
+        ThorlabsLTStage.home(lts)
+        ThorlabsLTStage.set_limits(lts,(0m, 0m, 0m), (0.02m, 0.02m, 0.02m))
+        @test ThorlabsLTStage.get_limits(lts) == ((0mm, 0mm, 0mm), (20mm, 20mm, 20mm))
+        @test_throws ErrorException ThorlabsLTStage.move_y_abs(lts, 21mm)
+    end
+
+
+    @safetestset "movement_limits_in_z_axis" begin
+        using ..SetupTestFakeLts
+        lts = ThorlabsLTStage.initialize(ThorlabsLTStage.FakeLTS)
+
+        @test ThorlabsLTStage.pos(lts) == [0m, 0m, 0m]
+        @test ThorlabsLTStage.get_limits(lts) == ((0m, 0m, 0m), (0.15m, 0.15m, 0.15m))
+        @test_throws ErrorException ThorlabsLTStage.move_z_rel(lts, -1mm)
+        @test_throws ErrorException ThorlabsLTStage.move_z_rel(lts, 151mm)
+        ThorlabsLTStage.move_z_abs(lts, 31mm)
+
+        ThorlabsLTStage.home(lts)
+        ThorlabsLTStage.set_limits(lts,(0m, 0m, 0m), (0.03m, 0.03m, 0.03m))
+        @test ThorlabsLTStage.get_limits(lts) == ((0mm, 0mm, 0mm), (30mm, 30mm, 30mm))
+        @test_throws ErrorException ThorlabsLTStage.move_z_abs(lts, 31mm)
     end
 end
