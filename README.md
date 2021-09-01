@@ -3,8 +3,8 @@
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://orchard-ultrasound-innovation.github.io/ThorlabsLTStage.jl/stable)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://orchard-ultrasound-innovation.github.io/ThorlabsLTStage.jl/dev)
 [![Build Status](https://github.com/orchard-ultrasound-innovation/ThorlabsLTStage.jl/workflows/CI/badge.svg)](https://github.com/orchard-ultrasound-innovation/ThorlabsLTStage.jl/actions)
-[![Build Status](https://travis-ci.com/orchard-ultrasound-innovation/ThorlabsLTStage.jl.svg?branch=master)](https://travis-ci.com/orchard-ultrasound-innovation/ThorlabsLTStage.jl)
-[![Coverage](https://codecov.io/gh/orchard-ultrasound-innovation/ThorlabsLTStage.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/orchard-ultrasound-innovation/ThorlabsLTStage.jl)
+[![Build Status](https://app.travis-ci.com/Orchard-Ultrasound-Innovation/ThorlabsLTStage.jl.svg?branch=main)](https://app.travis-ci.com/Orchard-Ultrasound-Innovation/ThorlabsLTStage.jl)
+[![codecov](https://codecov.io/gh/Orchard-Ultrasound-Innovation/ThorlabsLTStage.jl/branch/main/graph/badge.svg?token=41stEIf5vZ)](https://codecov.io/gh/Orchard-Ultrasound-Innovation/ThorlabsLTStage.jl)
 [![Code Style: Blue](https://img.shields.io/badge/code%20style-blue-4495d1.svg)](https://github.com/invenia/BlueStyle)
 [![ColPrac: Contributor's Guide on Collaborative Practices for Community Packages](https://img.shields.io/badge/ColPrac-Contributor's%20Guide-blueviolet)](https://github.com/SciML/ColPrac)
 
