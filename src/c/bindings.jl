@@ -61,6 +61,8 @@ function OpenDevice(serial::String)
     return err
 end
 
+check_is_connected(serial) = ccall(lib(:ISC_CheckConnection), Cshort, (Cstring,), serial)
+
 Poll(serial, sec) = ccall(lib(:ISC_StartPolling), Bool, (Cstring, Int), serial, sec)
 
 Enable(serial) = ccall(lib(:ISC_EnableChannel), Cshort, (Cstring,), serial)

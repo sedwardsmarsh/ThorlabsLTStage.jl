@@ -47,7 +47,7 @@ function move_abs!(stage::Stage, position; block=true)
 end
 
 function move_rel!(stage::Stage, position; block=true)
-    p = pos(stage)
+    p = raw_meters(pos(stage))
     move_abs!(stage, p + position; block=block)
 end
 

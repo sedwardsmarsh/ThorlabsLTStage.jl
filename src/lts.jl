@@ -28,6 +28,7 @@ function LTS(serials = GetDeviceList())
 end
 
 function initialize(::Type{LTS})
+    BuildDeviceList()
     stages = get(get_config(), "ThorlabsLTS", Dict())
     if isempty(stages)
         return LTS()
@@ -39,28 +40,28 @@ function initialize(::Type{LTS})
     device_list = map(s->s["serial"], [x_stage, y_stage, z_stage])
     lts = LTS(device_list)
 
-    function setup(stage, stage_config)
-        # Set position limits from config
-        min_pos, max_pos = limits(stage)
-        min_pos = get(stage_config, "min_position", min_pos)
-        max_pos = get(stage_config, "max_position", max_pos)
-        limits!(stage, min_pos, max_pos)
-
-        # Set velocity limits from config
-        max_vel = get(
-            stage_config, "max_velocity", velocity(stage)
-        )
-        velocity!(stage, max_vel)
-
-        # Set acceleration limits from config
-        max_acc = get(
-            stage_config, "max_acceleration", acceleration(stage)
-        )
-        acceleration!(stage, max_acc)
-    end
-
     setup(lts.x, x_stage)
     setup(lts.y, y_stage)
     setup(lts.z, z_stage)
     return lts
+end
+
+function setup(stage, stage_config)
+    # Set position limits from config
+    min_pos, max_pos = limits(stage)
+    min_pos = get(stage_config, "min_position", min_pos)
+    max_pos = get(stage_config, "max_position", max_pos)
+    limits!(stage, min_pos, max_pos)
+
+    # Set velocity limits from config
+    max_vel = get(
+        stage_config, "max_velocity", velocity(stage)
+    )
+    velocity!(stage, max_vel)
+
+    # Set acceleration limits from config
+    max_acc = get(
+        stage_config, "max_acceleration", acceleration(stage)
+    )
+    acceleration!(stage, max_acc)
 end

@@ -24,7 +24,7 @@ The C API is preferred however at the moment it may be a bit buggier.
 ## Using the C Backend
 ```julia
 pkg> add ThorlabsLTStage
-julia> using ThorlabsLTSStage
+julia> using ThorlabsLTStage
 julia> lts = initialize(LTS)
 ```
 ### Using this package
@@ -69,7 +69,7 @@ ThorlabsLTS:
 
 Now when you run 
 ```julia
-lts = initialize(LTS)
+julia> lts = initialize(LTS)
 ```
 the current stages will be configured as X, Y and Z
 
@@ -145,8 +145,8 @@ reset_limits(lts)
 
 
 ## Using the Python Backend
-If you are having trouble with the C backend you can
-use the Python Backend however it may be deprecated in the future.
+<details>
+<summary>If you are having trouble with the C backend you can use the Python Backend. However, it may be deprecated in the future.</summary>
 
 ## Prerequisites
 This guide explains how to setup a clean Windows 10 install.
@@ -325,6 +325,4 @@ clear_limits(lts)
 # Don't do this
 move_x_abs(lts, 5)
 ```
-
-
-
+</details>
