@@ -37,3 +37,8 @@ end
 function get_origin(stage::Stage)
     return stage.origin_pos * m
 end
+
+function move_to_origin(stage::Stage)
+    move_abs!(stage, stage.origin_pos)
+    return nothing
+end

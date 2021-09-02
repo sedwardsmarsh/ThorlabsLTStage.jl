@@ -62,3 +62,8 @@ end
 function get_origin(lts::LTS_3D)
     return [map(get_origin, stages(lts))...]
 end
+
+function move_to_origin(lts::LTS_3D)
+    map(move_to_origin, stages(lts))
+    return nothing
+end

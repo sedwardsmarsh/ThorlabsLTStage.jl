@@ -12,7 +12,7 @@ export move_x_rel, move_y_rel, move_z_rel
 export move_xyz, pos_xyz
 export pos_x, pos_y, pos_z
 export home, home_x, home_y, home_z
-export set_origin, get_origin
+export set_origin, get_origin, move_to_origin
 export set_limits, get_limits, clear_limits
 export get_limits_x, get_limits_y, get_limits_z
 export set_limits_x, set_limits_y, set_limits_z
