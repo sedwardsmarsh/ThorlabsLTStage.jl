@@ -52,3 +52,11 @@ function set_upper_limit(stage::Stage, position::Unitful.Length)
     stage.upper_limit = raw_meters(position)
     return nothing
 end
+
+function get_lower_limit(stage::Stage)
+    return stage.lower_limit * m
+end
+
+function get_upper_limit(stage::Stage)
+    return stage.upper_limit * m
+end
