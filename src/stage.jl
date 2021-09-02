@@ -42,3 +42,13 @@ function move_to_origin(stage::Stage)
     move_abs!(stage, stage.origin_pos)
     return nothing
 end
+
+function set_lower_limit(stage::Stage, position::Unitful.Length)
+    stage.lower_limit = raw_meters(position)
+    return nothing
+end
+
+function set_upper_limit(stage::Stage, position::Unitful.Length)
+    stage.upper_limit = raw_meters(position)
+    return nothing
+end
