@@ -98,47 +98,37 @@ For all the available commands use:
 ```julia
 using Unitful
 
-lts = initialize(ThorlabsLTS150)
+lts = initialize(LTS)
 
-move_xyz(lts, 0.1u"m", 0.1u"m", 0.1u"m")
-
-# Move 0.05 meters forwards
-move_x_rel(lts, 0.05u"m")
-
-# Get position of x stage (0.05m here)
-pos_x(lts)
-
-# Move 0.05 meters backwards
-move_x_rel(lts, -0.05u"m")
-
-# Moves device to home position
-home(lts)
-
-# Returns x,y,z positions
+pos_xyz(lts)
+move_xyz(lts, 5u"mm", 10u"mm", 10u"mm")
+pos_xyz(lts)
+move_x_rel(lts, 5u"mm")
 pos_xyz(lts)
 
-# First tuple contains lower limits, second contains upper limits
-# (x_low_lim, y_low_lim, z_low_lim), (x_up_lim, y_up_lim, z_up_lim)
-# Arrays can be used instead of tuples as well []
-set_limits(lts, (0.01, 0.01, 0.01), (0.1, 0.1, 0.1))
+# set a new origin location for all stages
+get_origin(lts)
+set_origin(lts)
 
-# Will return a pair of tuples with limits you just set
-get_limits(lts)
+# absolute positions are relative to the origin
+move_x_abs(lts, 5u"mm")
+pos_x(lts)
 
-# Will return lower and upper limit for x stage
-lower_x, upper_x = get_limits_x(lts)
+# set the current position to be the upper limit
+set_upper_limit(lts.x, pos(lts.x))
 
-# Will error: 0.1 (upper limit)
-move_x_abs(lts, 0.2u"m")
+# this will work
+move_to_origin(lts)
+move_x_abs(lts, 5u"mm")
 
-# Beyond device limit error: 0.1 (upper limit)
-move_x_abs(lts, 5u"m")
+# this will error because the upper limit was set to 5 mm
+move_x_abs(lts, 6u"mm")
 
-# Will error: 0.01 (lower limit)
-move_x_abs(lts, 0u"m")
+# set a new upper limit
+set_upper_limit(lts.x, get_upper_limit(lts.x)+5u"mm")
 
-# Reset limits to physical device limits
-reset_limits(lts)
+# this will now work
+move_x_abs(lts, 6u"mm")
 ```
 
 
