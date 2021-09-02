@@ -83,6 +83,7 @@ end
 mutable struct Stage
     serial::String
     info::String
+    origin_pos::Float64
     min_pos::Float64
     max_pos::Float64
     lower_limit::Float64
@@ -93,6 +94,7 @@ mutable struct Stage
         stage = new(serial, "", NaN, NaN, NaN, NaN, false)
         stage.info = init(stage)
         finalizer(s->Close(s.serial), stage)
+        stage.origin_pos = position(stage)
         stage.min_pos, stage.max_pos = raw_meters.(travel_limits(stage))
         stage.lower_limit = stage.min_pos
         stage.upper_limit = stage.max_pos
@@ -115,14 +117,12 @@ function init(stage)
     else
         error("Model name unrecognized: $model")
     end
-    Poll(stage.serial, 50)
-    sleep(6.5)
     ClearQueue(stage.serial)
     println("Loading settings")
     LoadNamedSettings(stage.serial, setting_name)
-    LoadSettings(stage.serial)
     println("Settings loaded")
     Enable(stage.serial)
+    Poll(stage.serial, 50)
     return setting_name
 end
 

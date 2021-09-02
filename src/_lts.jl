@@ -53,3 +53,12 @@ function Base.show(io::IO, ::MIME"text/plain", lts::T) where T <: LTS
    p_stage(io, lts.y)
    p_stage(io, lts.z)
 end
+
+function set_origin(lts::LTS_3D)
+    map(set_origin, stages(lts))
+    return nothing
+end
+
+function get_origin(lts::LTS_3D)
+    return [map(get_origin, stages(lts))...]
+end

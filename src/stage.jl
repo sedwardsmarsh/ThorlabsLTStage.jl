@@ -18,7 +18,7 @@ get_max_acceleration(st::Stage) = acceleration(st) * mm/s^2
 
 set_max_acceleration(st::Stage, max::Unitful.Acceleration) = acceleration!(st, ustrip(uconvert(mm/s^2, max)))
 
-move_abs(s::Stage, position::Unitful.Length) = move_abs!(s, raw_meters(position))
+move_abs(s::Stage, position::Unitful.Length) = move_abs!(s, s.origin_pos + raw_meters(position))
 
 move_rel(s::Stage, position::Unitful.Length) = move_rel!(s, raw_meters(position))
 
@@ -27,4 +27,13 @@ reset_limits(stage::Stage) = limits!(stage, stage.min_pos, stage.max_pos)
 function travel_limits(stage::Stage)
     lower, upper = GetMotorTravelLimits(stage.serial)
     return m(lower * mm), m(upper * mm)
+end
+
+function set_origin(stage::Stage)
+    stage.origin_pos = position(stage)
+    return nothing
+end
+
+function get_origin(stage::Stage)
+    return stage.origin_pos * m
 end
