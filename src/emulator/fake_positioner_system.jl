@@ -16,30 +16,30 @@ mutable struct FakeStage
 end
 
 function FakeStage(serial)
-    return FakeStage(serial, "HS FakeLTS 150mm", 0, 0, 0.15, 0, 0.15, false, 0, 20, 20)
+    return FakeStage(serial, "HS FakePS_3D 150mm", 0, 0, 0.15, 0, 0.15, false, 0, 20, 20)
 end
 
-struct FakeLTS <: PositionerSystem
+struct FakePS_3D <: PositionerSystem
     x::FakeStage
     y::FakeStage
     z::FakeStage
 end
 
-function initialize(::Type{FakeLTS}) 
-    return FakeLTS(map(FakeStage, ["1", "2", "3"])...)
+function initialize(::Type{FakePS_3D}) 
+    return FakePS_3D(map(FakeStage, ["1", "2", "3"])...)
 end
 
 
-## FakeLTS functions
-stages(positioner_system::FakeLTS) = (positioner_system.x, positioner_system.y, positioner_system.z)
+## FakePS_3D functions
+stages(positioner_system::FakePS_3D) = (positioner_system.x, positioner_system.y, positioner_system.z)
 
-function move(positioner_system::FakeLTS, x, y, z; move_func=false)
+function move(positioner_system::FakePS_3D, x, y, z; move_func=false)
     move_abs!(positioner_system.x, x)
     move_abs!(positioner_system.y, y)
     move_abs!(positioner_system.z, z)
 end
 
-home_xyz(positioner_system::FakeLTS) = move(positioner_system, raw_meters(0m), raw_meters(0m), raw_meters(0m))
+home_xyz(positioner_system::FakePS_3D) = move(positioner_system, raw_meters(0m), raw_meters(0m), raw_meters(0m))
 
 
 ## FakeStage functions

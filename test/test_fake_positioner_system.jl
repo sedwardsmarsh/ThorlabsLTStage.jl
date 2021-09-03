@@ -2,7 +2,7 @@ using Test
 using SafeTestsets
 
 
-module SetupTestFakeLts
+module SetupTestFakePs
     using ThorlabsLTStage
     using Unitful
 
@@ -16,8 +16,8 @@ end
 
 @testset "test_fake_positioner_system" begin
     @safetestset "move_along_x_axis" begin
-        using ..SetupTestFakeLts
-        positioner_system = ThorlabsLTStage.initialize(ThorlabsLTStage.FakeLTS)
+        using ..SetupTestFakePs
+        positioner_system = ThorlabsLTStage.initialize(ThorlabsLTStage.FakePS_3D)
         ThorlabsLTStage.home(positioner_system)
 
         ThorlabsLTStage.move_x_abs(positioner_system, 0.15m)
@@ -29,8 +29,8 @@ end
 
 
     @safetestset "move_along_y_axis" begin
-        using ..SetupTestFakeLts
-        positioner_system = ThorlabsLTStage.initialize(ThorlabsLTStage.FakeLTS)
+        using ..SetupTestFakePs
+        positioner_system = ThorlabsLTStage.initialize(ThorlabsLTStage.FakePS_3D)
         ThorlabsLTStage.home(positioner_system)
 
         ThorlabsLTStage.move_y_abs(positioner_system, 0.15m)
@@ -42,8 +42,8 @@ end
 
 
     @safetestset "move_along_z_axis" begin
-        using ..SetupTestFakeLts
-        positioner_system = ThorlabsLTStage.initialize(ThorlabsLTStage.FakeLTS)
+        using ..SetupTestFakePs
+        positioner_system = ThorlabsLTStage.initialize(ThorlabsLTStage.FakePS_3D)
         ThorlabsLTStage.home(positioner_system)
 
         ThorlabsLTStage.move_z_abs(positioner_system, 0.15m)
@@ -55,8 +55,8 @@ end
 
     
     @safetestset "move_along_all_three_axes" begin
-        using ..SetupTestFakeLts
-        positioner_system = ThorlabsLTStage.initialize(ThorlabsLTStage.FakeLTS)
+        using ..SetupTestFakePs
+        positioner_system = ThorlabsLTStage.initialize(ThorlabsLTStage.FakePS_3D)
         ThorlabsLTStage.home(positioner_system)
 
         ThorlabsLTStage.move_xyz(positioner_system, 14mm, 15mm, 16mm)
@@ -65,8 +65,8 @@ end
 
 
     @safetestset "movement_limits_in_x_axis" begin
-        using ..SetupTestFakeLts
-        positioner_system = ThorlabsLTStage.initialize(ThorlabsLTStage.FakeLTS)
+        using ..SetupTestFakePs
+        positioner_system = ThorlabsLTStage.initialize(ThorlabsLTStage.FakePS_3D)
 
         @test ThorlabsLTStage.pos(positioner_system) == [0m, 0m, 0m]
         @test ThorlabsLTStage.get_limits(positioner_system) == ((0m, 0m, 0m), (0.15m, 0.15m, 0.15m))
@@ -82,8 +82,8 @@ end
 
 
     @safetestset "movement_limits_in_y_axis" begin
-        using ..SetupTestFakeLts
-        positioner_system = ThorlabsLTStage.initialize(ThorlabsLTStage.FakeLTS)
+        using ..SetupTestFakePs
+        positioner_system = ThorlabsLTStage.initialize(ThorlabsLTStage.FakePS_3D)
 
         @test ThorlabsLTStage.pos(positioner_system) == [0m, 0m, 0m]
         @test ThorlabsLTStage.get_limits(positioner_system) == ((0m, 0m, 0m), (0.15m, 0.15m, 0.15m))
@@ -99,8 +99,8 @@ end
 
 
     @safetestset "movement_limits_in_z_axis" begin
-        using ..SetupTestFakeLts
-        positioner_system = ThorlabsLTStage.initialize(ThorlabsLTStage.FakeLTS)
+        using ..SetupTestFakePs
+        positioner_system = ThorlabsLTStage.initialize(ThorlabsLTStage.FakePS_3D)
 
         @test ThorlabsLTStage.pos(positioner_system) == [0m, 0m, 0m]
         @test ThorlabsLTStage.get_limits(positioner_system) == ((0m, 0m, 0m), (0.15m, 0.15m, 0.15m))
