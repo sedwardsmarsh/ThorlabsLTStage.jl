@@ -49,7 +49,7 @@ Edit/Create a config file with your text editor or:
  to look like the following:
 
 ```yml
-# Inside .lts_stage.yml
+# Inside .positioner_system_config.yml
 ThorlabsLTS:
   alias: bigStage # This is an optional alias
   x:  
@@ -91,7 +91,7 @@ Note: All positions are in meters
 
 For all the available commands use:
 
-`help> LTS_3D`
+`help> PS_3D`
 
 ## Example
 ```julia
@@ -193,7 +193,7 @@ If you wanted to add this line but the rest of the config doesn't fit your
 use case you can also manually create this config file instead.
 
 ```julia
-echo "backend: python" > .lts_stage.yml
+echo "backend: python" > .positioner_system_config.yml
 julia
 julia> using ThorlabsLTStage; ThorlabsLTStage.create_config()
 julia> load_python()
@@ -221,11 +221,11 @@ Edit your config file with your text editor or:
  to look like the following:
 
 ```yml
-# Inside .lts_stage.yml
+# Inside .positioner_system_config.yml
 backend: python
 
 ThorlabsLTS:
-  alias: lts150
+  alias: positioner_system_default
   x:  
     serial: 45140764 # or whatever your desired serial number is
     min_position: 0

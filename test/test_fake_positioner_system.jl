@@ -14,7 +14,7 @@ module SetupTestFakeLts
 end
 
 
-@testset "test_fake_lts" begin
+@testset "test_fake_positioner_system" begin
     @safetestset "move_along_x_axis" begin
         using ..SetupTestFakeLts
         positioner_system = ThorlabsLTStage.initialize(ThorlabsLTStage.FakeLTS)

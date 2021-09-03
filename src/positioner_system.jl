@@ -18,7 +18,7 @@ function initialize_positioner_system(serials = GetDeviceList())
         z_stage = Stage(z)
         println("Z Stage: $(z_stage.serial) $(z_stage.info)")
 
-        return LTS_3D(x_stage, y_stage, z_stage)
+        return PS_3D(x_stage, y_stage, z_stage)
     else
         error("$num_stages unexpectedly found: $serials")
     end
@@ -100,7 +100,7 @@ get_max_acceleration(positioner_system) = map(get_max_acceleration, stages(posit
 
 
 
-stages(positioner_system::LTS_3D) = (positioner_system.x, positioner_system.y, positioner_system.z)
+stages(positioner_system::PS_3D) = (positioner_system.x, positioner_system.y, positioner_system.z)
 
 function close!(positioner_system::T) where T <: PositionerSystem
     s = stages(positioner_system)
@@ -127,7 +127,7 @@ function limits!(positioner_system::T, lower, upper) where T <: PositionerSystem
     return nothing
 end
 
-function move(positioner_system::LTS_3D, x, y, z; move_func=move_abs!)
+function move(positioner_system::PS_3D, x, y, z; move_func=move_abs!)
     move_func(positioner_system.x, x; block=false)
     move_func(positioner_system.y, y; block=false)
     move_func(positioner_system.z, z; block=false)
@@ -138,7 +138,7 @@ function move(positioner_system::LTS_3D, x, y, z; move_func=move_abs!)
     return nothing
 end
 
-home_xyz(positioner_system::LTS_3D) = move(positioner_system, 0, 0, 0)
+home_xyz(positioner_system::PS_3D) = move(positioner_system, 0, 0, 0)
 
 pos(positioner_system::T) where T <:  PositionerSystem = [map(pos, stages(positioner_system))...]
 
@@ -156,16 +156,16 @@ function Base.show(io::IO, ::MIME"text/plain", positioner_system::T) where T <: 
    p_stage(io, positioner_system.z)
 end
 
-function set_origin(positioner_system::LTS_3D)
+function set_origin(positioner_system::PS_3D)
     map(set_origin, stages(positioner_system))
     return nothing
 end
 
-function get_origin(positioner_system::LTS_3D)
+function get_origin(positioner_system::PS_3D)
     return [map(get_origin, stages(positioner_system))...]
 end
 
-function move_to_origin(positioner_system::LTS_3D)
+function move_to_origin(positioner_system::PS_3D)
     map(move_to_origin, stages(positioner_system))
     return nothing
 end

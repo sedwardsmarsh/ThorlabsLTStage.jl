@@ -1,30 +1,30 @@
 using InstrumentConfig
 
-const lts_config = InstrumentConfig.Config(".lts_stage.yml",
-                                           @__MODULE__)
+const positioner_system_config = InstrumentConfig.Config(".positioner_system_config.yml", @__MODULE__)
+
 function load_config()
-    InstrumentConfig.load_config(lts_config)
-    create_aliases(lts_config; ignore=["backend"])
+    InstrumentConfig.load_config(positioner_system_config)
+    create_aliases(positioner_system_config; ignore=["backend"])
     init_python_lib()
 end
 
 function get_config()
-    return InstrumentConfig.get_config(lts_config)
+    return InstrumentConfig.get_config(positioner_system_config)
 end
 
 function create_config(;dir=homedir())
-    InstrumentConfig.create_config(lts_config; dir=dir)
+    InstrumentConfig.create_config(positioner_system_config; dir=dir)
 end
 
 function edit_config()
-    InstrumentConfig.edit_config(lts_config)
+    InstrumentConfig.edit_config(positioner_system_config)
 end
 
 function backend(;v=true) 
     b = get(get_config(), "backend", "None")
     if b == "None" && v
         @info """
-        You have no backend chosen. Please enter in your $(lts_config.name) config file:
+        You have no backend chosen. Please enter in your $(positioner_system_config.name) config file:
             backend: python
         """
     end

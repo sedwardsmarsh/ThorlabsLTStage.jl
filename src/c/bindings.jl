@@ -37,12 +37,12 @@ BuildDeviceList() = ccall(lib("TLI_BuildDeviceList"), Int, ())
 GetDeviceListSize() = ccall(lib("TLI_GetDeviceListSize"), Int, ())
 
 function GetDeviceList()
-    lts_identifier = 45 # Hard coded to only detect ThorlabsLTS
+    positioner_system_identifier = 45 # Hard coded to only detect ThorlabsLTS
     BuildDeviceList()
     GetDeviceListSize()
     list_string = Vector{UInt8}(undef, 256) # MAXHOSTNAMELEN
     size_list_string = sizeof(list_string)
-    err = ccall(lib(:TLI_GetDeviceListByTypeExt), Int, (Ptr{UInt8}, Csize_t, Int64), list_string, size_list_string, lts_identifier)
+    err = ccall(lib(:TLI_GetDeviceListByTypeExt), Int, (Ptr{UInt8}, Csize_t, Int64), list_string, size_list_string, positioner_system_identifier)
     if err != 0
         @info "GetDeviceError: $err"
         return err

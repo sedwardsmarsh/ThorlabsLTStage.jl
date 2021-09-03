@@ -37,9 +37,9 @@ include("models.jl")
 
 # C API BACKEND
 include("stage.jl")
-include("lts.jl")
+include("positioner_system.jl")
 
-include("emulator/fake_lts.jl")
+include("emulator/fake_positioner_system.jl")
 
 # DOT NET API BACKEND
 include("dotnet/bindings.jl")
