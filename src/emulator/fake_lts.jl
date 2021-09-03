@@ -19,7 +19,7 @@ function FakeStage(serial)
     return FakeStage(serial, "HS FakeLTS 150mm", 0, 0, 0.15, 0, 0.15, false, 0, 20, 20)
 end
 
-struct FakeLTS <: LTS
+struct FakeLTS <: PositionerSystem
     x::FakeStage
     y::FakeStage
     z::FakeStage

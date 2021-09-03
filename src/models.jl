@@ -127,9 +127,9 @@ function init(stage)
     return setting_name
 end
 
-abstract type LTS end
+abstract type PositionerSystem end
 
-struct LTS_2D <: LTS
+struct LTS_2D <: PositionerSystem
     x::Stage
     y::Stage
 end
@@ -159,13 +159,13 @@ end
 - `get_limits_z(xyz)`
 - `reset_limits(xyz)`
 """
-struct LTS_3D <: LTS
+struct LTS_3D <: PositionerSystem
     x::Stage
     y::Stage
     z::Stage
 end
 
-struct LTS_5D <: LTS
+struct LTS_5D <: PositionerSystem
     x::Stage
     y::Stage
     z::Stage

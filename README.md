@@ -25,7 +25,7 @@ The C API is preferred however at the moment it may be a bit buggier.
 ```julia
 pkg> add ThorlabsLTStage
 julia> using ThorlabsLTStage
-julia> lts = initialize(LTS)
+julia> lts = initialize(PositionerSystem)
 ```
 ### Using this package
 The C Backend now uses units from Unitful.jl
@@ -35,7 +35,7 @@ As of right now the only supported device are Thorlabs LTS150 or LTS300 stages
 To connect to them:
 ```julia
 julia> using ThorlabsLTStage
-julia> lts = initialize(LTS)
+julia> lts = initialize(PositionerSystem)
 ```
 
 This will print the serial numbers of all the LTS150 and LTS300 stages connected to the computer and then connect to them. 
@@ -69,7 +69,7 @@ ThorlabsLTS:
 
 Now when you run 
 ```julia
-julia> lts = initialize(LTS)
+julia> lts = initialize(PositionerSystem)
 ```
 the current stages will be configured as X, Y and Z
 
@@ -97,7 +97,7 @@ For all the available commands use:
 ```julia
 using Unitful
 
-lts = initialize(LTS)
+lts = initialize(PositionerSystem)
 
 pos_xyz(lts)
 move_xyz(lts, 5u"mm", 10u"mm", 10u"mm")

@@ -1,8 +1,8 @@
 import InstrumentConfig: initialize,terminate
 
-terminate(lts::T) where T <: LTS = close!(lts)
+terminate(lts::T) where T <: PositionerSystem = close!(lts)
 
-function LTS(serials = GetDeviceList())
+function initialize_positioner_system(serials = GetDeviceList())
     num_stages = length(serials)
     if num_stages == 0
         error("No stages detected")
@@ -24,18 +24,18 @@ function LTS(serials = GetDeviceList())
     end
 end
 
-function initialize(::Type{LTS})
+function initialize(::Type{PositionerSystem})
     BuildDeviceList()
     stages = get(get_config(), "ThorlabsLTS", Dict())
     if isempty(stages)
-        return LTS()
+        return initialize_positioner_system()
     end
 
     x_stage = stages["x"]
     y_stage = stages["y"]
     z_stage = stages["z"]
     device_list = map(s->s["serial"], [x_stage, y_stage, z_stage])
-    lts = LTS(device_list)
+    lts = initialize_positioner_system(device_list)
 
     setup(lts.x, x_stage)
     setup(lts.y, y_stage)
@@ -102,20 +102,20 @@ get_max_acceleration(lts) = map(get_max_acceleration, stages(lts))
 
 stages(lts::LTS_3D) = (lts.x, lts.y, lts.z)
 
-function close!(lts::T) where T <: LTS
+function close!(lts::T) where T <: PositionerSystem
     s = stages(lts)
     map(close!, s)
 
     return nothing
 end
 
-function limits(lts::T) where T <: LTS
+function limits(lts::T) where T <: PositionerSystem
     s = stages(lts)
     return map(x->lower_limit(x)*m, s), map(x->upper_limit(x)*m, s)
 end
 
 
-function limits!(lts::T, lower, upper) where T <: LTS
+function limits!(lts::T, lower, upper) where T <: PositionerSystem
     s = stages(lts)
     num_stages = length(s)
     length(lower) != num_stages && error("Expected $(num_stages) elements in $lower")
@@ -140,12 +140,12 @@ end
 
 home_xyz(lts::LTS_3D) = move(lts, 0, 0, 0)
 
-pos(lts::T) where T <:  LTS = [map(pos, stages(lts))...]
+pos(lts::T) where T <:  PositionerSystem = [map(pos, stages(lts))...]
 
-reset_limits(lts::T) where T <: LTS = map(reset_limits, stages(lts))
+reset_limits(lts::T) where T <: PositionerSystem = map(reset_limits, stages(lts))
 
-function Base.show(io::IO, ::MIME"text/plain", lts::T) where T <: LTS
-   println(io, "Thorlabs LTS")
+function Base.show(io::IO, ::MIME"text/plain", lts::T) where T <: PositionerSystem
+   println(io, "Thorlabs positioner system")
    function p_stage(io, s)
        print(io, " ")
        Base.show(io, s)
