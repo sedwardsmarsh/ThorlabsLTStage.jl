@@ -1,6 +1,24 @@
 import InstrumentConfig: initialize,terminate
 
-terminate(positioner_system::T) where T <: PositionerSystem = close!(positioner_system)
+## setup & teardown
+function initialize(::Type{PositionerSystem})
+    BuildDeviceList()
+    stages = get(get_config(), "ThorlabsLTS", Dict())
+    if isempty(stages)
+        return initialize_positioner_system()
+    end
+
+    x_stage = stages["x"]
+    y_stage = stages["y"]
+    z_stage = stages["z"]
+    device_list = map(s->s["serial"], [x_stage, y_stage, z_stage])
+    positioner_system = initialize_positioner_system(device_list)
+
+    setup(positioner_system.x, x_stage)
+    setup(positioner_system.y, y_stage)
+    setup(positioner_system.z, z_stage)
+    return positioner_system
+end
 
 function initialize_positioner_system(serials = GetDeviceList())
     num_stages = length(serials)
@@ -24,25 +42,6 @@ function initialize_positioner_system(serials = GetDeviceList())
     end
 end
 
-function initialize(::Type{PositionerSystem})
-    BuildDeviceList()
-    stages = get(get_config(), "ThorlabsLTS", Dict())
-    if isempty(stages)
-        return initialize_positioner_system()
-    end
-
-    x_stage = stages["x"]
-    y_stage = stages["y"]
-    z_stage = stages["z"]
-    device_list = map(s->s["serial"], [x_stage, y_stage, z_stage])
-    positioner_system = initialize_positioner_system(device_list)
-
-    setup(positioner_system.x, x_stage)
-    setup(positioner_system.y, y_stage)
-    setup(positioner_system.z, z_stage)
-    return positioner_system
-end
-
 function setup(stage, stage_config)
     # Set position limits from config
     min_pos, max_pos = limits(stage)
@@ -63,7 +62,86 @@ function setup(stage, stage_config)
     acceleration!(stage, max_acc)
 end
 
+function Base.show(io::IO, ::MIME"text/plain", positioner_system::T) where T <: PositionerSystem
+    println(io, "Thorlabs positioner system")
+    function p_stage(io, s)
+        print(io, " ")
+        Base.show(io, s)
+        println() 
+    end
+    p_stage(io, positioner_system.x)
+    p_stage(io, positioner_system.y)
+    p_stage(io, positioner_system.z)
+end
 
+stages(positioner_system::PS_3D) = (positioner_system.x, positioner_system.y, positioner_system.z)
+
+terminate(positioner_system::T) where T <: PositionerSystem = close!(positioner_system)
+
+function close!(positioner_system::T) where T <: PositionerSystem
+    s = stages(positioner_system)
+    map(close!, s)
+    return nothing
+end
+
+
+## position
+home_xyz(positioner_system::PS_3D) = move(positioner_system, 0, 0, 0)
+
+pos(positioner_system::T) where T <:  PositionerSystem = [map(pos, stages(positioner_system))...]
+
+function move(positioner_system::PS_3D, x, y, z; move_func=move_abs!)
+    move_func(positioner_system.x, x; block=false)
+    move_func(positioner_system.y, y; block=false)
+    move_func(positioner_system.z, z; block=false)
+    pause(positioner_system.x, x)
+    pause(positioner_system.y, y)
+    pause(positioner_system.z, z)
+
+    return nothing
+end
+
+function set_origin(positioner_system::PS_3D)
+    map(set_origin, stages(positioner_system))
+    return nothing
+end
+
+function get_origin(positioner_system::PS_3D)
+    return [map(get_origin, stages(positioner_system))...]
+end
+
+function move_to_origin(positioner_system::PS_3D)
+    map(move_to_origin, stages(positioner_system))
+    return nothing
+end
+
+
+## position limits
+function limits(positioner_system::T) where T <: PositionerSystem
+    s = stages(positioner_system)
+    return map(x->lower_limit(x)*m, s), map(x->upper_limit(x)*m, s)
+end
+
+function limits!(positioner_system::T, lower, upper) where T <: PositionerSystem
+    s = stages(positioner_system)
+    num_stages = length(s)
+    length(lower) != num_stages && error("Expected $(num_stages) elements in $lower")
+    length(upper) != num_stages && error("Expected $(num_stages) elements in $upper")
+    for i in 1:num_stages
+        set_limits(s[i], lower[i], upper[i])
+    end
+    return nothing
+end
+
+reset_limits(positioner_system::T) where T <: PositionerSystem = map(reset_limits, stages(positioner_system))
+
+
+## velocity & acceleration
+get_max_velocity(positioner_system) = map(get_max_velocity, stages(positioner_system))
+get_max_acceleration(positioner_system) = map(get_max_acceleration, stages(positioner_system))
+
+
+## syntactic sugar
 get_limits(positioner_system) = limits(positioner_system)
 set_limits(positioner_system, lower, upper) = limits!(positioner_system, raw_meters.(lower), raw_meters.(upper))
 
@@ -94,78 +172,3 @@ home(positioner_system) = home_xyz(positioner_system)
 home_x(positioner_system) = home(positioner_system.x)
 home_y(positioner_system) = home(positioner_system.y)
 home_z(positioner_system) = home(positioner_system.z)
-
-get_max_velocity(positioner_system) = map(get_max_velocity, stages(positioner_system))
-get_max_acceleration(positioner_system) = map(get_max_acceleration, stages(positioner_system))
-
-
-
-stages(positioner_system::PS_3D) = (positioner_system.x, positioner_system.y, positioner_system.z)
-
-function close!(positioner_system::T) where T <: PositionerSystem
-    s = stages(positioner_system)
-    map(close!, s)
-
-    return nothing
-end
-
-function limits(positioner_system::T) where T <: PositionerSystem
-    s = stages(positioner_system)
-    return map(x->lower_limit(x)*m, s), map(x->upper_limit(x)*m, s)
-end
-
-
-function limits!(positioner_system::T, lower, upper) where T <: PositionerSystem
-    s = stages(positioner_system)
-    num_stages = length(s)
-    length(lower) != num_stages && error("Expected $(num_stages) elements in $lower")
-    length(upper) != num_stages && error("Expected $(num_stages) elements in $upper")
-    for i in 1:num_stages
-        set_limits(s[i], lower[i], upper[i])
-    end
-
-    return nothing
-end
-
-function move(positioner_system::PS_3D, x, y, z; move_func=move_abs!)
-    move_func(positioner_system.x, x; block=false)
-    move_func(positioner_system.y, y; block=false)
-    move_func(positioner_system.z, z; block=false)
-    pause(positioner_system.x, x)
-    pause(positioner_system.y, y)
-    pause(positioner_system.z, z)
-
-    return nothing
-end
-
-home_xyz(positioner_system::PS_3D) = move(positioner_system, 0, 0, 0)
-
-pos(positioner_system::T) where T <:  PositionerSystem = [map(pos, stages(positioner_system))...]
-
-reset_limits(positioner_system::T) where T <: PositionerSystem = map(reset_limits, stages(positioner_system))
-
-function Base.show(io::IO, ::MIME"text/plain", positioner_system::T) where T <: PositionerSystem
-   println(io, "Thorlabs positioner system")
-   function p_stage(io, s)
-       print(io, " ")
-       Base.show(io, s)
-       println() 
-   end
-   p_stage(io, positioner_system.x)
-   p_stage(io, positioner_system.y)
-   p_stage(io, positioner_system.z)
-end
-
-function set_origin(positioner_system::PS_3D)
-    map(set_origin, stages(positioner_system))
-    return nothing
-end
-
-function get_origin(positioner_system::PS_3D)
-    return [map(get_origin, stages(positioner_system))...]
-end
-
-function move_to_origin(positioner_system::PS_3D)
-    map(move_to_origin, stages(positioner_system))
-    return nothing
-end
