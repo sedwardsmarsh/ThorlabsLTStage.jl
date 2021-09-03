@@ -122,7 +122,8 @@ function init(stage)
     LoadNamedSettings(stage.serial, setting_name)
     println("Settings loaded")
     Enable(stage.serial)
-    Poll(stage.serial, 50)
+    milliseconds_until_next_poll = 50
+    Poll(stage.serial, milliseconds_until_next_poll)
     return setting_name
 end
 
