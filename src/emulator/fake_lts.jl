@@ -14,14 +14,12 @@ mutable struct FakeStage
 end
 
 function FakeStage(serial)
-    return FakeStage(
-        serial, "HS FakeLTS 150mm", 0m, .15m, 0, .15, 20mm/s, 20mm/s^2, 0m, false
-    )
+    return FakeStage(serial, "HS FakeLTS 150mm", 0, 0.15, 0, 0.15, 20, 20, 0, false)
 end
 
-home(s::FakeStage) = move_abs(s, 0)
+home(s::FakeStage) = move_abs!(s, 0)
 
-pos(s::FakeStage) = s.pos
+pos(s::FakeStage) = s.pos * m
 
 get_max_velocity(st::FakeStage) = st.max_velocity
 
@@ -31,13 +29,17 @@ get_max_acceleration(st::FakeStage) = st.max_acceleration
 
 set_max_acceleration(st::FakeStage, max::Unitful.Acceleration) = st.max_acceleration = uconvert(mm/s^2, max)
 
-function move_abs(s::FakeStage, position::Unitful.Length)
-    pos = Float64(uconvert(m, position))
-    check_limits(s, raw_meters(pos))
-    s.pos = pos
+function move_abs(stage::FakeStage, position::Unitful.Length)
+    move_abs!(stage, raw_meters(position))
+    return nothing
 end
 
-move_rel(s::FakeStage, position::Unitful.Length) = move_abs(s, pos(s) + position)
+function move_abs!(s::FakeStage, position)
+    check_limits(s, position)
+    s.pos = position
+end
+
+move_rel(s::FakeStage, position::Unitful.Length) = move_abs!(s, raw_meters(pos(s)+position))
 
 lower_limit(s::FakeStage) = s.lower_limit
 upper_limit(s::FakeStage) = s.upper_limit
@@ -65,9 +67,9 @@ initialize(::Type{FakeLTS}) = FakeLTS(map(FakeStage, ["1", "2", "3"])...)
 stages(lts::FakeLTS) = (lts.x, lts.y, lts.z)
 
 function move(lts::FakeLTS, x,y,z; move_func=false)
-    move_abs(lts.x, x)
-    move_abs(lts.y, y)
-    move_abs(lts.z, z)
+    move_abs!(lts.x, x)
+    move_abs!(lts.y, y)
+    move_abs!(lts.z, z)
 end
 
-home_xyz(lts::FakeLTS) = move(lts, 0m, 0m, 0m)
+home_xyz(lts::FakeLTS) = move(lts, raw_meters(0m), raw_meters(0m), raw_meters(0m))
