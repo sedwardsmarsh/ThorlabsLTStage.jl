@@ -27,56 +27,56 @@
 
 # Example
 ```
-lts = initialize(ThorlabsLTS150)
+ps = initialize(ThorlabsLTS150)
 
-move_xyz(lts, 0.1, 0.1, 0.1)
+move_xyz(ps, 0.1, 0.1, 0.1)
 
 # Move 0.05 meters forwards
-move_x_rel(lts, 0.05)
+move_x_rel(ps, 0.05)
 
 # Get position of x stage (0.05 here)
-pos_x(lts)
+pos_x(ps)
 
 # Move 0.05 meters backwards
-move_x_rel(lts, -0.05)
+move_x_rel(ps, -0.05)
 
 # Moves device to home position
-home(lts)
+home(ps)
 
 # Returns x,y,z positions
-pos_xyz(lts)
+pos_xyz(ps)
 
 # First tuple contains lower limits, second contains upper limits
 # (x_low_lim, y_low_lim, z_low_lim), (x_up_lim, y_up_lim, z_up_lim)
 # Arrays can be used instead of tuples as well []
-set_limits(lts, (0.01, 0.01, 0.01), (0.1, 0.1, 0.1))
+set_limits(ps, (0.01, 0.01, 0.01), (0.1, 0.1, 0.1))
 
 # Will return a pair of tuples with limits you just set
-get_limits(lts)
+get_limits(ps)
 
 # Will return lower and upper limit for x stage
-lower_x, upper_x = get_limits_x(lts)
+lower_x, upper_x = get_limits_x(ps)
 
 # Will stay at 0.1 (upper limit)
-move_x_abs(lts, 0.2)
+move_x_abs(ps, 0.2)
 
 # Beyond device limit but will stay at 0.1 (upper limit)
-move_x_abs(lts, 5)
+move_x_abs(ps, 5)
 
 # Will move to 0.01 (lower limit)
-move_x_abs(lts, 0)
+move_x_abs(ps, 0)
 
 # Clear limits
-clear_limits(lts)
+clear_limits(ps)
 
 # Moving beyond your physical device with no limits will throw an error
 # Don't do this
-move_x_abs(lts, 5)
+move_x_abs(ps, 5)
 ```
 
 """
 mutable struct ThorlabsLTS150 # Python
-    lts
+    positioner_system
 end
 
 # C API
@@ -159,13 +159,13 @@ end
 - `get_limits_z(xyz)`
 - `reset_limits(xyz)`
 """
-struct LTS_3D <: PositionerSystem
+struct LTS_3D <: LTS
     x::Stage
     y::Stage
     z::Stage
 end
 
-struct LTS_5D <: PositionerSystem
+struct LTS_5D <: LTS
     x::Stage
     y::Stage
     z::Stage

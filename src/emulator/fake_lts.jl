@@ -31,15 +31,15 @@ end
 
 
 ## FakeLTS functions
-stages(lts::FakeLTS) = (lts.x, lts.y, lts.z)
+stages(positioner_system::FakeLTS) = (positioner_system.x, positioner_system.y, positioner_system.z)
 
-function move(lts::FakeLTS, x, y, z; move_func=false)
-    move_abs!(lts.x, x)
-    move_abs!(lts.y, y)
-    move_abs!(lts.z, z)
+function move(positioner_system::FakeLTS, x, y, z; move_func=false)
+    move_abs!(positioner_system.x, x)
+    move_abs!(positioner_system.y, y)
+    move_abs!(positioner_system.z, z)
 end
 
-home_xyz(lts::FakeLTS) = move(lts, raw_meters(0m), raw_meters(0m), raw_meters(0m))
+home_xyz(positioner_system::FakeLTS) = move(positioner_system, raw_meters(0m), raw_meters(0m), raw_meters(0m))
 
 
 ## FakeStage functions

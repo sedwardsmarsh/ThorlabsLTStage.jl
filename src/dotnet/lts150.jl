@@ -19,7 +19,7 @@ function init_python_lib()
         return
 
     end
-    lts_lib = pyimport("lts")
+    lts_lib = pyimport("positioner_system")
 end
 
 """
@@ -33,7 +33,7 @@ Returns:
 function initialize(::Type{ThorlabsLTS150}) 
     !Sys.iswindows() && error("Windows is needed to connect to ThorlabsLTS150")
     lts_lib == nothing && error("Call ThorlabsLTStage.load_config()")
-    lts = lts_lib.create_positioner_system()
+    positioner_system = lts_lib.create_positioner_system()
 
     stages = get(get_config(), "ThorlabsLTS150", Dict())
 
