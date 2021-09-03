@@ -33,13 +33,14 @@ raw_meters(a) = Float64(ustrip(uconvert(m, a)))
 include("c/bindings.jl") # C API BACKEND
 
 include("config.jl")
-include("models.jl")
 
-# C API BACKEND
+include("models.jl")
 include("stage.jl")
 include("positioner_system.jl")
 
+include("emulator/models.jl")
 include("emulator/fake_positioner_system.jl")
+include("emulator/fake_stage.jl")
 
 # DOT NET API BACKEND
 include("dotnet/bindings.jl")
