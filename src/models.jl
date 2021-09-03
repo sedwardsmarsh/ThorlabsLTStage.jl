@@ -75,12 +75,12 @@ move_x_abs(ps, 5)
 ```
 
 """
-mutable struct ThorlabsLTS150 # Python
-    positioner_system
-end
+
+abstract type PositionerSystem end
+abstract type LinearTranslationStage end
 
 # C API
-mutable struct Stage
+mutable struct Stage <: LinearTranslationStage
     serial::String
     info::String
     origin_pos::Float64
@@ -127,7 +127,6 @@ function init(stage)
     return setting_name
 end
 
-abstract type PositionerSystem end
 
 struct PS_2D <: PositionerSystem
     x::Stage
@@ -197,3 +196,7 @@ end
 - `get_limits_z(xyz)`
 - `clear_limits(xyz)`
 """
+
+mutable struct ThorlabsLTS150 # Python
+    positioner_system
+end

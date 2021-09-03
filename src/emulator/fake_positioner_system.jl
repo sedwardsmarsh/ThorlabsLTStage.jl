@@ -1,6 +1,6 @@
 import InstrumentConfig: initialize, terminate
 
-mutable struct FakeStage
+mutable struct FakeStage <: LinearTranslationStage
     serial::String
     info::String
     origin_pos::Float64
