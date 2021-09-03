@@ -34,7 +34,7 @@ set_limits_x(lts, l, u) = set_limits(lts.x, l, u)
 set_limits_y(lts, l, u) = set_limits(lts.y, l, u)
 set_limits_z(lts, l, u) = set_limits(lts.z, l, u)
 
-move_xyz(lts, x, y, z) = move(lts, x, y, z)
+move_xyz(lts, x, y, z) = move(lts, raw_meters(x), raw_meters(y), raw_meters(z))
 
 move_x_abs(lts, x) = move_abs(lts.x, x)
 move_y_abs(lts, y) = move_abs(lts.y, y)
