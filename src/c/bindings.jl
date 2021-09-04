@@ -56,10 +56,7 @@ LoadSettings(serial::String) = ccall(lib(:ISC_LoadSettings), Bool, (Cstring,), s
 
 LoadNamedSettings(serial::String, name) = ccall(lib(:ISC_LoadNamedSettings), Bool, (Cstring,Cstring), serial, name)
 
-function OpenDevice(serial::String) 
-    err = ccall(lib(:ISC_Open), Cshort, (Cstring,), serial)
-    return err
-end
+connect_device(serial::String) = ccall(lib(:ISC_Open), Cshort, (Cstring,), serial)
 
 check_is_connected(serial) = ccall(lib(:ISC_CheckConnection), Cshort, (Cstring,), serial)
 

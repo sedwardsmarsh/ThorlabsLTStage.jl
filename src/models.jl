@@ -93,7 +93,7 @@ mutable struct Stage <: LinearTranslationStage
         serial = "$serial"
         stage = new(serial, "", NaN, NaN, NaN, NaN, false)
         stage.info = init(stage)
-        finalizer(s->disconnect_device(s.serial), stage)
+        finalizer(s -> disconnect_device(s.serial), stage)
         stage.origin_pos = position(stage)
         stage.min_pos, stage.max_pos = raw_meters.(travel_limits(stage))
         stage.lower_limit = stage.min_pos
@@ -106,7 +106,7 @@ end
 function init(stage)
     is_connected = check_is_connected(stage.serial)
     println("Stage $(stage.serial) connection status: $(is_connected)")
-    err = OpenDevice(stage.serial)
+    err = connect_device(stage.serial)
     is_connected = check_is_connected(stage.serial)
     println("Stage $(stage.serial) connection status: $(is_connected)")
     model, _ = GetHardwareInfo(stage.serial)
