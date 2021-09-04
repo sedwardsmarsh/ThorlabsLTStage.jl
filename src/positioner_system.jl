@@ -74,13 +74,12 @@ function Base.show(io::IO, ::MIME"text/plain", positioner_system::T) where T <: 
     p_stage(io, positioner_system.z)
 end
 
-stages(positioner_system::PS_3D) = (positioner_system.x, positioner_system.y, positioner_system.z)
+get_stages(positioner_system::T) where T <: PositionerSystem = Tuple(getfield(positioner_system, fieldname) for fieldname in fieldnames(typeof(positioner_system)))
 
 terminate(positioner_system::T) where T <: PositionerSystem = close!(positioner_system)
 
 function close!(positioner_system::T) where T <: PositionerSystem
-    s = stages(positioner_system)
-    map(close!, s)
+    map(close!, get_stages(positioner_system))
     return nothing
 end
 
@@ -88,7 +87,7 @@ end
 ## position
 home_xyz(positioner_system::PS_3D) = move(positioner_system, 0, 0, 0)
 
-pos(positioner_system::T) where T <:  PositionerSystem = [map(pos, stages(positioner_system))...]
+pos(positioner_system::T) where T <:  PositionerSystem = [map(pos, get_stages(positioner_system))...]
 
 function move(positioner_system::PS_3D, x, y, z; move_func=move_abs!)
     move_func(positioner_system.x, x; block=false)
@@ -102,43 +101,43 @@ function move(positioner_system::PS_3D, x, y, z; move_func=move_abs!)
 end
 
 function set_origin(positioner_system::PS_3D)
-    map(set_origin, stages(positioner_system))
+    map(set_origin, get_stages(positioner_system))
     return nothing
 end
 
 function get_origin(positioner_system::PS_3D)
-    return [map(get_origin, stages(positioner_system))...]
+    return [map(get_origin, get_stages(positioner_system))...]
 end
 
 function move_to_origin(positioner_system::PS_3D)
-    map(move_to_origin, stages(positioner_system))
+    map(move_to_origin, get_stages(positioner_system))
     return nothing
 end
 
 
 ## position limits
 function limits(positioner_system::T) where T <: PositionerSystem
-    s = stages(positioner_system)
-    return map(x->lower_limit(x)*m, s), map(x->upper_limit(x)*m, s)
+    stages = get_stages(positioner_system)
+    return map(x->lower_limit(x)*m, stages), map(x->upper_limit(x)*m, stages)
 end
 
 function limits!(positioner_system::T, lower, upper) where T <: PositionerSystem
-    s = stages(positioner_system)
-    num_stages = length(s)
+    stages = get_stages(positioner_system)
+    num_stages = length(stages)
     length(lower) != num_stages && error("Expected $(num_stages) elements in $lower")
     length(upper) != num_stages && error("Expected $(num_stages) elements in $upper")
-    for i in 1:num_stages
-        set_limits(s[i], lower[i], upper[i])
+    for idx in 1:num_stages
+        set_limits(stages[idx], lower[idx], upper[idx])
     end
     return nothing
 end
 
-reset_limits(positioner_system::T) where T <: PositionerSystem = map(reset_limits, stages(positioner_system))
+reset_limits(positioner_system::T) where T <: PositionerSystem = map(reset_limits, get_stages(positioner_system))
 
 
 ## velocity & acceleration
-get_max_velocity(positioner_system) = map(get_max_velocity, stages(positioner_system))
-get_max_acceleration(positioner_system) = map(get_max_acceleration, stages(positioner_system))
+get_max_velocity(positioner_system) = map(get_max_velocity, get_stages(positioner_system))
+get_max_acceleration(positioner_system) = map(get_max_acceleration, get_stages(positioner_system))
 
 
 ## syntactic sugar
