@@ -208,7 +208,7 @@ function SetAcceleration(serial, acc)
     SetVelParams(serial, acc, vel)
 end
 
-function Close(serial)
+function disconnect_device(serial)
     ccall(lib(:ISC_StopPolling), Int, (Cstring,), serial)
     ccall(lib(:ISC_Close), Int, (Cstring,), serial)
 end

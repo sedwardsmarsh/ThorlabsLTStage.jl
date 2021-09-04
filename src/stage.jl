@@ -1,6 +1,6 @@
 ## setup & teardown
-function close!(stage::Stage)
-    Close(stage.serial)
+function disconnect(stage::Stage)
+    disconnect_device(stage.serial)
 end
 
 

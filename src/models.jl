@@ -93,7 +93,7 @@ mutable struct Stage <: LinearTranslationStage
         serial = "$serial"
         stage = new(serial, "", NaN, NaN, NaN, NaN, false)
         stage.info = init(stage)
-        finalizer(s->Close(s.serial), stage)
+        finalizer(s->disconnect_device(s.serial), stage)
         stage.origin_pos = position(stage)
         stage.min_pos, stage.max_pos = raw_meters.(travel_limits(stage))
         stage.lower_limit = stage.min_pos

@@ -76,10 +76,8 @@ end
 
 get_stages(positioner_system::T) where T <: PositionerSystem = Tuple(getfield(positioner_system, fieldname) for fieldname in fieldnames(typeof(positioner_system)))
 
-terminate(positioner_system::T) where T <: PositionerSystem = close!(positioner_system)
-
-function close!(positioner_system::T) where T <: PositionerSystem
-    map(close!, get_stages(positioner_system))
+function terminate(positioner_system::T) where T <: PositionerSystem
+    map(disconnect, get_stages(positioner_system))
     return nothing
 end
 
