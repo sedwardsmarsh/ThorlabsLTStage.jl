@@ -5,13 +5,41 @@ end
 
 
 ## position
-home(s::Stage) = home!(s)
-
 pos(s::Stage) = position(s) * m
+
+function position(stage::Stage)
+    return DeviceUnitToMeters(stage.serial, GetPos(stage.serial))
+end
 
 move_abs(s::Stage, position::Unitful.Length) = move_abs!(s, s.origin_pos + raw_meters(position))
 
+function move_abs!(stage::Stage, position; block=true)
+    check_limits(stage, position)
+    stage.is_moving = true
+    MoveAbs(stage.serial, position)
+    block && pause(stage, position)
+    return
+end
+
+function pause(stage::Stage, p)
+    while !isapprox(position(stage), p)
+        sleep(0.1)
+    end
+    stage.is_moving = false
+end
+
 move_rel(s::Stage, position::Unitful.Length) = move_rel!(s, raw_meters(position))
+
+function move_rel!(stage::Stage, position; block=true)
+    p = raw_meters(pos(stage))
+    move_abs!(stage, p + position; block=block)
+end
+
+home(s::Stage) = home!(s)
+
+function home!(stage::Stage)
+    move_abs!(stage, 0)
+end
 
 function set_origin(stage::Stage)
     stage.origin_pos = position(stage)
@@ -27,69 +55,37 @@ function move_to_origin(stage::Stage)
     return nothing
 end
 
-function pause(stage::Stage, p)
-    while !isapprox(position(stage), p)
-        sleep(0.1)
-    end
-    stage.is_moving = false
-end
-
-function move_abs!(stage::Stage, position; block=true)
-    check_limits(stage, position)
-    stage.is_moving = true
-    MoveAbs(stage.serial, position)
-    block && pause(stage, position)
-    return
-end
-
-function move_rel!(stage::Stage, position; block=true)
-    p = raw_meters(pos(stage))
-    move_abs!(stage, p + position; block=block)
-end
-
-function home!(stage::Stage)
-    move_abs!(stage, 0)
-end
-
-function position(stage::Stage)
-    return DeviceUnitToMeters(stage.serial, GetPos(stage.serial))
-end
-
 
 ## position limits
-get_limits(s::Stage) = limits(s) .* m
-
-function set_limits(s::Stage, min::Unitful.Length, max::Unitful.Length)
-    limits!(s, raw_meters(min), raw_meters(max))
-end
-
 function travel_limits(stage::Stage)
     lower, upper = GetMotorTravelLimits(stage.serial)
     return m(lower * mm), m(upper * mm)
 end
 
-reset_limits(stage::Stage) = limits!(stage, stage.min_pos, stage.max_pos)
-
-function set_lower_limit(stage::Stage, position::Unitful.Length)
-    stage.lower_limit = raw_meters(position)
-    return nothing
+function check_limits(stage, position)
+    if position < lower_limit(stage) || position > upper_limit(stage)
+        error("Position $position is outside of the current set limits $([stage.lower_limit, stage.upper_limit])")
+    end
 end
 
-function set_upper_limit(stage::Stage, position::Unitful.Length)
-    stage.upper_limit = raw_meters(position)
-    return nothing
-end
-
-function get_lower_limit(stage::Stage)
-    return stage.lower_limit * m
-end
-
-function get_upper_limit(stage::Stage)
-    return stage.upper_limit * m
-end
-
-upper_limit(stage::Stage) = stage.upper_limit
 lower_limit(stage::Stage) = stage.lower_limit
+upper_limit(stage::Stage) = stage.upper_limit
+
+get_limits(s::Stage) = limits(s) .* m
+
+limits(stage::Stage) = lower_limit(stage), upper_limit(stage)
+
+function set_limits(s::Stage, min::Unitful.Length, max::Unitful.Length)
+    limits!(s, raw_meters(min), raw_meters(max))
+end
+
+function limits!(stage::Stage, lower, upper)
+    if upper < lower
+        error("Upper limit ($upper) is less than lower limit ($lower)")
+    end
+    lower_limit!(stage, lower)
+    upper_limit!(stage, upper)
+end
 
 function lower_limit!(stage::Stage, limit) 
     if upper_limit(stage) > stage.max_pos
@@ -105,20 +101,24 @@ function upper_limit!(stage::Stage, limit)
     stage.upper_limit  = limit
 end
 
-function limits!(stage::Stage, lower, upper)
-    if upper < lower
-        error("Upper limit ($upper) is less than lower limit ($lower)")
-    end
-    lower_limit!(stage, lower)
-    upper_limit!(stage, upper)
+reset_limits(stage::Stage) = limits!(stage, stage.min_pos, stage.max_pos)
+
+function get_lower_limit(stage::Stage)
+    return stage.lower_limit * m
 end
 
-limits(stage::Stage) = lower_limit(stage), upper_limit(stage)
+function get_upper_limit(stage::Stage)
+    return stage.upper_limit * m
+end
 
-function check_limits(stage, position)
-    if position < lower_limit(stage) || position > upper_limit(stage)
-        error("Position $position is outside of the current set limits $([stage.lower_limit, stage.upper_limit])")
-    end
+function set_lower_limit(stage::Stage, position::Unitful.Length)
+    stage.lower_limit = raw_meters(position)
+    return nothing
+end
+
+function set_upper_limit(stage::Stage, position::Unitful.Length)
+    stage.upper_limit = raw_meters(position)
+    return nothing
 end
 
 
