@@ -62,46 +62,27 @@ function travel_limits(stage::Stage)
     return m(lower * mm), m(upper * mm)
 end
 
-function check_limits(stage, position)
-    if position < lower_limit(stage) || position > upper_limit(stage)
-        error("Position $position is outside of the current set limits $([stage.lower_limit, stage.upper_limit])")
+function check_limits(stage::Stage, position::Unitful.Length)
+    check_lower_limit(stage, position)
+    check_upper_limit(stage, position)
+    return nothing
+end
+
+function check_lower_limit(stage::Stage, position::Unitful.Length)
+    lower_limit = get_lower_limit(stage)
+    if position < lower_limit
+        error("Desired position ($position) is past the lower limit ($lower_limit)")
     end
+    return nothing
 end
 
-lower_limit(stage::Stage) = stage.lower_limit
-upper_limit(stage::Stage) = stage.upper_limit
-
-get_limits(s::Stage) = limits(s) .* m
-
-limits(stage::Stage) = lower_limit(stage), upper_limit(stage)
-
-function set_limits(s::Stage, min::Unitful.Length, max::Unitful.Length)
-    limits!(s, raw_meters(min), raw_meters(max))
-end
-
-function limits!(stage::Stage, lower, upper)
-    if upper < lower
-        error("Upper limit ($upper) is less than lower limit ($lower)")
+function check_upper_limit(stage::Stage, position::Unitful.Length)
+    upper_limit = get_upper_limit(stage)
+    if position > upper_limit
+        error("Desired position ($position) is past the upper limit ($upper_limit)")
     end
-    lower_limit!(stage, lower)
-    upper_limit!(stage, upper)
+    return nothing
 end
-
-function lower_limit!(stage::Stage, limit) 
-    if upper_limit(stage) > stage.max_pos
-        error("Min Position of $(stage.min_pos). Limit $(lower_limit(stage)) cannot be set")
-    end
-    stage.lower_limit  = limit
-end
-
-function upper_limit!(stage::Stage, limit) 
-    if upper_limit(stage) > stage.max_pos
-        error("Max Position of $(stage.max_pos). Limit $(upper_limit(stage)) cannot be set")
-    end
-    stage.upper_limit  = limit
-end
-
-reset_limits(stage::Stage) = limits!(stage, stage.min_pos, stage.max_pos)
 
 function get_lower_limit(stage::Stage)
     return stage.lower_limit * m
@@ -111,13 +92,46 @@ function get_upper_limit(stage::Stage)
     return stage.upper_limit * m
 end
 
+get_limits(s::Stage) = get_lower_limit(stage), get_upper_limit(stage)
+
+function set_limits(stage::Stage, min::Unitful.Length, max::Unitful.Length)
+    if min > max
+        error("Lower limit ($min) cannot be greater than upper limit ($max)")
+    end
+    set_lower_limit(stage, min)
+    set_upper_limit(stage, max)
+    return nothing
+end
+
 function set_lower_limit(stage::Stage, position::Unitful.Length)
+    device_min_position = get_device_min_position(stage)
+    if position < device_min_position
+        error("Desired lower limit ($position) is less than the device's min position ($device_min_position)")
+    end
     stage.lower_limit = raw_meters(position)
     return nothing
 end
 
 function set_upper_limit(stage::Stage, position::Unitful.Length)
+    device_max_position = get_device_max_position(stage)
+    if position > device_max_position
+        error("Desired upper limit ($position) is greater than the device's max position ($device_max_position)")
+    end
     stage.upper_limit = raw_meters(position)
+    return nothing
+end
+
+function get_device_min_position(stage::Stage)
+    return stage.min_pos * m
+end
+
+function get_device_max_position(stage::Stage)
+    return stage.max_pos * m
+end
+
+function reset_limits(stage::Stage)
+    set_lower_limit(stage, get_device_min_position(stage))
+    set_upper_limit(stage, get_device_max_position(stage))
     return nothing
 end
 
