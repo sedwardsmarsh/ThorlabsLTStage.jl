@@ -1,5 +1,5 @@
 # position
-get_pos(stage::FakeStage) = stage.current_pos
+get_intrinsic_position(stage::FakeStage) = stage.current_pos
 
 function move_to_intrinsic_position(stage::FakeStage, position::Unitful.Length)
     check_limits(stage, position)

@@ -93,7 +93,7 @@ mutable struct Stage <: LinearTranslationStage
         stage = new(serial, "", 0mm, 0mm, 0mm, 0mm, 0mm, false)
         stage.info = init(stage)
         finalizer(s -> disconnect_device(s.serial), stage)
-        stage.origin_pos = get_pos(stage)
+        stage.origin_pos = get_intrinsic_position(stage)
         stage.min_pos, stage.max_pos = get_device_travel_limits(stage)
         stage.lower_limit = stage.min_pos
         stage.upper_limit = stage.max_pos

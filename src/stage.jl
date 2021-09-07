@@ -5,10 +5,10 @@ end
 
 
 ## position
-get_pos(s::Stage) = position(s) * m
+get_pos(stage::LinearTranslationStage) = get_intrinsic_position(stage) - get_origin(stage)
 
-function position(stage::Stage)
-    return DeviceUnitToMeters(stage.serial, GetPos(stage.serial))
+function get_intrinsic_position(stage::Stage)
+    return DeviceUnitToMeters(stage.serial, GetPos(stage.serial)) * m
 end
 
 function move_to_position(stage::LinearTranslationStage, position::Unitful.Length)
@@ -24,15 +24,15 @@ function move_to_intrinsic_position(stage::Stage, position::Unitful.Length; bloc
     return
 end
 
-function pause(stage::Stage, target_position::Unitful.Length)
-    while !isapprox(get_pos(stage), target_position)
+function pause(stage::Stage, target_intrinsic_position::Unitful.Length)
+    while !isapprox(get_intrinsic_position(stage), target_intrinsic_position)
         sleep(0.1)
     end
     stage.is_moving = false
 end
 
-function move_rel(stage::LinearTranslationStage, position::Unitful.Length)
-    move_to_intrinsic_position(stage, get_pos(stage) + position)
+function move_rel(stage::LinearTranslationStage, distance::Unitful.Length)
+    move_to_intrinsic_position(stage, get_intrinsic_position(stage) + distance)
 end
 
 function home(stage::LinearTranslationStage)
@@ -40,7 +40,7 @@ function home(stage::LinearTranslationStage)
 end
 
 function set_origin(stage::LinearTranslationStage)
-    stage.origin_pos = get_pos(stage)
+    stage.origin_pos = get_intrinsic_position(stage)
     return nothing
 end
 
