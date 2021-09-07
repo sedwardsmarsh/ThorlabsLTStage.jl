@@ -113,4 +113,46 @@ end
         @test ThorlabsLTStage.get_limits(positioner_system) == ((0mm, 0mm, 0mm), (30mm, 30mm, 30mm))
         @test_throws ErrorException ThorlabsLTStage.move_z_abs(positioner_system, 31mm)
     end
+
+    @safetestset "get_and_set_origin" begin
+        using ..SetupTestFakePs
+        positioner_system = ThorlabsLTStage.initialize(ThorlabsLTStage.FakePS_3D)
+
+        ThorlabsLTStage.move_xyz(positioner_system, 11mm, 12mm, 13mm)
+        @test ThorlabsLTStage.get_origin(positioner_system) == [0mm, 0mm, 0mm]
+        ThorlabsLTStage.set_origin(positioner_system)
+        @test ThorlabsLTStage.get_origin(positioner_system) == [11mm, 12mm, 13mm]
+    end
+
+    @safetestset "coordinate_change_with_new_origin" begin
+        using ..SetupTestFakePs
+        positioner_system = ThorlabsLTStage.initialize(ThorlabsLTStage.FakePS_3D)
+
+        ThorlabsLTStage.move_xyz(positioner_system, 10mm, 10mm, 10mm)
+        @test ThorlabsLTStage.get_pos(positioner_system) == [10mm, 10mm, 10mm]
+        @test ThorlabsLTStage.get_intrinsic_position(positioner_system.x) == 10mm
+        @test ThorlabsLTStage.get_intrinsic_position(positioner_system.y) == 10mm
+        @test ThorlabsLTStage.get_intrinsic_position(positioner_system.z) == 10mm
+
+        ThorlabsLTStage.set_origin(positioner_system)
+        ThorlabsLTStage.move_xyz(positioner_system, 1mm, 2mm, 3mm)
+        @test ThorlabsLTStage.get_pos(positioner_system) == [1mm, 2mm, 3mm]
+        @test ThorlabsLTStage.get_intrinsic_position(positioner_system.x) == 11mm
+        @test ThorlabsLTStage.get_intrinsic_position(positioner_system.y) == 12mm
+        @test ThorlabsLTStage.get_intrinsic_position(positioner_system.z) == 13mm
+    end
+
+    @safetestset "move_to_origin" begin
+        using ..SetupTestFakePs
+        positioner_system = ThorlabsLTStage.initialize(ThorlabsLTStage.FakePS_3D)
+
+        ThorlabsLTStage.move_xyz(positioner_system, 4mm, 5mm, 6mm)
+        ThorlabsLTStage.set_origin(positioner_system)
+        ThorlabsLTStage.move_xyz(positioner_system, 1mm, 2mm, 3mm)
+        ThorlabsLTStage.move_to_origin(positioner_system)
+        @test ThorlabsLTStage.get_pos(positioner_system) == [0mm, 0mm, 0mm]
+        @test ThorlabsLTStage.get_intrinsic_position(positioner_system.x) == 4mm
+        @test ThorlabsLTStage.get_intrinsic_position(positioner_system.y) == 5mm
+        @test ThorlabsLTStage.get_intrinsic_position(positioner_system.z) == 6mm
+    end
 end

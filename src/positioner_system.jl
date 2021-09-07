@@ -81,16 +81,16 @@ end
 ## position
 get_pos(positioner_system::T) where T <:  PositionerSystem = [map(get_pos, get_stages(positioner_system))...]
 
-function set_origin(positioner_system::PS_3D)
+function set_origin(positioner_system::PositionerSystem)
     map(set_origin, get_stages(positioner_system))
     return nothing
 end
 
-function get_origin(positioner_system::PS_3D)
+function get_origin(positioner_system::PositionerSystem)
     return [map(get_origin, get_stages(positioner_system))...]
 end
 
-function move_to_origin(positioner_system::PS_3D)
+function move_to_origin(positioner_system::PositionerSystem)
     map(move_to_origin, get_stages(positioner_system))
     return nothing
 end
