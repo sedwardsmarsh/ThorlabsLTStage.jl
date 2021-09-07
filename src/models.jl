@@ -83,19 +83,19 @@ abstract type LinearTranslationStage end
 mutable struct Stage <: LinearTranslationStage
     serial::String
     info::String
-    origin_pos::Float64
-    min_pos::Float64
-    max_pos::Float64
-    lower_limit::Float64
-    upper_limit::Float64
+    origin_pos::Unitful.Length
+    min_pos::Unitful.Length
+    max_pos::Unitful.Length
+    lower_limit::Unitful.Length
+    upper_limit::Unitful.Length
     is_moving::Bool
     function Stage(serial)
         serial = "$serial"
-        stage = new(serial, "", NaN, NaN, NaN, NaN, false)
+        stage = new(serial, "", 0mm, 0mm, 0mm, 0mm, 0mm, false)
         stage.info = init(stage)
         finalizer(s -> disconnect_device(s.serial), stage)
-        stage.origin_pos = position(stage)
-        stage.min_pos, stage.max_pos = raw_meters.(travel_limits(stage))
+        stage.origin_pos = pos(stage)
+        stage.min_pos, stage.max_pos = get_device_travel_limits(stage)
         stage.lower_limit = stage.min_pos
         stage.upper_limit = stage.max_pos
         stage.is_moving = false

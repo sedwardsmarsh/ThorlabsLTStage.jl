@@ -45,9 +45,9 @@ end
 function setup(stage, stage_config)
     # Set position limits from config
     min_pos, max_pos = get_limits(stage)
-    min_pos = get(stage_config, "min_position", min_pos)
-    max_pos = get(stage_config, "max_position", max_pos)
-    set_limits(stage, min_pos, max_pos)
+    min_pos = get(stage_config, "min_position", raw_meters(min_pos))
+    max_pos = get(stage_config, "max_position", raw_meters(max_pos))
+    set_limits(stage, min_pos*m, max_pos*m)
 
     # Set velocity limits from config
     max_vel = get(stage_config, "max_velocity", velocity(stage))
@@ -146,7 +146,12 @@ set_limits_x(positioner_system, l, u) = set_limits(positioner_system.x, l, u)
 set_limits_y(positioner_system, l, u) = set_limits(positioner_system.y, l, u)
 set_limits_z(positioner_system, l, u) = set_limits(positioner_system.z, l, u)
 
-move_xyz(positioner_system, x, y, z) = move(positioner_system, raw_meters(x), raw_meters(y), raw_meters(z))
+function move_xyz(positioner_system, x_position, y_position, z_position)
+    move_abs(positioner_system.x, x_position)
+    move_abs(positioner_system.y, y_position)
+    move_abs(positioner_system.z, z_position)
+    return nothing
+end
 
 move_x_abs(positioner_system, x) = move_abs(positioner_system.x, x)
 move_y_abs(positioner_system, y) = move_abs(positioner_system.y, y)

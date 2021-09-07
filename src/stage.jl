@@ -11,43 +11,42 @@ function position(stage::Stage)
     return DeviceUnitToMeters(stage.serial, GetPos(stage.serial))
 end
 
-move_abs(s::Stage, position::Unitful.Length) = move_abs!(s, s.origin_pos + raw_meters(position))
+move_abs(stage::Stage, position::Unitful.Length) = move_abs!(stage, get_origin(stage) + position)
 
-function move_abs!(stage::Stage, position; block=true)
+function move_abs!(stage::Stage, position::Unitful.Length; block=true)
     check_limits(stage, position)
     stage.is_moving = true
-    MoveAbs(stage.serial, position)
+    MoveAbs(stage.serial, raw_meters(position))
     block && pause(stage, position)
     return
 end
 
-function pause(stage::Stage, p)
-    while !isapprox(position(stage), p)
+function pause(stage::Stage, target_position)
+    while !isapprox(pos(stage), target_position)
         sleep(0.1)
     end
     stage.is_moving = false
 end
 
-move_rel(s::Stage, position::Unitful.Length) = move_rel!(s, raw_meters(position))
+move_rel(s::Stage, position::Unitful.Length) = move_rel!(s, position)
 
-function move_rel!(stage::Stage, position; block=true)
-    p = raw_meters(pos(stage))
-    move_abs!(stage, p + position; block=block)
+function move_rel!(stage::Stage, position::Unitful.Length; block=true)
+    move_abs!(stage, pos(stage) + position; block=block)
 end
 
 home(s::Stage) = home!(s)
 
 function home!(stage::Stage)
-    move_abs!(stage, 0)
+    move_abs!(stage, 0mm)
 end
 
 function set_origin(stage::Stage)
-    stage.origin_pos = position(stage)
+    stage.origin_pos = pos(stage)
     return nothing
 end
 
 function get_origin(stage::Stage)
-    return stage.origin_pos * m
+    return stage.origin_pos
 end
 
 function move_to_origin(stage::Stage)
@@ -57,9 +56,9 @@ end
 
 
 ## position limits
-function travel_limits(stage::Stage)
-    lower, upper = GetMotorTravelLimits(stage.serial)
-    return m(lower * mm), m(upper * mm)
+function get_device_travel_limits(stage::LinearTranslationStage)
+    min_pos, max_pos = GetMotorTravelLimits(stage.serial)
+    return min_pos * mm, max_pos * mm
 end
 
 function check_limits(stage::LinearTranslationStage, position)
