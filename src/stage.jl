@@ -94,12 +94,12 @@ end
 
 get_limits(stage::LinearTranslationStage) = get_lower_limit(stage), get_upper_limit(stage)
 
-function set_limits(stage::LinearTranslationStage, min, max)
-    if min > max
-        error("Lower limit ($min) cannot be greater than upper limit ($max)")
+function set_limits(stage::LinearTranslationStage, lower_limit, upper_limit)
+    if lower_limit > upper_limit
+        error("Lower limit ($lower_limit) cannot be greater than upper limit ($upper_limit)")
     end
-    set_lower_limit(stage, min)
-    set_upper_limit(stage, max)
+    set_lower_limit(stage, lower_limit)
+    set_upper_limit(stage, upper_limit)
     return nothing
 end
 
@@ -108,7 +108,7 @@ function set_lower_limit(stage::LinearTranslationStage, position)
     if position < device_min_position
         error("Desired lower limit ($position) is less than the device's min position ($device_min_position)")
     end
-    stage.lower_limit = raw_meters(position)
+    stage.lower_limit = position
     return nothing
 end
 
@@ -117,7 +117,7 @@ function set_upper_limit(stage::LinearTranslationStage, position)
     if position > device_max_position
         error("Desired upper limit ($position) is greater than the device's max position ($device_max_position)")
     end
-    stage.upper_limit = raw_meters(position)
+    stage.upper_limit = position
     return nothing
 end
 
