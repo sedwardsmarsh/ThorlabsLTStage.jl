@@ -79,20 +79,7 @@ end
 
 
 ## position
-home_xyz(positioner_system::PS_3D) = move(positioner_system, 0, 0, 0)
-
 pos(positioner_system::T) where T <:  PositionerSystem = [map(pos, get_stages(positioner_system))...]
-
-function move(positioner_system::PS_3D, x, y, z; move_func=move_abs!)
-    move_func(positioner_system.x, x; block=false)
-    move_func(positioner_system.y, y; block=false)
-    move_func(positioner_system.z, z; block=false)
-    pause(positioner_system.x, x)
-    pause(positioner_system.y, y)
-    pause(positioner_system.z, z)
-
-    return nothing
-end
 
 function set_origin(positioner_system::PS_3D)
     map(set_origin, get_stages(positioner_system))
