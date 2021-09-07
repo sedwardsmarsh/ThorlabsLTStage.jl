@@ -7,11 +7,6 @@ function move_to_intrinsic_position(stage::FakeStage, position::Unitful.Length)
     return nothing
 end
 
-function move_rel(stage::FakeStage, position::Unitful.Length) 
-    move_to_intrinsic_position(stage, get_pos(stage) + position)
-    return nothing
-end
-
 
 # velocity
 get_max_velocity(stage::FakeStage) = stage.max_velocity

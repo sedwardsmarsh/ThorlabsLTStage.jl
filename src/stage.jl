@@ -31,8 +31,8 @@ function pause(stage::Stage, target_position::Unitful.Length)
     stage.is_moving = false
 end
 
-function move_rel(stage::LinearTranslationStage, position::Unitful.Length; block=true)
-    move_to_intrinsic_position(stage, get_pos(stage) + position; block=block)
+function move_rel(stage::LinearTranslationStage, position::Unitful.Length)
+    move_to_intrinsic_position(stage, get_pos(stage) + position)
 end
 
 function home(stage::LinearTranslationStage)
