@@ -21,7 +21,7 @@ function move_abs!(stage::Stage, position::Unitful.Length; block=true)
     return
 end
 
-function pause(stage::Stage, target_position)
+function pause(stage::Stage, target_position::Unitful.Length)
     while !isapprox(pos(stage), target_position)
         sleep(0.1)
     end
@@ -61,13 +61,13 @@ function get_device_travel_limits(stage::LinearTranslationStage)
     return min_pos * mm, max_pos * mm
 end
 
-function check_limits(stage::LinearTranslationStage, position)
+function check_limits(stage::LinearTranslationStage, position::Unitful.Length)
     check_lower_limit(stage, position)
     check_upper_limit(stage, position)
     return nothing
 end
 
-function check_lower_limit(stage::LinearTranslationStage, position)
+function check_lower_limit(stage::LinearTranslationStage, position::Unitful.Length)
     lower_limit = get_lower_limit(stage)
     if position < lower_limit
         error("Desired position ($position) is past the lower limit ($lower_limit)")
@@ -75,7 +75,7 @@ function check_lower_limit(stage::LinearTranslationStage, position)
     return nothing
 end
 
-function check_upper_limit(stage::LinearTranslationStage, position)
+function check_upper_limit(stage::LinearTranslationStage, position::Unitful.Length)
     upper_limit = get_upper_limit(stage)
     if position > upper_limit
         error("Desired position ($position) is past the upper limit ($upper_limit)")
@@ -93,7 +93,7 @@ end
 
 get_limits(stage::LinearTranslationStage) = get_lower_limit(stage), get_upper_limit(stage)
 
-function set_limits(stage::LinearTranslationStage, lower_limit, upper_limit)
+function set_limits(stage::LinearTranslationStage, lower_limit::Unitful.Length, upper_limit::Unitful.Length)
     if lower_limit > upper_limit
         error("Lower limit ($lower_limit) cannot be greater than upper limit ($upper_limit)")
     end
@@ -102,7 +102,7 @@ function set_limits(stage::LinearTranslationStage, lower_limit, upper_limit)
     return nothing
 end
 
-function set_lower_limit(stage::LinearTranslationStage, position)
+function set_lower_limit(stage::LinearTranslationStage, position::Unitful.Length)
     device_min_position = get_device_min_position(stage)
     if position < device_min_position
         error("Desired lower limit ($position) is less than the device's min position ($device_min_position)")
@@ -111,7 +111,7 @@ function set_lower_limit(stage::LinearTranslationStage, position)
     return nothing
 end
 
-function set_upper_limit(stage::LinearTranslationStage, position)
+function set_upper_limit(stage::LinearTranslationStage, position::Unitful.Length)
     device_max_position = get_device_max_position(stage)
     if position > device_max_position
         error("Desired upper limit ($position) is greater than the device's max position ($device_max_position)")
