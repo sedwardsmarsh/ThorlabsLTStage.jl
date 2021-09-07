@@ -11,9 +11,12 @@ function position(stage::Stage)
     return DeviceUnitToMeters(stage.serial, GetPos(stage.serial))
 end
 
-move_abs(stage::Stage, position::Unitful.Length) = move_abs!(stage, get_origin(stage) + position)
+function move_to_position(stage::LinearTranslationStage, position::Unitful.Length)
+    move_to_intrinsic_position(stage, get_origin(stage) + position)
+    return nothing
+end
 
-function move_abs!(stage::Stage, position::Unitful.Length; block=true)
+function move_to_intrinsic_position(stage::Stage, position::Unitful.Length; block=true)
     check_limits(stage, position)
     stage.is_moving = true
     MoveAbs(stage.serial, raw_meters(position))
@@ -28,16 +31,12 @@ function pause(stage::Stage, target_position::Unitful.Length)
     stage.is_moving = false
 end
 
-move_rel(s::LinearTranslationStage, position::Unitful.Length) = move_rel!(s, position)
-
-function move_rel!(stage::LinearTranslationStage, position::Unitful.Length; block=true)
-    move_abs!(stage, get_pos(stage) + position; block=block)
+function move_rel(stage::LinearTranslationStage, position::Unitful.Length; block=true)
+    move_to_intrinsic_position(stage, get_pos(stage) + position; block=block)
 end
 
-home(s::LinearTranslationStage) = home!(s)
-
-function home!(stage::LinearTranslationStage)
-    move_abs!(stage, 0mm)
+function home(stage::LinearTranslationStage)
+    move_to_intrinsic_position(stage, 0mm)
 end
 
 function set_origin(stage::LinearTranslationStage)
@@ -50,7 +49,7 @@ function get_origin(stage::LinearTranslationStage)
 end
 
 function move_to_origin(stage::LinearTranslationStage)
-    move_abs!(stage, stage.origin_pos)
+    move_to_intrinsic_position(stage, stage.origin_pos)
     return nothing
 end
 

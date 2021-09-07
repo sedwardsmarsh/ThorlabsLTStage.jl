@@ -131,14 +131,14 @@ set_limits_y(positioner_system, l, u) = set_limits(positioner_system.y, l, u)
 set_limits_z(positioner_system, l, u) = set_limits(positioner_system.z, l, u)
 
 function move_xyz(positioner_system, x_position, y_position, z_position)
-    move_abs(positioner_system.x, x_position)
-    move_abs(positioner_system.y, y_position)
-    move_abs(positioner_system.z, z_position)
+    move_to_position(positioner_system.x, x_position)
+    move_to_position(positioner_system.y, y_position)
+    move_to_position(positioner_system.z, z_position)
     return nothing
 end
-move_x_abs(positioner_system, x) = move_abs(positioner_system.x, x)
-move_y_abs(positioner_system, y) = move_abs(positioner_system.y, y)
-move_z_abs(positioner_system, z) = move_abs(positioner_system.z, z)
+move_x_abs(positioner_system, x) = move_to_position(positioner_system.x, x)
+move_y_abs(positioner_system, y) = move_to_position(positioner_system.y, y)
+move_z_abs(positioner_system, z) = move_to_position(positioner_system.z, z)
 
 move_x_rel(positioner_system, x) = move_rel(positioner_system.x, x)
 move_y_rel(positioner_system, y) = move_rel(positioner_system.y, y)
@@ -148,12 +148,7 @@ get_pos_x(positioner_system) = get_pos(positioner_system.x)
 get_pos_y(positioner_system) = get_pos(positioner_system.y)
 get_pos_z(positioner_system) = get_pos(positioner_system.z)
 
-function home(positioner_system)
-    move_abs!(positioner_system.x, 0mm)
-    move_abs!(positioner_system.y, 0mm)
-    move_abs!(positioner_system.z, 0mm)
-    return nothing
-end
+home(positioner_system) = map(home, get_stages(positioner_system))
 home_x(positioner_system) = home(positioner_system.x)
 home_y(positioner_system) = home(positioner_system.y)
 home_z(positioner_system) = home(positioner_system.z)

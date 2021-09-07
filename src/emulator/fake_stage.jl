@@ -1,21 +1,14 @@
 # position
-home(stage::FakeStage) = move_abs!(stage, 0mm)
-
 get_pos(stage::FakeStage) = stage.current_pos
 
-function move_abs(stage::FakeStage, position::Unitful.Length)
-    move_abs!(stage, position)
-    return nothing
-end
-
-function move_abs!(stage::FakeStage, position::Unitful.Length)
+function move_to_intrinsic_position(stage::FakeStage, position::Unitful.Length)
     check_limits(stage, position)
     stage.current_pos = position
     return nothing
 end
 
 function move_rel(stage::FakeStage, position::Unitful.Length) 
-    move_abs!(stage, get_pos(stage) + position)
+    move_to_intrinsic_position(stage, get_pos(stage) + position)
     return nothing
 end
 
