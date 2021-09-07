@@ -5,22 +5,32 @@ end
 
 
 ## position
-get_pos(stage::LinearTranslationStage) = get_intrinsic_position(stage) - get_origin(stage)
+get_pos(stage::LinearTranslationStage) = intrinsic_to_extrinsic_position(stage, get_intrinsic_position(stage))
 
 function get_intrinsic_position(stage::Stage)
     return DeviceUnitToMeters(stage.serial, GetPos(stage.serial)) * m
 end
 
-function move_to_position(stage::LinearTranslationStage, position::Unitful.Length)
-    move_to_intrinsic_position(stage, get_origin(stage) + position)
+function intrinsic_to_extrinsic_position(stage::LinearTranslationStage, intrinsic_position::Unitful.Length)
+    return intrinsic_position - get_origin(stage)
+end
+
+function extrinsic_to_intrinsic_position(stage::LinearTranslationStage, extrinsic_position::Unitful.Length)
+    return extrinsic_position + get_origin(stage)
+end
+
+function move_to_position(stage::LinearTranslationStage, extrinsic_position::Unitful.Length)
+    intrinsic_position = extrinsic_to_intrinsic_position(stage, extrinsic_position)
+    move_to_intrinsic_position(stage, intrinsic_position)
     return nothing
 end
 
-function move_to_intrinsic_position(stage::Stage, position::Unitful.Length; block=true)
-    check_limits(stage, position)
+function move_to_intrinsic_position(stage::Stage, intrinsic_position::Unitful.Length; block=true)
+    extrinsic_position = intrinsic_to_extrinsic_position(stage, intrinsic_position)
+    check_limits(stage, extrinsic_position)
     stage.is_moving = true
-    MoveAbs(stage.serial, raw_meters(position))
-    block && pause(stage, position)
+    MoveAbs(stage.serial, raw_meters(intrinsic_position))
+    block && pause(stage, intrinsic_position)
     return
 end
 
@@ -67,30 +77,41 @@ function check_limits(stage::LinearTranslationStage, position::Unitful.Length)
 end
 
 function check_lower_limit(stage::LinearTranslationStage, position::Unitful.Length)
-    lower_limit = get_lower_limit(stage)
-    if position < lower_limit
-        error("Desired position ($position) is past the lower limit ($lower_limit)")
+    extrinsic_lower_limit = get_lower_limit(stage)
+    if position < extrinsic_lower_limit
+        error("Desired position ($position) is past the lower limit ($extrinsic_lower_limit)")
     end
     return nothing
 end
 
 function check_upper_limit(stage::LinearTranslationStage, position::Unitful.Length)
-    upper_limit = get_upper_limit(stage)
-    if position > upper_limit
-        error("Desired position ($position) is past the upper limit ($upper_limit)")
+    extrinsic_upper_limit = get_upper_limit(stage)
+    if position > extrinsic_upper_limit
+        error("Desired position ($position) is past the upper limit ($extrinsic_upper_limit)")
     end
     return nothing
 end
 
 function get_lower_limit(stage::LinearTranslationStage)
-    return stage.lower_limit
+    intrinsic_lower_limit = get_intrinsic_lower_limit(stage)
+    return intrinsic_to_extrinsic_position(stage, intrinsic_lower_limit)
 end
 
 function get_upper_limit(stage::LinearTranslationStage)
+    intrinsic_upper_limit = get_intrinsic_upper_limit(stage)
+    return intrinsic_to_extrinsic_position(stage, intrinsic_upper_limit)
+end
+
+function get_intrinsic_lower_limit(stage::LinearTranslationStage)
+    return stage.lower_limit
+end
+
+function get_intrinsic_upper_limit(stage::LinearTranslationStage)
     return stage.upper_limit
 end
 
 get_limits(stage::LinearTranslationStage) = get_lower_limit(stage), get_upper_limit(stage)
+get_intrinsic_limits(stage::LinearTranslationStage) = get_intrinsic_lower_limit(stage), get_intrinsic_upper_limit(stage)
 
 function set_limits(stage::LinearTranslationStage, lower_limit::Unitful.Length, upper_limit::Unitful.Length)
     if lower_limit > upper_limit
@@ -101,30 +122,67 @@ function set_limits(stage::LinearTranslationStage, lower_limit::Unitful.Length, 
     return nothing
 end
 
-function set_lower_limit(stage::LinearTranslationStage, position::Unitful.Length)
-    device_min_position = get_device_min_position(stage)
-    if position < device_min_position
-        error("Desired lower limit ($position) is less than the device's min position ($device_min_position)")
+function set_lower_limit(stage::LinearTranslationStage, extrinsic_position::Unitful.Length)
+    extrinsic_min_position = get_device_min_position(stage)
+    if extrinsic_position < extrinsic_min_position
+        error("Desired lower limit ($extrinsic_position) is less than the device's min position ($extrinsic_min_position)")
     end
-    stage.lower_limit = position
+    stage.lower_limit = extrinsic_to_intrinsic_position(stage, extrinsic_position)
     return nothing
 end
 
-function set_upper_limit(stage::LinearTranslationStage, position::Unitful.Length)
-    device_max_position = get_device_max_position(stage)
-    if position > device_max_position
-        error("Desired upper limit ($position) is greater than the device's max position ($device_max_position)")
+function set_upper_limit(stage::LinearTranslationStage, extrinsic_position::Unitful.Length)
+    extrinsic_max_position = get_device_max_position(stage)
+    if extrinsic_position > extrinsic_max_position
+        error("Desired upper limit ($extrinsic_position) is greater than the device's max position ($extrinsic_max_position)")
     end
-    stage.upper_limit = position
+    stage.upper_limit = extrinsic_to_intrinsic_position(stage, extrinsic_position)
     return nothing
 end
 
 function get_device_min_position(stage::LinearTranslationStage)
-    return stage.min_pos
+    intrinsic_min_pos = get_intrinsic_min_position(stage)
+    return intrinsic_to_extrinsic_position(stage, intrinsic_min_pos)
 end
 
 function get_device_max_position(stage::LinearTranslationStage)
+    intrinsic_max_pos = get_intrinsic_max_position(stage)
+    return intrinsic_to_extrinsic_position(stage, intrinsic_max_pos)
+end
+
+function get_intrinsic_min_position(stage::LinearTranslationStage)
+    return stage.min_pos
+end
+
+function get_intrinsic_max_position(stage::LinearTranslationStage)
     return stage.max_pos
+end
+
+function set_intrinsic_limits(stage::LinearTranslationStage, lower_limit::Unitful.Length, upper_limit::Unitful.Length)
+    if lower_limit > upper_limit
+        error("Lower limit ($lower_limit) cannot be greater than upper limit ($upper_limit)")
+    end
+    set_intrinsic_lower_limit(stage, lower_limit)
+    set_intrinsic_upper_limit(stage, upper_limit)
+    return nothing
+end
+
+function set_intrinsic_lower_limit(stage::LinearTranslationStage, intrinsic_position::Unitful.Length)
+    intrinsic_min_pos = get_intrinsic_min_position(stage)
+    if intrinsic_position < intrinsic_min_pos
+        error("Desired intrinsic lower limit ($intrinsic_position) is less than the device's intrinsic min position ($intrinsic_min_position)")
+    end
+    stage.lower_limit = intrinsic_position
+    return nothing
+end
+
+function set_intrinsic_upper_limit(stage::LinearTranslationStage, intrinsic_position::Unitful.Length)
+    intrinsic_max_pos = get_intrinsic_max_position(stage)
+    if intrinsic_position > intrinsic_max_pos
+        error("Desired intrinsic upper limit ($intrinsic_position) is greater than the device's intrinsic max position ($intrinsic_max_position)")
+    end
+    stage.upper_limit = intrinsic_position
+    return nothing
 end
 
 function reset_limits(stage::LinearTranslationStage)

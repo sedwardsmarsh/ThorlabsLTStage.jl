@@ -1,9 +1,10 @@
 # position
 get_intrinsic_position(stage::FakeStage) = stage.current_pos
 
-function move_to_intrinsic_position(stage::FakeStage, position::Unitful.Length)
-    check_limits(stage, position)
-    stage.current_pos = position
+function move_to_intrinsic_position(stage::FakeStage, intrinsic_position::Unitful.Length)
+    extrinsic_position = intrinsic_to_extrinsic_position(stage, intrinsic_position)
+    check_limits(stage, extrinsic_position)
+    stage.current_pos = intrinsic_position
     return nothing
 end
 

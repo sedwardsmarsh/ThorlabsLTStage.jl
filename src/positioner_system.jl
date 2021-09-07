@@ -44,10 +44,10 @@ end
 
 function setup(stage, stage_config)
     # Set position limits from config
-    min_pos, max_pos = get_limits(stage)
+    min_pos, max_pos = get_intrinsic_limits(stage)
     min_pos = get(stage_config, "min_position", raw_meters(min_pos))
     max_pos = get(stage_config, "max_position", raw_meters(max_pos))
-    set_limits(stage, min_pos*m, max_pos*m)
+    set_intrinsic_limits(stage, min_pos*m, max_pos*m)
 
     # Set velocity limits from config
     max_vel = get(stage_config, "max_velocity", velocity(stage))
