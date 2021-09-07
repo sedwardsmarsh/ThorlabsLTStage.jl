@@ -1,39 +1,22 @@
 # position
-home(stage::FakeStage) = move_abs!(stage, 0)
+home(stage::FakeStage) = move_abs!(stage, 0mm)
 
-pos(stage::FakeStage) = stage.current_pos * m
+pos(stage::FakeStage) = stage.current_pos
 
 function move_abs(stage::FakeStage, position::Unitful.Length)
-    move_abs!(stage, raw_meters(position))
+    move_abs!(stage, position)
     return nothing
 end
 
-function move_abs!(stage::FakeStage, position)
+function move_abs!(stage::FakeStage, position::Unitful.Length)
     check_limits(stage, position)
     stage.current_pos = position
     return nothing
 end
 
 function move_rel(stage::FakeStage, position::Unitful.Length) 
-    move_abs!(stage, raw_meters(pos(stage)+position))
+    move_abs!(stage, pos(stage) + position)
     return nothing
-end
-
-
-# position limits
-lower_limit(stage::FakeStage) = stage.lower_limit
-upper_limit(stage::FakeStage) = stage.upper_limit
-
-get_limits(stage::FakeStage) = stage.lower_limit * m, stage.upper_limit * m
-
-function set_limits(stage::FakeStage, lower, upper)
-    stage.lower_limit = ustrip(lower)
-    stage.upper_limit = ustrip(upper)
-end
-
-function reset_limits(stage::FakeStage)
-    stage.upper_limit = stage.max_pos
-    stage.lower_limit = stage.min_pos
 end
 
 

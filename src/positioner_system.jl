@@ -110,18 +110,18 @@ end
 
 
 ## position limits
-function limits(positioner_system::T) where T <: PositionerSystem
+function get_limits(positioner_system::T) where T <: PositionerSystem
     stages = get_stages(positioner_system)
-    return map(x->lower_limit(x)*m, stages), map(x->upper_limit(x)*m, stages)
+    return map(x -> get_lower_limit(x), stages), map(x -> get_upper_limit(x), stages)
 end
 
-function limits!(positioner_system::T, lower, upper) where T <: PositionerSystem
+function set_limits(positioner_system::T, lower_limits, upper_limits) where T <: PositionerSystem
     stages = get_stages(positioner_system)
     num_stages = length(stages)
-    length(lower) != num_stages && error("Expected $(num_stages) elements in $lower")
-    length(upper) != num_stages && error("Expected $(num_stages) elements in $upper")
+    length(lower_limits) != num_stages && error("Expected $(num_stages) elements in $lower_limits")
+    length(upper_limits) != num_stages && error("Expected $(num_stages) elements in $upper_limits")
     for idx in 1:num_stages
-        set_limits(stages[idx], lower[idx], upper[idx])
+        set_limits(stages[idx], lower_limits[idx], upper_limits[idx])
     end
     return nothing
 end
@@ -135,9 +135,6 @@ get_max_acceleration(positioner_system) = map(get_max_acceleration, get_stages(p
 
 
 ## syntactic sugar
-get_limits(positioner_system) = limits(positioner_system)
-set_limits(positioner_system, lower, upper) = limits!(positioner_system, raw_meters.(lower), raw_meters.(upper))
-
 get_limits_x(positioner_system) = get_limits(positioner_system.x)
 get_limits_y(positioner_system) = get_limits(positioner_system.y)
 get_limits_z(positioner_system) = get_limits(positioner_system.z)
@@ -152,7 +149,6 @@ function move_xyz(positioner_system, x_position, y_position, z_position)
     move_abs(positioner_system.z, z_position)
     return nothing
 end
-
 move_x_abs(positioner_system, x) = move_abs(positioner_system.x, x)
 move_y_abs(positioner_system, y) = move_abs(positioner_system.y, y)
 move_z_abs(positioner_system, z) = move_abs(positioner_system.z, z)
@@ -166,7 +162,12 @@ pos_x(positioner_system) = pos(positioner_system.x)
 pos_y(positioner_system) = pos(positioner_system.y)
 pos_z(positioner_system) = pos(positioner_system.z)
 
-home(positioner_system) = home_xyz(positioner_system)
+function home(positioner_system)
+    move_abs!(positioner_system.x, 0mm)
+    move_abs!(positioner_system.y, 0mm)
+    move_abs!(positioner_system.z, 0mm)
+    return nothing
+end
 home_x(positioner_system) = home(positioner_system.x)
 home_y(positioner_system) = home(positioner_system.y)
 home_z(positioner_system) = home(positioner_system.z)

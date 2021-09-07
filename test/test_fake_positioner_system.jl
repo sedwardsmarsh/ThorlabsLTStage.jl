@@ -75,7 +75,7 @@ end
         ThorlabsLTStage.move_x_abs(positioner_system, 11mm)
 
         ThorlabsLTStage.home(positioner_system)
-        ThorlabsLTStage.set_limits(positioner_system,(0m, 0m, 0m), (0.01m, 0.01m, 0.01m))
+        ThorlabsLTStage.set_limits(positioner_system, (0m, 0m, 0m), (0.01m, 0.01m, 0.01m))
         @test ThorlabsLTStage.get_limits(positioner_system) == ((0mm, 0mm, 0mm), (10mm, 10mm, 10mm))
         @test_throws ErrorException ThorlabsLTStage.move_x_abs(positioner_system, 11mm)
     end
@@ -92,7 +92,7 @@ end
         ThorlabsLTStage.move_y_abs(positioner_system, 21mm)
 
         ThorlabsLTStage.home(positioner_system)
-        ThorlabsLTStage.set_limits(positioner_system,(0m, 0m, 0m), (0.02m, 0.02m, 0.02m))
+        ThorlabsLTStage.set_limits(positioner_system, (0m, 0m, 0m), (0.02m, 0.02m, 0.02m))
         @test ThorlabsLTStage.get_limits(positioner_system) == ((0mm, 0mm, 0mm), (20mm, 20mm, 20mm))
         @test_throws ErrorException ThorlabsLTStage.move_y_abs(positioner_system, 21mm)
     end
@@ -109,7 +109,7 @@ end
         ThorlabsLTStage.move_z_abs(positioner_system, 31mm)
 
         ThorlabsLTStage.home(positioner_system)
-        ThorlabsLTStage.set_limits(positioner_system,(0m, 0m, 0m), (0.03m, 0.03m, 0.03m))
+        ThorlabsLTStage.set_limits(positioner_system, (0m, 0m, 0m), (0.03m, 0.03m, 0.03m))
         @test ThorlabsLTStage.get_limits(positioner_system) == ((0mm, 0mm, 0mm), (30mm, 30mm, 30mm))
         @test_throws ErrorException ThorlabsLTStage.move_z_abs(positioner_system, 31mm)
     end

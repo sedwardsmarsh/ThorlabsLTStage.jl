@@ -28,28 +28,28 @@ function pause(stage::Stage, target_position::Unitful.Length)
     stage.is_moving = false
 end
 
-move_rel(s::Stage, position::Unitful.Length) = move_rel!(s, position)
+move_rel(s::LinearTranslationStage, position::Unitful.Length) = move_rel!(s, position)
 
-function move_rel!(stage::Stage, position::Unitful.Length; block=true)
+function move_rel!(stage::LinearTranslationStage, position::Unitful.Length; block=true)
     move_abs!(stage, pos(stage) + position; block=block)
 end
 
-home(s::Stage) = home!(s)
+home(s::LinearTranslationStage) = home!(s)
 
-function home!(stage::Stage)
+function home!(stage::LinearTranslationStage)
     move_abs!(stage, 0mm)
 end
 
-function set_origin(stage::Stage)
+function set_origin(stage::LinearTranslationStage)
     stage.origin_pos = pos(stage)
     return nothing
 end
 
-function get_origin(stage::Stage)
+function get_origin(stage::LinearTranslationStage)
     return stage.origin_pos
 end
 
-function move_to_origin(stage::Stage)
+function move_to_origin(stage::LinearTranslationStage)
     move_abs!(stage, stage.origin_pos)
     return nothing
 end

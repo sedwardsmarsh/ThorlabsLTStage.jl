@@ -1,20 +1,20 @@
 mutable struct FakeStage <: LinearTranslationStage
     serial::String
     info::String
-    origin_pos::Float64
-    min_pos::Float64
-    max_pos::Float64
-    lower_limit::Float64
-    upper_limit::Float64
+    origin_pos::Unitful.Length
+    min_pos::Unitful.Length
+    max_pos::Unitful.Length
+    lower_limit::Unitful.Length
+    upper_limit::Unitful.Length
     is_moving::Bool
     # additional fields that Stage does not have
-    current_pos::Float64
-    max_velocity::Float64
-    max_acceleration::Float64
+    current_pos::Unitful.Length
+    max_velocity::Unitful.Velocity
+    max_acceleration::Unitful.Acceleration
 end
 
 function FakeStage(serial)
-    return FakeStage(serial, "HS FakeStage 150mm", 0, 0, 0.15, 0, 0.15, false, 0, 20, 20)
+    return FakeStage(serial, "HS FakeStage 150mm", 0mm, 0mm, 150mm, 0mm, 150mm, false, 0mm, 20*mm/s, 20*mm/s^2)
 end
 
 struct FakePS_3D <: PositionerSystem
