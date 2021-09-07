@@ -77,7 +77,7 @@ end
         ThorlabsLTStage.home(positioner_system)
         ThorlabsLTStage.set_limits(positioner_system,(0m, 0m, 0m), (0.01m, 0.01m, 0.01m))
         @test ThorlabsLTStage.get_limits(positioner_system) == ((0mm, 0mm, 0mm), (10mm, 10mm, 10mm))
-        @test_throws ErrorException("Position 0.011 is outside of the current set limits [0.0, 0.01]") ThorlabsLTStage.move_x_abs(positioner_system, 11mm)
+        @test_throws ErrorException ThorlabsLTStage.move_x_abs(positioner_system, 11mm)
     end
 
 
