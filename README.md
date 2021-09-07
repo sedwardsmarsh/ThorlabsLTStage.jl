@@ -78,10 +78,10 @@ Move a single axis to a certain position:
 `move_x_abs(ps, .54u"m")`
 
 Get position of a single axis:
-`pos_y(ps)`
+`get_pos_y(ps)`
 
 Get position of all stages:
-`pos_xyz(ps)`
+`get_pos(ps)`
 
 If you ask a stage to move further than its available length
 this package will throw an error. You can however set limits
@@ -99,11 +99,11 @@ using Unitful
 
 ps = initialize(PositionerSystem)
 
-pos_xyz(ps)
+get_pos(ps)
 move_xyz(ps, 5u"mm", 10u"mm", 10u"mm")
-pos_xyz(ps)
+get_pos(ps)
 move_x_rel(ps, 5u"mm")
-pos_xyz(ps)
+get_pos(ps)
 
 # set a new origin location for all stages
 get_origin(ps)
@@ -111,10 +111,10 @@ set_origin(ps)
 
 # absolute positions are relative to the origin
 move_x_abs(ps, 5u"mm")
-pos_x(ps)
+get_pos_x(ps)
 
 # set the current position to be the upper limit
-set_upper_limit(ps.x, pos(ps.x))
+set_upper_limit(ps.x, get_pos(ps.x))
 
 # this will work
 move_to_origin(ps)
@@ -252,10 +252,10 @@ Move a single axis to a certain position:
 `move_x_abs(ps, .54)`
 
 Get position of a single axis:
-`pos_y(ps)`
+`get_pos_y(ps)`
 
 Get position of all stages:
-`pos_xyz(ps)`
+`get_pos(ps)`
 
 If you ask a stage to move further than its available length
 this package will throw an error. You can however set limits
@@ -277,7 +277,7 @@ move_xyz(ps, 0.1, 0.1, 0.1)
 move_x_rel(ps, 0.05)
 
 # Get position of x stage (0.05 here)
-pos_x(ps)
+get_pos_x(ps)
 
 # Move 0.05 meters backwards
 move_x_rel(ps, -0.05)
@@ -286,7 +286,7 @@ move_x_rel(ps, -0.05)
 home(ps)
 
 # Returns x,y,z positions
-pos_xyz(ps)
+get_pos(ps)
 
 # First tuple contains lower limits, second contains upper limits
 # (x_low_lim, y_low_lim, z_low_lim), (x_up_lim, y_up_lim, z_up_lim)

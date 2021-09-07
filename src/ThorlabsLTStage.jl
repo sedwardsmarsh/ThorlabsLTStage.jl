@@ -9,8 +9,8 @@ export initialize, terminate
 export ThorlabsLTS150, PositionerSystem, LTS150_3D, LTS150_2D
 export move_x_abs, move_y_abs, move_z_abs
 export move_x_rel, move_y_rel, move_z_rel
-export move_xyz, pos_xyz
-export pos_x, pos_y, pos_z
+export move_xyz, get_pos
+export get_pos_x, get_pos_y, get_pos_z
 export home, home_x, home_y, home_z
 export set_origin, get_origin, move_to_origin
 export set_lower_limit, set_upper_limit

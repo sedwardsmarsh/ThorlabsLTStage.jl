@@ -1,7 +1,7 @@
 # position
 home(stage::FakeStage) = move_abs!(stage, 0mm)
 
-pos(stage::FakeStage) = stage.current_pos
+get_pos(stage::FakeStage) = stage.current_pos
 
 function move_abs(stage::FakeStage, position::Unitful.Length)
     move_abs!(stage, position)
@@ -15,7 +15,7 @@ function move_abs!(stage::FakeStage, position::Unitful.Length)
 end
 
 function move_rel(stage::FakeStage, position::Unitful.Length) 
-    move_abs!(stage, pos(stage) + position)
+    move_abs!(stage, get_pos(stage) + position)
     return nothing
 end
 

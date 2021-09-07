@@ -5,7 +5,7 @@ end
 
 
 ## position
-pos(s::Stage) = position(s) * m
+get_pos(s::Stage) = position(s) * m
 
 function position(stage::Stage)
     return DeviceUnitToMeters(stage.serial, GetPos(stage.serial))
@@ -22,7 +22,7 @@ function move_abs!(stage::Stage, position::Unitful.Length; block=true)
 end
 
 function pause(stage::Stage, target_position::Unitful.Length)
-    while !isapprox(pos(stage), target_position)
+    while !isapprox(get_pos(stage), target_position)
         sleep(0.1)
     end
     stage.is_moving = false
@@ -31,7 +31,7 @@ end
 move_rel(s::LinearTranslationStage, position::Unitful.Length) = move_rel!(s, position)
 
 function move_rel!(stage::LinearTranslationStage, position::Unitful.Length; block=true)
-    move_abs!(stage, pos(stage) + position; block=block)
+    move_abs!(stage, get_pos(stage) + position; block=block)
 end
 
 home(s::LinearTranslationStage) = home!(s)
@@ -41,7 +41,7 @@ function home!(stage::LinearTranslationStage)
 end
 
 function set_origin(stage::LinearTranslationStage)
-    stage.origin_pos = pos(stage)
+    stage.origin_pos = get_pos(stage)
     return nothing
 end
 

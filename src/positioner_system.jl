@@ -79,7 +79,7 @@ end
 
 
 ## position
-pos(positioner_system::T) where T <:  PositionerSystem = [map(pos, get_stages(positioner_system))...]
+get_pos(positioner_system::T) where T <:  PositionerSystem = [map(get_pos, get_stages(positioner_system))...]
 
 function set_origin(positioner_system::PS_3D)
     map(set_origin, get_stages(positioner_system))
@@ -144,10 +144,9 @@ move_x_rel(positioner_system, x) = move_rel(positioner_system.x, x)
 move_y_rel(positioner_system, y) = move_rel(positioner_system.y, y)
 move_z_rel(positioner_system, z) = move_rel(positioner_system.z, z)
 
-pos_xyz(positioner_system) = pos(positioner_system)
-pos_x(positioner_system) = pos(positioner_system.x)
-pos_y(positioner_system) = pos(positioner_system.y)
-pos_z(positioner_system) = pos(positioner_system.z)
+get_pos_x(positioner_system) = get_pos(positioner_system.x)
+get_pos_y(positioner_system) = get_pos(positioner_system.y)
+get_pos_z(positioner_system) = get_pos(positioner_system.z)
 
 function home(positioner_system)
     move_abs!(positioner_system.x, 0mm)

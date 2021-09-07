@@ -21,10 +21,10 @@ end
         ThorlabsLTStage.home(positioner_system)
 
         ThorlabsLTStage.move_x_abs(positioner_system, 0.15m)
-        @test ThorlabsLTStage.pos_x(positioner_system) == 150mm
+        @test ThorlabsLTStage.get_pos_x(positioner_system) == 150mm
 
         ThorlabsLTStage.move_x_rel(positioner_system, -1mm)
-        @test ThorlabsLTStage.pos_x(positioner_system) == 149mm
+        @test ThorlabsLTStage.get_pos_x(positioner_system) == 149mm
     end
 
 
@@ -34,10 +34,10 @@ end
         ThorlabsLTStage.home(positioner_system)
 
         ThorlabsLTStage.move_y_abs(positioner_system, 0.15m)
-        @test ThorlabsLTStage.pos_y(positioner_system) == 150mm
+        @test ThorlabsLTStage.get_pos_y(positioner_system) == 150mm
 
         ThorlabsLTStage.move_y_rel(positioner_system, -1mm)
-        @test ThorlabsLTStage.pos_y(positioner_system) == 149mm
+        @test ThorlabsLTStage.get_pos_y(positioner_system) == 149mm
     end
 
 
@@ -47,10 +47,10 @@ end
         ThorlabsLTStage.home(positioner_system)
 
         ThorlabsLTStage.move_z_abs(positioner_system, 0.15m)
-        @test ThorlabsLTStage.pos_z(positioner_system) == 150mm
+        @test ThorlabsLTStage.get_pos_z(positioner_system) == 150mm
 
         ThorlabsLTStage.move_z_rel(positioner_system, -1mm)
-        @test ThorlabsLTStage.pos_z(positioner_system) == 149mm
+        @test ThorlabsLTStage.get_pos_z(positioner_system) == 149mm
     end
 
     
@@ -60,7 +60,7 @@ end
         ThorlabsLTStage.home(positioner_system)
 
         ThorlabsLTStage.move_xyz(positioner_system, 14mm, 15mm, 16mm)
-        @test ThorlabsLTStage.pos(positioner_system) == [14mm, 15mm, 16mm]
+        @test ThorlabsLTStage.get_pos(positioner_system) == [14mm, 15mm, 16mm]
     end
 
 
@@ -68,7 +68,7 @@ end
         using ..SetupTestFakePs
         positioner_system = ThorlabsLTStage.initialize(ThorlabsLTStage.FakePS_3D)
 
-        @test ThorlabsLTStage.pos(positioner_system) == [0m, 0m, 0m]
+        @test ThorlabsLTStage.get_pos(positioner_system) == [0m, 0m, 0m]
         @test ThorlabsLTStage.get_limits(positioner_system) == ((0m, 0m, 0m), (0.15m, 0.15m, 0.15m))
         @test_throws ErrorException ThorlabsLTStage.move_x_rel(positioner_system, -1mm)
         @test_throws ErrorException ThorlabsLTStage.move_x_rel(positioner_system, 151mm)
@@ -85,7 +85,7 @@ end
         using ..SetupTestFakePs
         positioner_system = ThorlabsLTStage.initialize(ThorlabsLTStage.FakePS_3D)
 
-        @test ThorlabsLTStage.pos(positioner_system) == [0m, 0m, 0m]
+        @test ThorlabsLTStage.get_pos(positioner_system) == [0m, 0m, 0m]
         @test ThorlabsLTStage.get_limits(positioner_system) == ((0m, 0m, 0m), (0.15m, 0.15m, 0.15m))
         @test_throws ErrorException ThorlabsLTStage.move_y_rel(positioner_system, -1mm)
         @test_throws ErrorException ThorlabsLTStage.move_y_rel(positioner_system, 151mm)
@@ -102,7 +102,7 @@ end
         using ..SetupTestFakePs
         positioner_system = ThorlabsLTStage.initialize(ThorlabsLTStage.FakePS_3D)
 
-        @test ThorlabsLTStage.pos(positioner_system) == [0m, 0m, 0m]
+        @test ThorlabsLTStage.get_pos(positioner_system) == [0m, 0m, 0m]
         @test ThorlabsLTStage.get_limits(positioner_system) == ((0m, 0m, 0m), (0.15m, 0.15m, 0.15m))
         @test_throws ErrorException ThorlabsLTStage.move_z_rel(positioner_system, -1mm)
         @test_throws ErrorException ThorlabsLTStage.move_z_rel(positioner_system, 151mm)

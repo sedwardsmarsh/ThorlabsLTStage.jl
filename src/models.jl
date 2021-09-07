@@ -3,17 +3,16 @@
 
 - `initialize` 
 - `move_xyz(xyz, x, y, z)` 
-- `pos_xyz(xyz, x, y, z)` 
 - `move_x_abs(xyz, x)`
 - `move_y_abs(xyz, y)`
 - `move_z_abs(xyz, z)`
 - `move_x_rel(xyz, x)`
 - `move_y_rel(xyz, y)`
 - `move_z_rel(xyz, z)`
-- `pos_xyz(xyz)`
-- `pos_x(xyz)`
-- `pos_y(xyz)`
-- `pos_z(xyz)`
+- `get_pos(xyz)`
+- `get_pos_x(xyz)`
+- `get_pos_y(xyz)`
+- `get_pos_z(xyz)`
 - `home(xyz)`
 - `home_x(xyz)`
 - `home_y(xyz)`
@@ -94,7 +93,7 @@ mutable struct Stage <: LinearTranslationStage
         stage = new(serial, "", 0mm, 0mm, 0mm, 0mm, 0mm, false)
         stage.info = init(stage)
         finalizer(s -> disconnect_device(s.serial), stage)
-        stage.origin_pos = pos(stage)
+        stage.origin_pos = get_pos(stage)
         stage.min_pos, stage.max_pos = get_device_travel_limits(stage)
         stage.lower_limit = stage.min_pos
         stage.upper_limit = stage.max_pos
@@ -136,17 +135,16 @@ end
 """
 # Available functions
 - `move_xyz(xyz, x, y, z)` 
-- `pos_xyz(xyz, x, y, z)` 
 - `move_x_abs(xyz, x)`
 - `move_y_abs(xyz, y)`
 - `move_z_abs(xyz, z)`
 - `move_x_rel(xyz, x)`
 - `move_y_rel(xyz, y)`
 - `move_z_rel(xyz, z)`
-- `pos_xyz(xyz)`
-- `pos_x(xyz)`
-- `pos_y(xyz)`
-- `pos_z(xyz)`
+- `get_pos(xyz)`
+- `get_pos_x(xyz)`
+- `get_pos_y(xyz)`
+- `get_pos_z(xyz)`
 - `home(xyz)`
 - `home_x(xyz)`
 - `home_y(xyz)`
@@ -174,17 +172,16 @@ end
 
 """
 - `move_xyz(xyz, x, y, z)` 
-- `pos_xyz(xyz, x, y, z)` 
 - `move_x_abs(xyz, x)`
 - `move_y_abs(xyz, y)`
 - `move_z_abs(xyz, z)`
 - `move_x_rel(xyz, x)`
 - `move_y_rel(xyz, y)`
 - `move_z_rel(xyz, z)`
-- `pos_xyz(xyz)`
-- `pos_x(xyz)`
-- `pos_y(xyz)`
-- `pos_z(xyz)`
+- `get_pos(xyz)`
+- `get_pos_x(xyz)`
+- `get_pos_y(xyz)`
+- `get_pos_z(xyz)`
 - `home(xyz)`
 - `home_x(xyz)`
 - `home_y(xyz)`
