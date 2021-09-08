@@ -70,7 +70,15 @@ end
         using ThorlabsLTStage
         ps = initialize(ThorlabsLTStage.FakePS_3D)
 
+        @test_throws ErrorException set_lower_limit(ps.x, -1mm)
+        @test_throws ErrorException set_upper_limit(ps.x, 151mm)
         @test_throws ErrorException set_limits(ps.x, 10mm, -10mm)
+
+        @test_throws ErrorException ThorlabsLTStage.set_intrinsic_lower_limit(ps.x, -1mm)
+        @test_throws ErrorException ThorlabsLTStage.set_intrinsic_upper_limit(ps.x, 151mm)
+        @test_throws ErrorException ThorlabsLTStage.set_intrinsic_limits(ps.x, 40mm, 30mm)
+        ThorlabsLTStage.set_intrinsic_limits(ps.x, 30mm, 40mm)
+        @test ThorlabsLTStage.get_intrinsic_limits(ps.x) == (30mm, 40mm)
     end
 
 

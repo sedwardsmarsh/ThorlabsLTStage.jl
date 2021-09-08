@@ -141,13 +141,13 @@ function set_upper_limit(stage::LinearTranslationStage, extrinsic_position::Unit
 end
 
 function get_device_min_position(stage::LinearTranslationStage)
-    intrinsic_min_pos = get_intrinsic_min_position(stage)
-    return intrinsic_to_extrinsic_position(stage, intrinsic_min_pos)
+    intrinsic_min_position = get_intrinsic_min_position(stage)
+    return intrinsic_to_extrinsic_position(stage, intrinsic_min_position)
 end
 
 function get_device_max_position(stage::LinearTranslationStage)
-    intrinsic_max_pos = get_intrinsic_max_position(stage)
-    return intrinsic_to_extrinsic_position(stage, intrinsic_max_pos)
+    intrinsic_max_position = get_intrinsic_max_position(stage)
+    return intrinsic_to_extrinsic_position(stage, intrinsic_max_position)
 end
 
 function get_intrinsic_min_position(stage::LinearTranslationStage)
@@ -168,8 +168,8 @@ function set_intrinsic_limits(stage::LinearTranslationStage, lower_limit::Unitfu
 end
 
 function set_intrinsic_lower_limit(stage::LinearTranslationStage, intrinsic_position::Unitful.Length)
-    intrinsic_min_pos = get_intrinsic_min_position(stage)
-    if intrinsic_position < intrinsic_min_pos
+    intrinsic_min_position = get_intrinsic_min_position(stage)
+    if intrinsic_position < intrinsic_min_position
         error("Desired intrinsic lower limit ($intrinsic_position) is less than the device's intrinsic min position ($intrinsic_min_position)")
     end
     stage.lower_limit = intrinsic_position
@@ -177,8 +177,8 @@ function set_intrinsic_lower_limit(stage::LinearTranslationStage, intrinsic_posi
 end
 
 function set_intrinsic_upper_limit(stage::LinearTranslationStage, intrinsic_position::Unitful.Length)
-    intrinsic_max_pos = get_intrinsic_max_position(stage)
-    if intrinsic_position > intrinsic_max_pos
+    intrinsic_max_position = get_intrinsic_max_position(stage)
+    if intrinsic_position > intrinsic_max_position
         error("Desired intrinsic upper limit ($intrinsic_position) is greater than the device's intrinsic max position ($intrinsic_max_position)")
     end
     stage.upper_limit = intrinsic_position
