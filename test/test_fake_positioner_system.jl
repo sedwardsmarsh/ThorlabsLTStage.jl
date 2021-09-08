@@ -57,10 +57,21 @@ end
     @safetestset "move_along_all_three_axes" begin
         using ..SetupTestFakePs
         positioner_system = ThorlabsLTStage.initialize(ThorlabsLTStage.FakePS_3D)
-        ThorlabsLTStage.home(positioner_system)
 
         ThorlabsLTStage.move_xyz(positioner_system, 14mm, 15mm, 16mm)
         @test ThorlabsLTStage.get_pos(positioner_system) == [14mm, 15mm, 16mm]
+
+        ThorlabsLTStage.home_x(positioner_system)
+        ThorlabsLTStage.home_y(positioner_system)
+        ThorlabsLTStage.home_z(positioner_system)
+        @test ThorlabsLTStage.get_pos(positioner_system) == [0mm, 0mm, 0mm]
+    end
+
+    @safetestset "invalid_limits" begin
+        using ..SetupTestFakePs
+        positioner_system = ThorlabsLTStage.initialize(ThorlabsLTStage.FakePS_3D)
+
+        @test_throws ErrorException ThorlabsLTStage.set_limits(positioner_system.x, 10mm, -10mm)
     end
 
 
@@ -112,6 +123,22 @@ end
         ThorlabsLTStage.set_limits(positioner_system, (0m, 0m, 0m), (0.03m, 0.03m, 0.03m))
         @test ThorlabsLTStage.get_limits(positioner_system) == ((0mm, 0mm, 0mm), (30mm, 30mm, 30mm))
         @test_throws ErrorException ThorlabsLTStage.move_z_abs(positioner_system, 31mm)
+    end
+
+    @safetestset "reset_limits" begin
+        using ..SetupTestFakePs
+        positioner_system = ThorlabsLTStage.initialize(ThorlabsLTStage.FakePS_3D)
+
+        @test ThorlabsLTStage.get_limits(positioner_system) == ((0m, 0m, 0m), (150mm, 150mm, 150mm))
+        ThorlabsLTStage.set_limits_x(positioner_system, 0m, 0.03m)
+        ThorlabsLTStage.set_limits_y(positioner_system, 0m, 0.03m)
+        ThorlabsLTStage.set_limits_z(positioner_system, 0m, 0.03m)
+        @test ThorlabsLTStage.get_limits(positioner_system) == ((0m, 0m, 0m), (30mm, 30mm, 30mm))
+
+        ThorlabsLTStage.reset_limits(positioner_system)
+        @test ThorlabsLTStage.get_limits_x(positioner_system) == (0m, 150mm)
+        @test ThorlabsLTStage.get_limits_y(positioner_system) == (0m, 150mm)
+        @test ThorlabsLTStage.get_limits_z(positioner_system) == (0m, 150mm)
     end
 
     @safetestset "get_and_set_origin" begin
