@@ -101,6 +101,8 @@ end
 get_stage_axis_min_pos(serial) = ccall(lib(:ISC_GetStageAxisMinPos), Int, (Cstring,), serial)
 get_stage_axis_max_pos(serial) = ccall(lib(:ISC_GetStageAxisMaxPos), Int, (Cstring,), serial)
 
+set_stage_axis_min_max_pos(serial, min_pos, max_pos) = ccall(lib(:ISC_SetStageAxisLimits), Int, (Cstring, Int, Int), serial, min_pos, max_pos)
+
 
 ## velocity
 function GetVelParams(serial)

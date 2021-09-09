@@ -11,6 +11,7 @@ function initialize_stage(stage::Stage)
     stage.info = get_stage_name(stage)
     LoadNamedSettings(stage.serial, stage.info)
     println("Settings loaded")
+    set_stage_min_max_pos(stage, -150u"mm", 150u"mm")
     Enable(stage.serial)
     milliseconds_until_next_poll = 50
     Poll(stage.serial, milliseconds_until_next_poll)
@@ -36,6 +37,13 @@ function get_stage_name(stage::Stage)
         error("Model name unrecognized: $model")
     end
     return setting_name
+end
+
+function set_stage_min_max_pos(stage::Stage, min_pos::Unitful.Length, max_pos::Unitful.Length)
+    min_position = MetersToDeviceUnit(stage.serial, raw_meters(min_pos))
+    max_position = MetersToDeviceUnit(stage.serial, raw_meters(max_pos))
+    set_stage_axis_min_max_pos(stage.serial, min_position, max_position)
+    return nothing
 end
 
 function get_device_min_position(stage::Stage)
@@ -165,7 +173,7 @@ function set_limits(stage::LinearTranslationStage, lower_limit::Unitful.Length, 
 end
 
 function set_lower_limit(stage::LinearTranslationStage, extrinsic_position::Unitful.Length)
-    extrinsic_min_position = get_device_min_position(stage)
+    extrinsic_min_position = get_min_position(stage)
     if extrinsic_position < extrinsic_min_position
         error("Desired lower limit ($extrinsic_position) is less than the device's min position ($extrinsic_min_position)")
     end
@@ -174,7 +182,7 @@ function set_lower_limit(stage::LinearTranslationStage, extrinsic_position::Unit
 end
 
 function set_upper_limit(stage::LinearTranslationStage, extrinsic_position::Unitful.Length)
-    extrinsic_max_position = get_device_max_position(stage)
+    extrinsic_max_position = get_max_position(stage)
     if extrinsic_position > extrinsic_max_position
         error("Desired upper limit ($extrinsic_position) is greater than the device's max position ($extrinsic_max_position)")
     end
@@ -182,12 +190,12 @@ function set_upper_limit(stage::LinearTranslationStage, extrinsic_position::Unit
     return nothing
 end
 
-function get_device_min_position(stage::LinearTranslationStage)
+function get_min_position(stage::LinearTranslationStage)
     intrinsic_min_position = get_intrinsic_min_position(stage)
     return intrinsic_to_extrinsic_position(stage, intrinsic_min_position)
 end
 
-function get_device_max_position(stage::LinearTranslationStage)
+function get_max_position(stage::LinearTranslationStage)
     intrinsic_max_position = get_intrinsic_max_position(stage)
     return intrinsic_to_extrinsic_position(stage, intrinsic_max_position)
 end
@@ -228,8 +236,8 @@ function set_intrinsic_upper_limit(stage::LinearTranslationStage, intrinsic_posi
 end
 
 function reset_limits(stage::LinearTranslationStage)
-    set_lower_limit(stage, get_device_min_position(stage))
-    set_upper_limit(stage, get_device_max_position(stage))
+    set_lower_limit(stage, get_min_position(stage))
+    set_upper_limit(stage, get_max_position(stage))
     return nothing
 end
 
