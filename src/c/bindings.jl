@@ -53,7 +53,7 @@ end
 
 
 ## device connection
-check_is_connected(serial) = ccall(lib(:ISC_CheckConnection), Cshort, (Cstring,), serial)
+check_is_connected(serial) = ccall(lib(:ISC_CheckConnection), Bool, (Cstring,), serial)
 connect_device(serial::String) = ccall(lib(:ISC_Open), Cshort, (Cstring,), serial)
 
 function disconnect_device(serial)
@@ -97,6 +97,9 @@ function GetMotorTravelLimits(serial)
     err != 0 && error("Error GetMotorTravelLimits code: $err")
     return min[], max[]
 end
+
+get_stage_axis_min_pos(serial) = ccall(lib(:ISC_GetStageAxisMinPos), Int, (Cstring,), serial)
+get_stage_axis_max_pos(serial) = ccall(lib(:ISC_GetStageAxisMaxPos), Int, (Cstring,), serial)
 
 
 ## velocity

@@ -1,4 +1,51 @@
 ## setup & teardown
+function initialize_stage(stage::Stage)
+    is_connected = check_is_connected(stage.serial)
+    println("Stage $(stage.serial) connected: $(is_connected)")
+    connect_device(stage.serial)
+    is_connected = check_is_connected(stage.serial)
+    println("Stage $(stage.serial) connected: $(is_connected)")
+
+    ClearQueue(stage.serial)
+    println("Loading settings")
+    stage.info = get_stage_name(stage)
+    LoadNamedSettings(stage.serial, stage.info)
+    println("Settings loaded")
+    Enable(stage.serial)
+    milliseconds_until_next_poll = 50
+    Poll(stage.serial, milliseconds_until_next_poll)
+
+    stage.origin_pos = get_intrinsic_position(stage)
+    stage.min_pos = get_device_min_position(stage)
+    stage.max_pos = get_device_max_position(stage)
+    stage.lower_limit = stage.min_pos
+    stage.upper_limit = stage.max_pos
+    stage.is_moving = false
+
+    finalizer(s -> disconnect_device(s.serial), stage)
+    return nothing
+end
+
+function get_stage_name(stage::Stage)
+    model, _ = GetHardwareInfo(stage.serial)
+    if model == "LTS150"
+        setting_name = "HS LTS150 150mm Stage"
+    elseif model == "LTS300"
+        setting_name = "HS LTS300 300mm Stage"
+    else
+        error("Model name unrecognized: $model")
+    end
+    return setting_name
+end
+
+function get_device_min_position(stage::Stage)
+    return DeviceUnitToMeters(stage.serial, get_stage_axis_min_pos(stage.serial)) * m
+end
+
+function get_device_max_position(stage::Stage)
+    return DeviceUnitToMeters(stage.serial, get_stage_axis_max_pos(stage.serial)) * m
+end
+
 function disconnect(stage::Stage)
     disconnect_device(stage.serial)
 end
@@ -65,11 +112,6 @@ end
 
 
 ## position limits
-function get_device_travel_limits(stage::LinearTranslationStage)
-    min_pos, max_pos = GetMotorTravelLimits(stage.serial)
-    return min_pos * mm, max_pos * mm
-end
-
 function check_limits(stage::LinearTranslationStage, position::Unitful.Length)
     check_lower_limit(stage, position)
     check_upper_limit(stage, position)

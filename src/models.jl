@@ -91,39 +91,9 @@ mutable struct Stage <: LinearTranslationStage
     function Stage(serial)
         serial = "$serial"
         stage = new(serial, "", 0mm, 0mm, 0mm, 0mm, 0mm, false)
-        stage.info = init(stage)
-        finalizer(s -> disconnect_device(s.serial), stage)
-        stage.origin_pos = get_intrinsic_position(stage)
-        stage.min_pos, stage.max_pos = get_device_travel_limits(stage)
-        stage.lower_limit = stage.min_pos
-        stage.upper_limit = stage.max_pos
-        stage.is_moving = false
+        initialize_stage(stage)
         return stage
     end
-end
-
-function init(stage)
-    is_connected = check_is_connected(stage.serial)
-    println("Stage $(stage.serial) connection status: $(is_connected)")
-    err = connect_device(stage.serial)
-    is_connected = check_is_connected(stage.serial)
-    println("Stage $(stage.serial) connection status: $(is_connected)")
-    model, _ = GetHardwareInfo(stage.serial)
-    setting_name = if model == "LTS150"
-        "HS LTS150 150mm Stage"
-    elseif model == "LTS300"
-        "HS LTS300 300mm Stage"
-    else
-        error("Model name unrecognized: $model")
-    end
-    ClearQueue(stage.serial)
-    println("Loading settings")
-    LoadNamedSettings(stage.serial, setting_name)
-    println("Settings loaded")
-    Enable(stage.serial)
-    milliseconds_until_next_poll = 50
-    Poll(stage.serial, milliseconds_until_next_poll)
-    return setting_name
 end
 
 
