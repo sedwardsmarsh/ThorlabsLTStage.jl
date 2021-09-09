@@ -5,8 +5,9 @@ using Unitful: m, mm, s
 
 export backend, load_python
 
+export PositionerSystem
 export initialize, terminate
-export ThorlabsLTS150, PositionerSystem, LTS150_3D, LTS150_2D
+export move_to_position
 export move_x_abs, move_y_abs, move_z_abs
 export move_x_rel, move_y_rel, move_z_rel
 export move_xyz, get_pos
