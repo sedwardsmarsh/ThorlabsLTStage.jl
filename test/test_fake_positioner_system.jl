@@ -152,6 +152,18 @@ end
         @test get_limits_z(ps) == (0m, 150mm)
     end
 
+    @safetestset "positioner_outside_of_limits" begin
+        using ..SetupTestFakePs
+        using ThorlabsLTStage
+        ps = initialize(ThorlabsLTStage.FakePS_3D)
+
+        set_limits(ps, (20mm, 20mm, 20mm), (30mm, 30mm, 30mm))
+        @test_throws ErrorException move_xyz(ps, 15mm, 15mm, 15mm)
+
+        # positioner can move from outside the limits to inside the limits
+        move_xyz(ps, 25mm, 25mm, 25mm)
+    end
+
     @safetestset "get_and_set_origin" begin
         using ..SetupTestFakePs
         using ThorlabsLTStage
