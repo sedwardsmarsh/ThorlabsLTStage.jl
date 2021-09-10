@@ -18,9 +18,16 @@ function FakeStage(serial)
 end
 
 function Base.show(io::IO, stage::FakeStage)
-    for fieldname in fieldnames(typeof(stage))
-        println(io, fieldname, ": ", getfield(stage, fieldname))
-    end
+    println(io, "         serial: ", stage.serial)
+    println(io, "           info: ", stage.info)
+    println(io, "      is_moving: ", stage.is_moving)
+    println(io, "    current_pos: ", get_pos(stage))
+    println(io, "    lower_limit: ", get_lower_limit(stage))
+    println(io, "    upper_limit: ", get_upper_limit(stage))
+    println(io, "        min_pos: ", get_min_position(stage))
+    println(io, "        max_pos: ", get_max_position(stage))
+    println(io, "   max_velocity: ", get_max_velocity(stage))
+    println(io, "max_accelration: ", get_max_acceleration(stage))
 end
 
 struct FakePS_3D <: PositionerSystem
