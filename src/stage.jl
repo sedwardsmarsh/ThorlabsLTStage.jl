@@ -11,7 +11,7 @@ function initialize_stage(stage::Stage)
     stage.info = get_stage_name(stage)
     LoadNamedSettings(stage.serial, stage.info)
     println("Settings loaded")
-    set_stage_min_max_pos(stage, -150u"mm", 150u"mm")
+    set_stage_default_min_max_pos(stage)
     Enable(stage.serial)
     milliseconds_until_next_poll = 50
     Poll(stage.serial, milliseconds_until_next_poll)
@@ -37,6 +37,18 @@ function get_stage_name(stage::Stage)
         error("Model name unrecognized: $model")
     end
     return setting_name
+end
+
+function set_stage_default_min_max_pos(stage::Stage)
+    stage_info = stage.info
+    if stage_info == "HS LTS150 150mm Stage"
+        set_stage_min_max_pos(stage, -150mm, 150mm)
+    elseif stage_info == "HS LTS300 300mm Stage"
+        set_stage_min_max_pos(stage, -300mm, 300mm)
+    else
+        error("Stage info not recognized: $stage_info")
+    end
+    return nothing
 end
 
 function set_stage_min_max_pos(stage::Stage, min_pos::Unitful.Length, max_pos::Unitful.Length)
