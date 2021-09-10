@@ -35,12 +35,3 @@ struct FakePS_3D <: PositionerSystem
     y::FakeStage
     z::FakeStage
 end
-
-function Base.show(io::IO, positioner_system::FakePS_3D)
-    for fieldname in fieldnames(typeof(positioner_system))
-        println(io, fieldname, ": ")
-        Base.show(getfield(positioner_system, fieldname))
-        println()
-        println()
-    end
-end
