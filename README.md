@@ -107,7 +107,7 @@ get_pos(ps)
 
 # set a new origin location for all stages
 get_origin(ps)
-set_origin(ps)
+set_origin(ps) # sets the current position as origin (0mm, 0mm, 0mm)
 
 # absolute positions are relative to the origin
 move_x_abs(ps, 5u"mm")
