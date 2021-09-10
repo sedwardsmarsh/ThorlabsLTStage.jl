@@ -58,18 +58,6 @@ function setup(stage, stage_config)
     acceleration!(stage, max_acc)
 end
 
-function Base.show(io::IO, ::MIME"text/plain", positioner_system::T) where T <: PositionerSystem
-    println(io, "Thorlabs positioner system")
-    function p_stage(io, s)
-        print(io, " ")
-        Base.show(io, s)
-        println() 
-    end
-    p_stage(io, positioner_system.x)
-    p_stage(io, positioner_system.y)
-    p_stage(io, positioner_system.z)
-end
-
 get_stages(positioner_system::T) where T <: PositionerSystem = Tuple(getfield(positioner_system, fieldname) for fieldname in fieldnames(typeof(positioner_system)))
 
 function terminate(positioner_system::T) where T <: PositionerSystem
