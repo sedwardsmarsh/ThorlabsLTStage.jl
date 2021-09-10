@@ -25,7 +25,7 @@ The C API is preferred however at the moment it may be a bit buggier.
 ```julia
 pkg> add ThorlabsLTStage
 julia> using ThorlabsLTStage
-julia> lts = initialize(LTS)
+julia> ps = initialize(PositionerSystem)
 ```
 ### Using this package
 The C Backend now uses units from Unitful.jl
@@ -35,7 +35,7 @@ As of right now the only supported device are Thorlabs LTS150 or LTS300 stages
 To connect to them:
 ```julia
 julia> using ThorlabsLTStage
-julia> lts = initialize(LTS)
+julia> ps = initialize(PositionerSystem)
 ```
 
 This will print the serial numbers of all the LTS150 and LTS300 stages connected to the computer and then connect to them. 
@@ -49,7 +49,7 @@ Edit/Create a config file with your text editor or:
  to look like the following:
 
 ```yml
-# Inside .lts_stage.yml
+# Inside .positioner_system_config.yml
 ThorlabsLTS:
   alias: bigStage # This is an optional alias
   x:  
@@ -69,19 +69,19 @@ ThorlabsLTS:
 
 Now when you run 
 ```julia
-julia> lts = initialize(LTS)
+julia> ps = initialize(PositionerSystem)
 ```
 the current stages will be configured as X, Y and Z
 
 ## Controlling the XYZ Stage
 Move a single axis to a certain position:
-`move_x_abs(lts, .54u"m")`
+`move_x_abs(ps, .54u"m")`
 
 Get position of a single axis:
-`pos_y(lts)`
+`get_pos_y(ps)`
 
 Get position of all stages:
-`pos_xyz(lts)`
+`get_pos(ps)`
 
 If you ask a stage to move further than its available length
 this package will throw an error. You can however set limits
@@ -91,43 +91,43 @@ Note: All positions are in meters
 
 For all the available commands use:
 
-`help> LTS_3D`
+`help> PS_3D`
 
 ## Example
 ```julia
 using Unitful
 
-lts = initialize(LTS)
+ps = initialize(PositionerSystem)
 
-pos_xyz(lts)
-move_xyz(lts, 5u"mm", 10u"mm", 10u"mm")
-pos_xyz(lts)
-move_x_rel(lts, 5u"mm")
-pos_xyz(lts)
+get_pos(ps)
+move_xyz(ps, 5u"mm", 10u"mm", 10u"mm")
+get_pos(ps)
+move_x_rel(ps, 5u"mm")
+get_pos(ps)
 
 # set a new origin location for all stages
-get_origin(lts)
-set_origin(lts)
+get_origin(ps)
+set_origin(ps) # sets the current position as origin (0mm, 0mm, 0mm)
 
 # absolute positions are relative to the origin
-move_x_abs(lts, 5u"mm")
-pos_x(lts)
+move_x_abs(ps, 5u"mm")
+get_pos_x(ps)
 
 # set the current position to be the upper limit
-set_upper_limit(lts.x, pos(lts.x))
+set_upper_limit(ps.x, get_pos(ps.x))
 
 # this will work
-move_to_origin(lts)
-move_x_abs(lts, 5u"mm")
+move_to_origin(ps)
+move_x_abs(ps, 5u"mm")
 
 # this will error because the upper limit was set to 5 mm
-move_x_abs(lts, 6u"mm")
+move_x_abs(ps, 6u"mm")
 
 # set a new upper limit
-set_upper_limit(lts.x, get_upper_limit(lts.x)+5u"mm")
+set_upper_limit(ps.x, get_upper_limit(ps.x)+5u"mm")
 
 # this will now work
-move_x_abs(lts, 6u"mm")
+move_x_abs(ps, 6u"mm")
 ```
 
 
@@ -193,7 +193,7 @@ If you wanted to add this line but the rest of the config doesn't fit your
 use case you can also manually create this config file instead.
 
 ```julia
-echo "backend: python" > .lts_stage.yml
+echo "backend: python" > .positioner_system_config.yml
 julia
 julia> using ThorlabsLTStage; ThorlabsLTStage.create_config()
 julia> load_python()
@@ -207,7 +207,7 @@ To connect to it:
 ```julia
 julia
 julia> using ThorlabsLTStage; ThorlabsLTStage.load_config()
-lts = initialize(ThorlabsLTS150)
+ps = initialize(ThorlabsLTS150)
 ```
 
 This will print the serial numbers of all the LTS150 stages connected to the
@@ -221,11 +221,11 @@ Edit your config file with your text editor or:
  to look like the following:
 
 ```yml
-# Inside .lts_stage.yml
+# Inside .positioner_system_config.yml
 backend: python
 
 ThorlabsLTS:
-  alias: lts150
+  alias: positioner_system_default
   x:  
     serial: 45140764 # or whatever your desired serial number is
     min_position: 0
@@ -243,19 +243,19 @@ ThorlabsLTS:
 
 Now when you run 
 ```julia
-lts = initialize(ThorlabsLTS150)
+ps = initialize(ThorlabsLTS150)
 ```
 the correct stages will be configured as X, Y and Z
 
 ## Controlling the XYZ Stage
 Move a single axis to a certain position:
-`move_x_abs(lts, .54)`
+`move_x_abs(ps, .54)`
 
 Get position of a single axis:
-`pos_y(lts)`
+`get_pos_y(ps)`
 
 Get position of all stages:
-`pos_xyz(lts)`
+`get_pos(ps)`
 
 If you ask a stage to move further than its available length
 this package will throw an error. You can however set limits
@@ -269,50 +269,50 @@ For all the available commands use:
 
 ## Example
 ```julia
-lts = initialize(ThorlabsLTS150)
+ps = initialize(ThorlabsLTS150)
 
-move_xyz(lts, 0.1, 0.1, 0.1)
+move_xyz(ps, 0.1, 0.1, 0.1)
 
 # Move 0.05 meters forwards
-move_x_rel(lts, 0.05)
+move_x_rel(ps, 0.05)
 
 # Get position of x stage (0.05 here)
-pos_x(lts)
+get_pos_x(ps)
 
 # Move 0.05 meters backwards
-move_x_rel(lts, -0.05)
+move_x_rel(ps, -0.05)
 
 # Moves device to home position
-home(lts)
+home(ps)
 
 # Returns x,y,z positions
-pos_xyz(lts)
+get_pos(ps)
 
 # First tuple contains lower limits, second contains upper limits
 # (x_low_lim, y_low_lim, z_low_lim), (x_up_lim, y_up_lim, z_up_lim)
 # Arrays can be used instead of tuples as well []
-set_limits(lts, (0.01, 0.01, 0.01), (0.1, 0.1, 0.1))
+set_limits(ps, (0.01, 0.01, 0.01), (0.1, 0.1, 0.1))
 
 # Will return a pair of tuples with limits you just set
-get_limits(lts)
+get_limits(ps)
 
 # Will return lower and upper limit for x stage
-lower_x, upper_x = get_limits_x(lts)
+lower_x, upper_x = get_limits_x(ps)
 
 # Will stay at 0.1 (upper limit)
-move_x_abs(lts, 0.2)
+move_x_abs(ps, 0.2)
 
 # Beyond device limit but will stay at 0.1 (upper limit)
-move_x_abs(lts, 5)
+move_x_abs(ps, 5)
 
 # Will move to 0.01 (lower limit)
-move_x_abs(lts, 0)
+move_x_abs(ps, 0)
 
 # Clear limits
-clear_limits(lts)
+clear_limits(ps)
 
 # Moving beyond your physical device with no limits will throw an error
 # Don't do this
-move_x_abs(lts, 5)
+move_x_abs(ps, 5)
 ```
 </details>

@@ -5,12 +5,13 @@ using Unitful: m, mm, s
 
 export backend, load_python
 
+export PositionerSystem
 export initialize, terminate
-export ThorlabsLTS150, LTS, LTS150_3D, LTS150_2D
+export move_to_position
 export move_x_abs, move_y_abs, move_z_abs
 export move_x_rel, move_y_rel, move_z_rel
-export move_xyz, pos_xyz
-export pos_x, pos_y, pos_z
+export move_xyz, get_pos
+export get_pos_x, get_pos_y, get_pos_z
 export home, home_x, home_y, home_z
 export set_origin, get_origin, move_to_origin
 export set_lower_limit, set_upper_limit
@@ -33,13 +34,14 @@ raw_meters(a) = Float64(ustrip(uconvert(m, a)))
 include("c/bindings.jl") # C API BACKEND
 
 include("config.jl")
+
 include("models.jl")
-
-# C API BACKEND
 include("stage.jl")
-include("lts.jl")
+include("positioner_system.jl")
 
-include("emulator/fake_lts.jl")
+include("emulator/models.jl")
+include("emulator/fake_positioner_system.jl")
+include("emulator/fake_stage.jl")
 
 # DOT NET API BACKEND
 include("dotnet/bindings.jl")

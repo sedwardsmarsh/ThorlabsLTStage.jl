@@ -18,7 +18,7 @@ from Thorlabs.MotionControl.DeviceManagerCLI import *
 from Thorlabs.MotionControl.IntegratedStepperMotorsCLI import *
 
 def test():
-    print("LTS Python Loaded")
+    print("Python Loaded")
 
 def ParseDec(d):
     return float(str(d))
@@ -160,7 +160,7 @@ class Stage:
         self.stage.StopPolling()
         self.stage.ShutDown()
 
-class LTS:
+class PositionerSystem:
     def __init__(self):
         self.x_stage = Stage()
         self.y_stage = Stage()
@@ -171,7 +171,7 @@ class LTS:
         d_list = DeviceManagerCLI.GetDeviceList(45)
 
         if len(d_list) == 0:
-            print("No Thorlabs LTS Device connected!")
+            print("No Thorlabs device connected!")
             return
         elif len(d_list) == 3:
             self.x_serial, self.y_serial, self.z_serial = d_list
@@ -191,7 +191,7 @@ class LTS:
         DeviceManagerCLI.BuildDeviceList()
 
         if len(serials) == 0:
-            print("No Thorlabs LTS Device connected!")
+            print("No Thorlabs device connected!")
             return
         elif len(serials) == 3:
             self.x_serial, self.y_serial, self.z_serial = serials

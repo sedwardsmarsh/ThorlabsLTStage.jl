@@ -1,7 +1,7 @@
 backend: python
 
 ThorlabsLTS:
-  alias: lts150
+  alias: positioner_system_default
   x:  
     serial: 45140764
     min_position: 0 # meters

@@ -33,16 +33,15 @@ function lib(x)
 end
 
 BuildDeviceList() = ccall(lib("TLI_BuildDeviceList"), Int, ())
-
 GetDeviceListSize() = ccall(lib("TLI_GetDeviceListSize"), Int, ())
 
 function GetDeviceList()
-    lts_identifier = 45 # Hard coded to only detect ThorlabsLTS
+    positioner_system_identifier = 45 # Hard coded to only detect ThorlabsLTS
     BuildDeviceList()
     GetDeviceListSize()
     list_string = Vector{UInt8}(undef, 256) # MAXHOSTNAMELEN
     size_list_string = sizeof(list_string)
-    err = ccall(lib(:TLI_GetDeviceListByTypeExt), Int, (Ptr{UInt8}, Csize_t, Int64), list_string, size_list_string, lts_identifier)
+    err = ccall(lib(:TLI_GetDeviceListByTypeExt), Int, (Ptr{UInt8}, Csize_t, Int64), list_string, size_list_string, positioner_system_identifier)
     if err != 0
         @info "GetDeviceError: $err"
         return err
@@ -52,31 +51,101 @@ function GetDeviceList()
     return [filter(!isempty, split(serials, ','))...]
 end
 
-LoadSettings(serial::String) = ccall(lib(:ISC_LoadSettings), Bool, (Cstring,), serial)
 
-LoadNamedSettings(serial::String, name) = ccall(lib(:ISC_LoadNamedSettings), Bool, (Cstring,Cstring), serial, name)
+## device connection
+check_is_connected(serial) = ccall(lib(:ISC_CheckConnection), Bool, (Cstring,), serial)
+connect_device(serial::String) = ccall(lib(:ISC_Open), Cshort, (Cstring,), serial)
 
-function OpenDevice(serial::String) 
-    err = ccall(lib(:ISC_Open), Cshort, (Cstring,), serial)
-    return err
+function disconnect_device(serial)
+    ccall(lib(:ISC_StopPolling), Int, (Cstring,), serial)
+    ccall(lib(:ISC_Close), Int, (Cstring,), serial)
 end
-
-check_is_connected(serial) = ccall(lib(:ISC_CheckConnection), Cshort, (Cstring,), serial)
-
-Poll(serial, sec) = ccall(lib(:ISC_StartPolling), Bool, (Cstring, Int), serial, sec)
 
 Enable(serial) = ccall(lib(:ISC_EnableChannel), Cshort, (Cstring,), serial)
 
+
+## device settings
+LoadSettings(serial::String) = ccall(lib(:ISC_LoadSettings), Bool, (Cstring,), serial)
+LoadNamedSettings(serial::String, name) = ccall(lib(:ISC_LoadNamedSettings), Bool, (Cstring,Cstring), serial, name)
+
+Poll(serial, sec) = ccall(lib(:ISC_StartPolling), Bool, (Cstring, Int), serial, sec)
+
 ClearQueue(serial) = ccall(lib(:ISC_ClearMessageQueue), Int, (Cstring,), serial)
+
+
+## position
+GetPos(serial) = ccall(lib(:ISC_GetPosition), Int, (Cstring,), serial)
 
 MoveTo(serial::String, pos::Int) = ccall(lib(:ISC_MoveToPosition), Int, (Cstring,Int), serial, pos)
 
 SetMoveAbsolutePosition(serial::String, pos::Int64) = ccall(lib(:ISC_SetMoveAbsolutePosition), Int, (Cstring,Int), serial, pos)
-
 MoveAbsolute(serial::String) = ccall(lib(:ISC_MoveAbsolute), Int, (Cstring,), serial)
 
-GetPos(serial) = ccall(lib(:ISC_GetPosition), Int, (Cstring,), serial)
+function MoveAbs(serial::String, pos)
+    pos = MetersToDeviceUnit(serial, pos)
+    ClearQueue(serial)
+    SetMoveAbsolutePosition(serial, pos)
+    MoveAbsolute(serial)
+end
 
+
+## position limits
+function GetMotorTravelLimits(serial)
+    min = Ref{Cdouble}(0)
+    max = Ref{Cdouble}(0)
+    err = ccall(lib(:ISC_GetMotorTravelLimits), Cshort, (Cstring, Ref{Cdouble}, Ref{Cdouble}), serial, min, max)
+    err != 0 && error("Error GetMotorTravelLimits code: $err")
+    return min[], max[]
+end
+
+get_stage_axis_min_pos(serial) = ccall(lib(:ISC_GetStageAxisMinPos), Int, (Cstring,), serial)
+get_stage_axis_max_pos(serial) = ccall(lib(:ISC_GetStageAxisMaxPos), Int, (Cstring,), serial)
+
+set_stage_axis_min_max_pos(serial, min_pos, max_pos) = ccall(lib(:ISC_SetStageAxisLimits), Int, (Cstring, Int, Int), serial, min_pos, max_pos)
+
+
+## velocity
+function GetVelParams(serial)
+    acc = Ref{Cint}(0)
+    vel = Ref{Cint}(0)
+    err = ccall(lib(:ISC_GetVelParams), Cshort, (Cstring, Ref{Cint}, Ref{Cint}), serial, acc, vel)
+    err != 0 && error("Error GetVelParams code: $err")
+    return acc[], vel[]
+end
+
+function SetVelParams(serial, acc, vel)
+    err = ccall(lib(:ISC_SetVelParams), Cshort, (Cstring, Cint, Cint), serial, acc, vel)
+    err != 0 && error("Error code: $err")
+    return true
+end
+
+function GetVelocity(serial)
+    acc, vel = GetVelParams(serial)
+    return DeviceUnitToVelocity(serial, vel)
+end
+
+function SetVelocity(serial, vel)
+    vel = VelocityToDeviceUnit(serial, vel)
+    acc, _ = GetVelParams(serial)
+    SetVelParams(serial, acc, vel)
+end
+
+
+## acceleration
+function GetAcceleration(serial)
+    acc, vel = GetVelParams(serial)
+    acc = DeviceUnitToAcceleration(serial, acc)
+    return round(acc; digits=4)
+end
+
+function SetAcceleration(serial, acc)
+    acc = AccelerationToDeviceUnit(serial, acc)
+    _, vel = GetVelParams(serial)
+    SetVelParams(serial, acc, vel)
+end
+
+
+## utils
 const Word = UInt16
 const Dword = UInt32
 function GetHardwareInfo(serial)
@@ -163,56 +232,6 @@ function DeviceUnitToAcceleration(serial::String, device_unit)
     return GetRealValueFromDeviceUnit(serial, device_unit, 2)
 end
 
-function GetMotorTravelLimits(serial)
-    min = Ref{Cdouble}(0)
-    max = Ref{Cdouble}(0)
-    err = ccall(lib(:ISC_GetMotorTravelLimits), Cshort, (Cstring, Ref{Cdouble}, Ref{Cdouble}), serial, min, max)
-    err != 0 && error("Error GetMotorTravelLimits code: $err")
-    return min[], max[]
-end
-
-function GetVelParams(serial)
-    acc = Ref{Cint}(0)
-    vel = Ref{Cint}(0)
-    err = ccall(lib(:ISC_GetVelParams), Cshort, (Cstring, Ref{Cint}, Ref{Cint}), serial, acc, vel)
-    err != 0 && error("Error GetVelParams code: $err")
-    return acc[], vel[]
-end
-
-function SetVelParams(serial, acc, vel)
-    err = ccall(lib(:ISC_SetVelParams), Cshort, (Cstring, Cint, Cint), serial, acc, vel)
-    err != 0 && error("Error code: $err")
-    return true
-end
-
-function GetVelocity(serial)
-    acc, vel = GetVelParams(serial)
-    return DeviceUnitToVelocity(serial, vel)
-end
-
-function SetVelocity(serial, vel)
-    vel = VelocityToDeviceUnit(serial, vel)
-    acc, _ = GetVelParams(serial)
-    SetVelParams(serial, acc, vel)
-end
-
-function GetAcceleration(serial)
-    acc, vel = GetVelParams(serial)
-    acc = DeviceUnitToAcceleration(serial, acc)
-    return round(acc; digits=4)
-end
-
-function SetAcceleration(serial, acc)
-    acc = AccelerationToDeviceUnit(serial, acc)
-    _, vel = GetVelParams(serial)
-    SetVelParams(serial, acc, vel)
-end
-
-function Close(serial)
-    ccall(lib(:ISC_StopPolling), Int, (Cstring,), serial)
-    ccall(lib(:ISC_Close), Int, (Cstring,), serial)
-end
-
 function WaitForMessage(serial)
     msgType = Ref{Cint}(2)
     msgID = Ref{Cint}(0)
@@ -226,14 +245,4 @@ function WaitForMessage(serial)
     while (msgType[] != 2 || msgID[] != 0)
         ccall(lib(:ISC_WaitForMessage), Bool, (Cstring, Ref{Cint}, Ref{Cint}, Ref{Clong}), serial, msgType, msgID, msgData)
     end
-        
 end
-
-function MoveAbs(serial::String, pos)
-    pos = MetersToDeviceUnit(serial, pos)
-    ClearQueue(serial)
-    SetMoveAbsolutePosition(serial, pos)
-    MoveAbsolute(serial)
-end
-
-
