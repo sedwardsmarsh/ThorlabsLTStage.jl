@@ -54,16 +54,17 @@ ThorlabsLTS:
   alias: bigStage # This is an optional alias
   x:  
     serial: 45140764 # or whatever your desired serial number is
-    min_position: 0
-    max_position: .15 # in meters
-    max_velocity: 20
-    max_acceleration: 20
+    min_position: 0       # [mm]
+    max_position: 150     # [mm]
+    max_velocity: 20      # [mm s^-1]
+    max_acceleration: 20  # [mm s^-2]
   y:
     serial: 45146974
-    max_velocity: 3 # mm s^-1
-    max_acceleration: 5 # mm s^-2
+    max_velocity: 3       # [mm s^-1]
+    max_acceleration: 5   # [mm s^-2]
   z:
     serial: 45141924
+
     # If no limits specified physical device limits will be used
 ```
 
@@ -86,8 +87,6 @@ Get position of all stages:
 If you ask a stage to move further than its available length
 this package will throw an error. You can however set limits
 that will prevent a stage from moving past a particular point.
-
-Note: All positions are in meters
 
 For all the available commands use:
 

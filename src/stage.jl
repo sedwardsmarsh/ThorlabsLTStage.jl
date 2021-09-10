@@ -52,18 +52,18 @@ function set_stage_default_min_max_pos(stage::Stage)
 end
 
 function set_stage_min_max_pos(stage::Stage, min_pos::Unitful.Length, max_pos::Unitful.Length)
-    min_position = MetersToDeviceUnit(stage.serial, raw_meters(min_pos))
-    max_position = MetersToDeviceUnit(stage.serial, raw_meters(max_pos))
+    min_position = MillimetersToDeviceUnit(stage.serial, raw_millimeters(min_pos))
+    max_position = MillimetersToDeviceUnit(stage.serial, raw_millimeters(max_pos))
     set_stage_axis_min_max_pos(stage.serial, min_position, max_position)
     return nothing
 end
 
 function get_device_min_position(stage::Stage)
-    return DeviceUnitToMeters(stage.serial, get_stage_axis_min_pos(stage.serial)) * m
+    return DeviceUnitToMillimeters(stage.serial, get_stage_axis_min_pos(stage.serial)) * mm
 end
 
 function get_device_max_position(stage::Stage)
-    return DeviceUnitToMeters(stage.serial, get_stage_axis_max_pos(stage.serial)) * m
+    return DeviceUnitToMillimeters(stage.serial, get_stage_axis_max_pos(stage.serial)) * mm
 end
 
 function disconnect(stage::Stage)
@@ -75,7 +75,7 @@ end
 get_pos(stage::LinearTranslationStage) = intrinsic_to_extrinsic_position(stage, get_intrinsic_position(stage))
 
 function get_intrinsic_position(stage::Stage)
-    return DeviceUnitToMeters(stage.serial, GetPos(stage.serial)) * m
+    return DeviceUnitToMillimeters(stage.serial, GetPos(stage.serial)) * mm
 end
 
 function intrinsic_to_extrinsic_position(stage::LinearTranslationStage, intrinsic_position::Unitful.Length)
@@ -96,7 +96,7 @@ function move_to_intrinsic_position(stage::Stage, intrinsic_position::Unitful.Le
     extrinsic_position = intrinsic_to_extrinsic_position(stage, intrinsic_position)
     check_limits(stage, extrinsic_position)
     stage.is_moving = true
-    MoveAbs(stage.serial, raw_meters(intrinsic_position))
+    MoveAbs(stage.serial, intrinsic_position)
     block && pause(stage, intrinsic_position)
     return
 end

@@ -29,6 +29,7 @@ export set_max_acceleration_x, set_max_acceleration_y, set_max_acceleration_z
 export pos, reset_limits
 
 raw_meters(a) = Float64(ustrip(uconvert(m, a)))
+raw_millimeters(val) = Float64(ustrip(uconvert(mm, val)))
 
 
 include("c/bindings.jl") # C API BACKEND

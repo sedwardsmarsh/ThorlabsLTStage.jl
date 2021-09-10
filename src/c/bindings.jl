@@ -81,10 +81,10 @@ MoveTo(serial::String, pos::Int) = ccall(lib(:ISC_MoveToPosition), Int, (Cstring
 SetMoveAbsolutePosition(serial::String, pos::Int64) = ccall(lib(:ISC_SetMoveAbsolutePosition), Int, (Cstring,Int), serial, pos)
 MoveAbsolute(serial::String) = ccall(lib(:ISC_MoveAbsolute), Int, (Cstring,), serial)
 
-function MoveAbs(serial::String, pos)
-    pos = MetersToDeviceUnit(serial, pos)
+function MoveAbs(serial::String, pos::Unitful.Length)
+    device_pos = MillimetersToDeviceUnit(serial, raw_millimeters(pos))
     ClearQueue(serial)
-    SetMoveAbsolutePosition(serial, pos)
+    SetMoveAbsolutePosition(serial, device_pos)
     MoveAbsolute(serial)
 end
 
@@ -200,20 +200,20 @@ function GetRealValueFromDeviceUnit(serial::String, device_unit, unit_enum)
     return real[]
 end
 
-function DeviceUnitToMilimeters(serial::String, device_unit)
+function DeviceUnitToMillimeters(serial::String, device_unit)
     return GetRealValueFromDeviceUnit(serial, device_unit, 0)
 end
 
-function MilimetersToDeviceUnit(serial::String, mm)
+function MillimetersToDeviceUnit(serial::String, mm)
     GetDeviceUnitFromRealValue(serial, mm, 0)
 end
 
 function MetersToDeviceUnit(serial::String, m)
-    return MilimetersToDeviceUnit(serial, m * 1000)
+    return MillimetersToDeviceUnit(serial, m * 1000)
 end
 
 function DeviceUnitToMeters(serial::String, device_unit)
-    return DeviceUnitToMilimeters(serial, device_unit) / 1000
+    return DeviceUnitToMillimeters(serial, device_unit) / 1000
 end
 
 function VelocityToDeviceUnit(serial::String, vel)
