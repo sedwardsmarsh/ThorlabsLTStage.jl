@@ -22,6 +22,7 @@ function initialize_stage(stage::Stage)
     stage.lower_limit = stage.min_pos
     stage.upper_limit = stage.max_pos
     stage.is_moving = false
+    stage.pos_accuracy = 0.01mm
 
     finalizer(s -> disconnect_device(s.serial), stage)
     return nothing
@@ -93,12 +94,21 @@ function move_to_position(stage::LinearTranslationStage, extrinsic_position::Uni
 end
 
 function move_to_intrinsic_position(stage::Stage, intrinsic_position::Unitful.Length; block=true)
+    intrinsic_position = round(intrinsic_position, get_position_accuracy(stage))
     extrinsic_position = intrinsic_to_extrinsic_position(stage, intrinsic_position)
     check_limits(stage, extrinsic_position)
     stage.is_moving = true
     MoveAbs(stage.serial, intrinsic_position)
     block && pause(stage, intrinsic_position)
     return
+end
+
+function get_position_accuracy(stage::LinearTranslationStage)
+    return stage.pos_accuracy
+end
+
+function round(value::Unitful.Length, multiple::Unitful.Length)
+    return Base.round(value / multiple) * multiple
 end
 
 function pause(stage::Stage, target_intrinsic_position::Unitful.Length)
