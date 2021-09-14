@@ -78,7 +78,6 @@ move_x_abs(ps, 5)
 abstract type PositionerSystem end
 abstract type LinearTranslationStage end
 
-# C API
 mutable struct Stage <: LinearTranslationStage
     serial::String
     info::String
@@ -88,11 +87,33 @@ mutable struct Stage <: LinearTranslationStage
     lower_limit::Unitful.Length
     upper_limit::Unitful.Length
     is_moving::Bool
+    pos_accuracy::Unitful.Length
     function Stage(serial)
         serial = "$serial"
-        stage = new(serial, "", 0mm, 0mm, 0mm, 0mm, 0mm, false)
+        stage = new(serial, "", 0mm, 0mm, 0mm, 0mm, 0mm, false, 0mm)
         initialize_stage(stage)
         return stage
+    end
+end
+
+function Base.show(io::IO, stage::Stage)
+    println(io, "         serial: ", stage.serial)
+    println(io, "           info: ", stage.info)
+    println(io, "      is_moving: ", stage.is_moving)
+    println(io, "    current_pos: ", round(get_pos(stage), get_position_accuracy(stage)))
+    println(io, "    lower_limit: ", round(get_lower_limit(stage), get_position_accuracy(stage)))
+    println(io, "    upper_limit: ", round(get_upper_limit(stage), get_position_accuracy(stage)))
+    println(io, "        min_pos: ", round(get_min_position(stage), get_position_accuracy(stage)))
+    println(io, "        max_pos: ", round(get_max_position(stage), get_position_accuracy(stage)))
+    println(io, "   pos_accuracy: ", get_position_accuracy(stage))
+end
+
+function Base.show(io::IO, positioner_system::PositionerSystem)
+    println(io, typeof(positioner_system))
+    for fieldname in fieldnames(typeof(positioner_system))
+        println(io, fieldname, ": ")
+        Base.show(getfield(positioner_system, fieldname))
+        println()
     end
 end
 

@@ -9,6 +9,14 @@ end
 
 
 @testset "test_fake_positioner_system" begin
+    @safetestset "round_to_nearest_multiple" begin
+        using ..SetupTestFakePs
+        using ThorlabsLTStage
+        @test ThorlabsLTStage.round(58.261mm, 0.01mm) == 58.26mm
+        @test ThorlabsLTStage.round(26.975mm, 0.01mm) == 26.98mm
+        @test ThorlabsLTStage.round(26.985mm, 0.01mm) == 26.98mm    # Julia's default RoundNearest mode rounds ties (0.5) to the nearest even integer
+    end
+    
     @safetestset "move_along_x_axis" begin
         using ..SetupTestFakePs
         using ThorlabsLTStage

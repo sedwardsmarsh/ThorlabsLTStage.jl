@@ -45,9 +45,9 @@ end
 function setup(stage, stage_config)
     # Set position limits from config
     min_pos, max_pos = get_intrinsic_limits(stage)
-    min_pos = get(stage_config, "min_position", raw_meters(min_pos))
-    max_pos = get(stage_config, "max_position", raw_meters(max_pos))
-    set_intrinsic_limits(stage, min_pos*m, max_pos*m)
+    min_pos = get(stage_config, "min_position", raw_millimeters(min_pos))
+    max_pos = get(stage_config, "max_position", raw_millimeters(max_pos))
+    set_intrinsic_limits(stage, min_pos*mm, max_pos*mm)
 
     # Set velocity limits from config
     max_vel = get(stage_config, "max_velocity", velocity(stage))
@@ -56,18 +56,11 @@ function setup(stage, stage_config)
     # Set acceleration limits from config
     max_acc = get(stage_config, "max_acceleration", acceleration(stage))
     acceleration!(stage, max_acc)
-end
 
-function Base.show(io::IO, ::MIME"text/plain", positioner_system::T) where T <: PositionerSystem
-    println(io, "Thorlabs positioner system")
-    function p_stage(io, s)
-        print(io, " ")
-        Base.show(io, s)
-        println() 
-    end
-    p_stage(io, positioner_system.x)
-    p_stage(io, positioner_system.y)
-    p_stage(io, positioner_system.z)
+    # set position accuracy from config
+    position_accuracy = get_position_accuracy(stage)
+    position_accuracy = get(stage_config, "position_accuracy", raw_millimeters(position_accuracy))
+    set_position_accuracy(stage, position_accuracy)
 end
 
 get_stages(positioner_system::T) where T <: PositionerSystem = Tuple(getfield(positioner_system, fieldname) for fieldname in fieldnames(typeof(positioner_system)))
