@@ -56,6 +56,11 @@ function setup(stage, stage_config)
     # Set acceleration limits from config
     max_acc = get(stage_config, "max_acceleration", acceleration(stage))
     acceleration!(stage, max_acc)
+
+    # set position accuracy from config
+    position_accuracy = get_position_accuracy(stage)
+    position_accuracy = get(stage_config, "position_accuracy", raw_millimeters(position_accuracy))
+    set_position_accuracy(stage, position_accuracy)
 end
 
 get_stages(positioner_system::T) where T <: PositionerSystem = Tuple(getfield(positioner_system, fieldname) for fieldname in fieldnames(typeof(positioner_system)))

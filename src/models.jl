@@ -105,6 +105,7 @@ function Base.show(io::IO, stage::Stage)
     println(io, "    upper_limit: ", round(get_upper_limit(stage), get_position_accuracy(stage)))
     println(io, "        min_pos: ", round(get_min_position(stage), get_position_accuracy(stage)))
     println(io, "        max_pos: ", round(get_max_position(stage), get_position_accuracy(stage)))
+    println(io, "   pos_accuracy: ", get_position_accuracy(stage))
 end
 
 function Base.show(io::IO, positioner_system::PositionerSystem)

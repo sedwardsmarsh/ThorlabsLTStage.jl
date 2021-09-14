@@ -103,12 +103,17 @@ function move_to_intrinsic_position(stage::Stage, intrinsic_position::Unitful.Le
     return
 end
 
+function round(value::Unitful.Length, multiple::Unitful.Length)
+    return Base.round(value / multiple) * multiple
+end
+
 function get_position_accuracy(stage::LinearTranslationStage)
     return stage.pos_accuracy
 end
 
-function round(value::Unitful.Length, multiple::Unitful.Length)
-    return Base.round(value / multiple) * multiple
+function set_position_accuracy(stage::LinearTranslationStage, position_accuracy::Unitful.Length)
+    stage.pos_accuracy = position_accuracy
+    return nothing
 end
 
 function pause(stage::Stage, target_intrinsic_position::Unitful.Length)
