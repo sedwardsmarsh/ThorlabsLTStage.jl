@@ -135,7 +135,7 @@ end
 function GetAcceleration(serial)
     acc, vel = GetVelParams(serial)
     acc = DeviceUnitToAcceleration(serial, acc)
-    return round(acc; digits=4)
+    return Base.round(acc; digits=4)
 end
 
 function SetAcceleration(serial, acc)
