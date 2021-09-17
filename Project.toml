@@ -1,7 +1,7 @@
 name = "ThorlabsLTStage"
 uuid = "c851c8d9-0c3b-43db-9ff0-525c27d20a67"
 authors = ["Esti Gajda", "Morten F. Rasmussen <10264458+mofii@users.noreply.github.com> and contributors"]
-version = "0.4.0"
+version = "0.4.1"
 
 [deps]
 InstrumentConfig = "2ae464b0-21de-4247-9233-e7c17725eb53"
