@@ -88,14 +88,13 @@ function extrinsic_to_intrinsic_position(stage::LinearTranslationStage, extrinsi
 end
 
 function move_to_position(stage::LinearTranslationStage, extrinsic_position::Unitful.Length)
+    check_limits(stage, extrinsic_position)
     intrinsic_position = extrinsic_to_intrinsic_position(stage, extrinsic_position)
     move_to_intrinsic_position(stage, intrinsic_position)
     return nothing
 end
 
 function move_to_intrinsic_position(stage::Stage, intrinsic_position::Unitful.Length; block=true)
-    extrinsic_position = intrinsic_to_extrinsic_position(stage, intrinsic_position)
-    check_limits(stage, extrinsic_position)
     stage.is_moving = true
     MoveAbs(stage.serial, intrinsic_position)
     block && pause(stage, intrinsic_position)
