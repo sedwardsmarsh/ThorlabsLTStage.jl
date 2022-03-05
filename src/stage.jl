@@ -94,7 +94,6 @@ function move_to_position(stage::LinearTranslationStage, extrinsic_position::Uni
 end
 
 function move_to_intrinsic_position(stage::Stage, intrinsic_position::Unitful.Length; block=true)
-    intrinsic_position = round(intrinsic_position, get_position_accuracy(stage))
     extrinsic_position = intrinsic_to_extrinsic_position(stage, intrinsic_position)
     check_limits(stage, extrinsic_position)
     stage.is_moving = true
