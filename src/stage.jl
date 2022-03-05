@@ -148,11 +148,13 @@ function pause(stage::Stage, target_intrinsic_position::Unitful.Length)
 end
 
 function move_rel(stage::LinearTranslationStage, distance::Unitful.Length)
-    _move_to_intrinsic_position(stage, get_intrinsic_position(stage) + distance)
+    target_position = get_pos(stage) + distance
+    move_to_position(stage, target_position)
 end
 
 function home(stage::LinearTranslationStage)
-    _move_to_intrinsic_position(stage, 0mm)
+    target_position = intrinsic_to_extrinsic_position(stage, 0mm)
+    move_to_position(stage, target_position)
 end
 
 function set_origin(stage::LinearTranslationStage)
@@ -165,7 +167,8 @@ function get_origin(stage::LinearTranslationStage)
 end
 
 function move_to_origin(stage::LinearTranslationStage)
-    _move_to_intrinsic_position(stage, stage.origin_pos)
+    target_position = intrinsic_to_extrinsic_position(stage, get_origin(stage))
+    move_to_position(stage, target_position)
     return nothing
 end
 
