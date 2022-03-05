@@ -87,10 +87,11 @@ mutable struct Stage <: LinearTranslationStage
     lower_limit::Unitful.Length
     upper_limit::Unitful.Length
     is_moving::Bool
+    move_allowed::Bool
     pos_accuracy::Unitful.Length
     function Stage(serial)
         serial = "$serial"
-        stage = new(serial, "", 0mm, 0mm, 0mm, 0mm, 0mm, false, 0mm)
+        stage = new(serial, "", 0mm, 0mm, 0mm, 0mm, 0mm, false, false, 0mm)
         initialize_stage(stage)
         return stage
     end
