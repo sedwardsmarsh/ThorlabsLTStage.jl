@@ -88,19 +88,43 @@ function extrinsic_to_intrinsic_position(stage::LinearTranslationStage, extrinsi
 end
 
 function move_to_position(stage::LinearTranslationStage, extrinsic_position::Unitful.Length)
+    _check_move_validity(stage, extrinsic_position)
     intrinsic_position = extrinsic_to_intrinsic_position(stage, extrinsic_position)
-    move_to_intrinsic_position(stage, intrinsic_position)
+    _move_to_intrinsic_position(stage, intrinsic_position)
     return nothing
 end
 
-function move_to_intrinsic_position(stage::Stage, intrinsic_position::Unitful.Length; block=true)
-    intrinsic_position = round(intrinsic_position, get_position_accuracy(stage))
-    extrinsic_position = intrinsic_to_extrinsic_position(stage, intrinsic_position)
-    check_limits(stage, extrinsic_position)
-    stage.is_moving = true
-    MoveAbs(stage.serial, intrinsic_position)
-    block && pause(stage, intrinsic_position)
-    return
+function _check_move_validity(stage::LinearTranslationStage, extrinsic_position::Unitful.Length)
+    if _is_position_within_limits(stage, extrinsic_position)
+        _set_move_allowed(stage)
+    end
+    return nothing
+end
+
+function _move_to_intrinsic_position(stage::Stage, intrinsic_position::Unitful.Length; block=true)
+    if _is_move_allowed(stage)
+        stage.is_moving = true
+        MoveAbs(stage.serial, intrinsic_position)
+        block && pause(stage, intrinsic_position)
+        _set_move_disallowed(stage)
+    else
+        error("Stage movement not allowed")
+    end
+    return nothing
+end
+
+function _set_move_allowed(stage::LinearTranslationStage)
+    stage.move_allowed = true
+    return nothing
+end
+
+function _set_move_disallowed(stage::LinearTranslationStage)
+    stage.move_allowed = false
+    return nothing
+end
+
+function _is_move_allowed(stage::LinearTranslationStage)
+    return stage.move_allowed
 end
 
 function round(value::Unitful.Length, multiple::Unitful.Length)
@@ -124,11 +148,13 @@ function pause(stage::Stage, target_intrinsic_position::Unitful.Length)
 end
 
 function move_rel(stage::LinearTranslationStage, distance::Unitful.Length)
-    move_to_intrinsic_position(stage, get_intrinsic_position(stage) + distance)
+    target_position = get_pos(stage) + distance
+    move_to_position(stage, target_position)
 end
 
 function home(stage::LinearTranslationStage)
-    move_to_intrinsic_position(stage, 0mm)
+    target_position = intrinsic_to_extrinsic_position(stage, 0mm)
+    move_to_position(stage, target_position)
 end
 
 function set_origin(stage::LinearTranslationStage)
@@ -141,32 +167,35 @@ function get_origin(stage::LinearTranslationStage)
 end
 
 function move_to_origin(stage::LinearTranslationStage)
-    move_to_intrinsic_position(stage, stage.origin_pos)
+    target_position = intrinsic_to_extrinsic_position(stage, get_origin(stage))
+    move_to_position(stage, target_position)
     return nothing
 end
 
 
 ## position limits
-function check_limits(stage::LinearTranslationStage, position::Unitful.Length)
-    check_lower_limit(stage, position)
-    check_upper_limit(stage, position)
-    return nothing
+function _is_position_within_limits(stage::LinearTranslationStage, position::Unitful.Length)
+    lower_limit_condition = _is_position_above_lower_limit(stage, position)
+    upper_limit_condition = _is_position_below_upper_limit(stage, position)
+    return lower_limit_condition & upper_limit_condition
 end
 
-function check_lower_limit(stage::LinearTranslationStage, position::Unitful.Length)
+function _is_position_above_lower_limit(stage::LinearTranslationStage, position::Unitful.Length)
     extrinsic_lower_limit = get_lower_limit(stage)
     if position < extrinsic_lower_limit
         error("Desired position ($position) is past the lower limit ($extrinsic_lower_limit)")
+    else
+        return true
     end
-    return nothing
 end
 
-function check_upper_limit(stage::LinearTranslationStage, position::Unitful.Length)
+function _is_position_below_upper_limit(stage::LinearTranslationStage, position::Unitful.Length)
     extrinsic_upper_limit = get_upper_limit(stage)
     if position > extrinsic_upper_limit
         error("Desired position ($position) is past the upper limit ($extrinsic_upper_limit)")
+    else
+        return true
     end
-    return nothing
 end
 
 function get_lower_limit(stage::LinearTranslationStage)
