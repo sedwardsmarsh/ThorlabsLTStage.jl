@@ -1,45 +1,55 @@
 import InstrumentConfig: initialize,terminate
 
 ## setup & teardown
-function initialize(::Type{PositionerSystem})
+function initialize(::Type{PositionerSystem}; x=nothing, y=nothing, z=nothing)
     BuildDeviceList()
     stages = get(get_config(), "ThorlabsLTS", Dict())
     if isempty(stages)
-        return initialize_positioner_system()
+        positioner_system = initialize_positioner_system(; x, y, z)
+    else
+        x_stage = stages["x"]
+        y_stage = stages["y"]
+        z_stage = stages["z"]
+        device_list = map(s->s["serial"], [x_stage, y_stage, z_stage])
+        positioner_system = initialize_positioner_system(device_list; x, y, z)
+        setup(positioner_system.x, x_stage)
+        setup(positioner_system.y, y_stage)
+        setup(positioner_system.z, z_stage)
     end
-
-    x_stage = stages["x"]
-    y_stage = stages["y"]
-    z_stage = stages["z"]
-    device_list = map(s->s["serial"], [x_stage, y_stage, z_stage])
-    positioner_system = initialize_positioner_system(device_list)
-
-    setup(positioner_system.x, x_stage)
-    setup(positioner_system.y, y_stage)
-    setup(positioner_system.z, z_stage)
     return positioner_system
 end
 
-function initialize_positioner_system(serials = GetDeviceList())
+function initialize_positioner_system(serials = GetDeviceList(); x=nothing, y=nothing, z=nothing)
+    if isnothing(x) && isnothing(y) && isnothing(z)
+        x,y,z = get_xyz_serials_from_list(serials)
+    end
+    x_stage, y_stage, z_stage = get_stage_handles(x,y,z)
+    return PS_3D(x_stage, y_stage, z_stage)
+end
+
+function get_xyz_serials_from_list(serials)
     num_stages = length(serials)
     if num_stages == 0
         error("No stages detected")
     elseif num_stages == 3
         x, y, z = serials
-
-        x_stage = Stage(x)
-        println("X Stage: $(x_stage.serial) $(x_stage.info)")
-
-        y_stage = Stage(y)
-        println("Y Stage: $(y_stage.serial) $(y_stage.info)")
-
-        z_stage = Stage(z)
-        println("Z Stage: $(z_stage.serial) $(z_stage.info)")
-
-        return PS_3D(x_stage, y_stage, z_stage)
     else
-        error("$num_stages unexpectedly found: $serials")
+        error("Found $num_stages stages, but were expecting only 3.\n Stage-serials found: $serials")
     end
+    return x,y,z
+end
+
+function get_stage_handles(x,y,z)
+    x_stage = Stage(x)
+    println("Initialized x-stage: $(x_stage.serial) $(x_stage.info)")
+
+    y_stage = Stage(y)
+    println("Initialized y-stage: $(y_stage.serial) $(y_stage.info)")
+
+    z_stage = Stage(z)
+    println("Initialized z-stage: $(z_stage.serial) $(z_stage.info)")
+
+    return x_stage, y_stage, z_stage
 end
 
 function setup(stage, stage_config)
