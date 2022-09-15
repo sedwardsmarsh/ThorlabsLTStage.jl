@@ -14,4 +14,33 @@ ThorlabsLTS:
     position_accuracy: 0.01   # [mm]
   z:
     serial: 45141924
+    max_velocity: 3          # [mm s^-1]
+    max_acceleration: 5      # [mm s^-2]
+    position_accuracy: 0.01   # [mm]
+
+  alias: positioner_imaging
+  x:  
+    serial: 45293664
+    position_accuracy: 0.01   # [mm]
+  y:
+    serial: 45286264
+    position_accuracy: 0.01   # [mm]
+  z:
+    serial: 45289034
+    max_velocity: 3           # [mm s^-1]
+    max_acceleration: 5       # [mm s^-2]
+    position_accuracy: 0.01   # [mm]
+
+
+  alias: positioner_hifu
+  x:  
+    serial: 45140764
+    position_accuracy: 0.01   # [mm]
+  y:
+    serial: 45146974
+    position_accuracy: 0.01   # [mm]
+  z:
+    serial: 45141924
+    max_velocity: 3           # [mm s^-1]
+    max_acceleration: 5       # [mm s^-2]
     position_accuracy: 0.01   # [mm]
