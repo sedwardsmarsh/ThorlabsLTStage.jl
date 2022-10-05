@@ -71,16 +71,6 @@ function disconnect(stage::Stage)
     disconnect_device(stage.serial)
 end
 
-function get_attached_stages()
-    # get list of serial numbers
-    # for each serial number check if it's stage is connected.
-    #   if connected -> GetHArdwareInfo() and print name
-    #   if not connected -> connect, get info, print, disconnect
-    # return Dict of all serial numbers and their description
-    
-    return nothing
-end
-
 ## position
 get_pos(stage::LinearTranslationStage) = intrinsic_to_extrinsic_position(stage, get_intrinsic_position(stage))
 
