@@ -12,6 +12,24 @@ function get_config()
     return InstrumentConfig.get_config(positioner_system_config)
 end
 
+function print_config()
+    config = get_config()
+    print_dict(config)
+end
+
+function print_dict(dict; n_prepend=1)
+    ks = collect(keys(dict))
+    for k in ks
+        value = dict[k]
+        if typeof(value) == Dict{Any, Any}
+            println(" "^n_prepend, "$(k):")
+            print_dict(value; n_prepend=n_prepend+3)
+        else
+            println(" "^n_prepend, "$(k): $(value)")
+        end
+    end
+end
+
 function create_config(;dir=homedir())
     InstrumentConfig.create_config(positioner_system_config; dir=dir)
 end
@@ -20,7 +38,7 @@ function edit_config()
     InstrumentConfig.edit_config(positioner_system_config)
 end
 
-function backend(;v=true) 
+function backend(;v=true)
     b = get(get_config(), "backend", "None")
     if b == "None" && v
         @info """
@@ -43,7 +61,7 @@ function create_aliases(config; ignore=[])
             error("""
             $(config.loaded_file) contains device of name:
                 $device
-            
+
             This is not a valid device.
 
             For a list of available devices use `help> Instrument`
@@ -53,7 +71,7 @@ function create_aliases(config; ignore=[])
         alias = get(data, "alias", "")
         isempty(alias) && continue
         @eval global const $(Symbol(alias)) = $(device_type)
-        @eval export $(Symbol(alias)) 
+        @eval export $(Symbol(alias))
         alias_print("$alias = $device")
     end
 end
@@ -62,4 +80,3 @@ function alias_print(msg)
     printstyled("[ Aliasing: ", color = :blue, bold = true)
     println(msg)
 end
-
