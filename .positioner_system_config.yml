@@ -1,24 +1,4 @@
-ThorlabsLTS:
-  alias: positioner_system_default
-  x:  
-    serial: 45140764
-    min_position: 0           # [mm]
-    max_position: 150         # [mm]
-    max_velocity: 20          # [mm s^-1]
-    max_acceleration: 20      # [mm s^-2]
-    position_accuracy: 0.01   # [mm]
-  y:
-    serial: 45146974
-    max_velocity: 3           # [mm s^-1]
-    max_acceleration: 5       # [mm s^-2]
-    position_accuracy: 0.01   # [mm]
-  z:
-    serial: 45141924
-    max_velocity: 3          # [mm s^-1]
-    max_acceleration: 5      # [mm s^-2]
-    position_accuracy: 0.01   # [mm]
-
-  alias: positioner_imaging
+Positioner1:
   x:  
     serial: 45293664
     position_accuracy: 0.01   # [mm]
@@ -31,8 +11,7 @@ ThorlabsLTS:
     max_acceleration: 5       # [mm s^-2]
     position_accuracy: 0.01   # [mm]
 
-
-  alias: positioner_hifu
+Positioner2:
   x:  
     serial: 45140764
     position_accuracy: 0.01   # [mm]
