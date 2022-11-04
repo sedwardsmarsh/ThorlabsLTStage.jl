@@ -1,0 +1,20 @@
+[ThorlabsLTStage]
+alias = "positioner_system_default"
+
+    [ThorlabsLTStage.x]
+    max_acceleration = 20
+    max_position = 150
+    max_velocity = 20
+    min_position = 0
+    position_accuracy = 0.01
+    serial = 45140764
+
+    [ThorlabsLTStage.y]
+    max_acceleration = 5
+    max_velocity = 3
+    position_accuracy = 0.01
+    serial = 45146974
+
+    [ThorlabsLTStage.z]
+    position_accuracy = 0.01
+    serial = 45141924

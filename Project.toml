@@ -7,6 +7,7 @@ version = "0.4.2"
 InstrumentConfig = "2ae464b0-21de-4247-9233-e7c17725eb53"
 Libdl = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
+Preferences = "21216c6a-2e73-6563-6e65-726566657250"
 PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
