@@ -3,25 +3,13 @@ using Preferences
 
 const positioner_system_config = InstrumentConfig.Config(".positioner_system_config.yml", @__MODULE__)
 
-function set_preferences(prefs::Pair{String,Any}...)
-    @set_preferences! prefs
-    return nothing
-end
+set_pref(prefs...) = @set_preferences! prefs
 
-function get_preference(key::String)
-    @load_preference key
-    return nothing
-end
+get_pref(key::String) = @load_preference key
 
-function has_preference(key::String)
-    @has_preference key
-    return nothing
-end
+has_pref(key::String) = @has_preference key
 
-function del_preferences(prefs::Pair{String,Any}...)
-    @delete_preferences! prefs
-    return nothing
-end
+del_pref(prefs...) = @delete_preferences! prefs
 
 function load_config()
     InstrumentConfig.load_config(positioner_system_config)
