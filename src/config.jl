@@ -5,6 +5,39 @@ const positioner_system_config = InstrumentConfig.Config(".positioner_system_con
 
 set_alias(string::String) =  @set_preferences!("alias" => string)
 get_alias() =  get_pref("alias")
+
+## Creates preference for a LTStage named "name" with the arguments given
+function set_stagekw(
+    name::String;
+    serial_number=missing,
+    min_position=missing,
+    max_position=missing,
+    max_velocity=missing,
+    max_acceleration=missing,
+    position_accuracy=missing,
+)
+    dict = Dict{String, Any}()
+    if (!ismissing(serial_number))
+        push!(dict, "serial_number" => serial_number)
+    end
+    if (!ismissing(min_position))
+        push!(dict, "min_position" => min_position)
+    end
+    if (!ismissing(max_position))
+        push!(dict, "max_position" => max_position)
+    end
+    if (!ismissing(max_velocity))
+        push!(dict, "max_velocity" => max_velocity)
+    end
+    if (!ismissing(max_acceleration))
+        push!(dict, "max_acceleration" => max_acceleration)
+    end
+    if (!ismissing(position_accuracy))
+        push!(dict, "position_accuracy" => position_accuracy)
+    end
+    @set_preferences!(name => dict)
+end
+
 ## Creates a preference of name "key" with Dict with entries "pairs"
 set_pref(key::String, pairs...) = @set_preferences!(key => Dict(pairs))
 
