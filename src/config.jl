@@ -3,6 +3,8 @@ using Preferences
 
 const positioner_system_config = InstrumentConfig.Config(".positioner_system_config.yml", @__MODULE__)
 
+set_alias(string::String) =  @set_preferences!("alias" => string)
+get_alias() =  get_pref("alias")
 ## Creates a preference of name "key" with Dict with entries "pairs"
 set_pref(key::String, pairs...) = @set_preferences!(key => Dict(pairs))
 
