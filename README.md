@@ -21,15 +21,7 @@ The other uses Pycall to call the Dot Net API.
 
 The C API is preferred however at the moment it may be a bit buggier.
 
-## Using the C Backend
-```julia
-pkg> add ThorlabsLTStage
-julia> using ThorlabsLTStage
-julia> ps = initialize(PositionerSystem)
-```
-### Using this package
-The C Backend now uses units from Unitful.jl
-
+## Using the C Backend (default behavior)
 As of right now the only supported device are Thorlabs LTS150 or LTS300 stages
 
 To connect to them:
@@ -44,12 +36,10 @@ as the X stage followed by Y and Z.
 
 Lets say for your setup you want to change which stage is considered X, Y and Z.
 
-Edit/Create a config file with your text editor or:
-` ThorlabsLTStage.edit_config() `
- to look like the following:
+Create/edit a `.positioner_system_config.yml` file in the local directory to look like the
+following:
 
 ```yml
-# Inside .positioner_system_config.yml
 ThorlabsLTS:
   alias: bigStage # This is an optional alias
   x:  

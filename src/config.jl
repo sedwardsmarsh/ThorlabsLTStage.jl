@@ -1,22 +1,29 @@
 using InstrumentConfig
 
-const positioner_system_config = InstrumentConfig.Config(".positioner_system_config.yml", @__MODULE__)
-
 function load_config()
+    positioner_system_config = get_default_config()
     InstrumentConfig.load_config(positioner_system_config)
     create_aliases(positioner_system_config; ignore=["backend"])
     init_python_lib()
 end
 
+function get_default_config()
+    config_file_name = ".positioner_system_config.yml"
+    return InstrumentConfig.Config(config_file_name, @__MODULE__)
+end
+
 function get_config()
+    positioner_system_config = get_default_config()
     return InstrumentConfig.get_config(positioner_system_config)
 end
 
 function create_config(;dir=homedir())
+    positioner_system_config = get_default_config()
     InstrumentConfig.create_config(positioner_system_config; dir=dir)
 end
 
 function edit_config()
+    positioner_system_config = get_default_config()
     InstrumentConfig.edit_config(positioner_system_config)
 end
 
@@ -24,7 +31,7 @@ function backend(;v=true)
     b = get(get_config(), "backend", "None")
     if b == "None" && v
         @info """
-        You have no backend chosen. Please enter in your $(positioner_system_config.name) config file:
+        You have no backend chosen. Please enter in your config file:
             backend: python
         """
     end
