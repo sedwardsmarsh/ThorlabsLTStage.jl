@@ -36,3 +36,17 @@ end
 function GetDeviceList()
     return lts_lib.get_available_stage_serials()
 end
+
+# this function returns true if the device is connected, false if it is not 
+# connected. We can verify this by requesting the serial numbers of all 
+# connected devices.
+check_is_connected(serial::String) = lts_lib.is_stage_connected(serial)
+
+# this function connects to the stage with the corresponding serial number.
+connect_device(serial::String) = lts_lib.connect_to_stage(serial)
+
+# this function disconnects from the stage with the corresponding serial number.
+disconnect_device(serial::String) = lts_lib.disconnect_from_stage(serial)
+
+# 
+Enable(serial)
