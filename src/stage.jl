@@ -101,11 +101,14 @@ function _check_move_validity(stage::LinearTranslationStage, extrinsic_position:
     return nothing
 end
 
+trunc_intrinsic_position(intrinsic_position, precision=3) = Base.trunc(unit(intrinsic_position), intrinsic_position, digits=precision)
+
 function _move_to_intrinsic_position(stage::Stage, intrinsic_position::Unitful.Length; block=true)
     if _is_move_allowed(stage)
+        intrinsic_position = trunc_intrinsic_position(intrinsic_position)
         stage.is_moving = true
         MoveAbs(stage.serial, intrinsic_position)
-        block && pause(stage, intrinsic_position)
+        block && pause(stage, intrinsic_position, absolute_position_tolerance=0.001u"mm")
         _set_move_disallowed(stage)
     else
         error("Stage movement not allowed")
@@ -140,8 +143,8 @@ function set_position_accuracy(stage::LinearTranslationStage, position_accuracy:
     return nothing
 end
 
-function pause(stage::Stage, target_intrinsic_position::Unitful.Length)
-    while !isapprox(get_intrinsic_position(stage), target_intrinsic_position)
+function pause(stage::Stage, target_intrinsic_position::Unitful.Length; absolute_position_tolerance::Unitful.Length)
+    while !isapprox(get_intrinsic_position(stage), target_intrinsic_position, atol=absolute_position_tolerance)
         sleep(0.1)
     end
     stage.is_moving = false
