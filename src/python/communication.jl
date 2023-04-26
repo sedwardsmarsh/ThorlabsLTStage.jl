@@ -7,12 +7,12 @@ end
 # builds an internal collection of all devices found on 
 # the USB that are not currently open. Return zero for now,
 # since all connected devices are always available. 
+# TODO: mark devices as closed or open
 function BuildDeviceList()
     return []
 end
 
-# returns the length of the device list. Return zero for now,
-# since all connected devices are always available. 
+# returns the length of the device list.
 function GetDeviceListSize()
     return length(GetDeviceList())
 end
