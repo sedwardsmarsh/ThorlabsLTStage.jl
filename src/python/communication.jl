@@ -1,7 +1,7 @@
 # initialize the python library
 lts_lib = nothing
 function init_python_lib()
-    global lts_lib = pyimport("ThorlabsLTStage.communication")
+    global lts_lib = pyimport("ThorlabsLTStage.bindings")
 end
 
 # In the C backend, this method updates the device with stored settings. 
@@ -41,13 +41,16 @@ end
 # connected. We can verify this by requesting the serial numbers of all 
 # connected devices.
 # TODO: change python backend to allow checking which stages are connected
-check_is_connected(serial::String) = lts_lib.is_stage_connected(serial)
+check_is_connected(serial::String) = lts_lib.is_stage_usb_connected(serial)
 
 # this function connects to the stage with the corresponding serial number.
-connect_device(serial::String) = 0
+connect_device(serial::String) = lts_lib.connect_to_stage(serial)
 
 # this function disconnects from the stage with the corresponding serial number.
-disconnect_device(serial::String) = 0
+function disconnect_device(serial::String)
+    stage = lts_lib.get_stage(serial)
+    lts_lib.disconnect_from_stage(stage)
+end
 
 # In the C backend, this function enables the channel corresponding to the 
 # serial number. However, this is handeled by the python backend for us.
@@ -57,7 +60,7 @@ Enable(serial::String) = 0
 # returns the stage's current position in device units. 
 function GetPos(serial::String)
     global lts_lib
-    stage = lts_lib.STAGE_SERIAL_MAP[serial]
+    stage = lts_lib.get_stage(serial)
     return lts_lib.get_stage_position_in_device_units(stage)
 end
 
@@ -69,9 +72,10 @@ SetMoveAbsolutePosition(serial::String, pos::Int64) = 0
 MoveAbsolute(serial::String) = 0
 
 # move the stage to the specified absolute position.
-function MoveAbs(serial::String, pos::Int64)
+function MoveAbs(serial::String, pos::Unitful.Length)
+    pos = MillimetersToDeviceUnit(serial, ustrip(pos))
     global lts_lib
-    stage = lts_lib.STAGE_SERIAL_MAP[serial]
+    stage = lts_lib.get_stage(serial)
     return lts_lib.move_stage_absolute(stage, pos)
 end
 
@@ -98,51 +102,56 @@ set_stage_axis_min_max_pos(serial::String, min_pos::Int, max_pos::Int) = 0
 # Gets the move velocity parameters.
 function GetVelParams(serial::String)
     global lts_lib
-    stage = lts_lib.STAGE_SERIAL_MAP[serial]
-    acc = lts_lib.get_stage_velocity(stage)
-    vel = lts_lib.get_stage_acceleration(stage)
+    acc = GetAcceleration(serial)
+    vel = GetVelocity(serial)
     return acc[], vel[]
 end
 
 # Sets the move velocity parameters, in device units
 function SetVelParams(serial::String, acc::Int, vel::Int)
     global lts_lib
-    stage = lts_lib.STAGE_SERIAL_MAP[serial]
-    lts_lib.set_stage_acceleration(stage, acc)
-    lts_lib.set_stage_velocity(stage, vel)
+    stage = lts_lib.get_stage(serial)
+    SetVelocity(serial, vel)
+    SetAcceleration(serial, acc)
 end
 
 # Get the move velocity.
 function GetVelocity(serial::String)
     global lts_lib
-    stage = lts_lib.STAGE_SERIAL_MAP[serial]
-    return lts_lib.get_stage_velocity(stage)
+    stage = lts_lib.get_stage(serial)
+    stage_velocity = lts_lib.get_stage_velocity(stage)
+    return lts_lib.convert_velocity_in_device_units_to_mm(stage_velocity)
+
 end
 
 # Set the move velocity.
 function SetVelocity(serial::String, vel::Int)
     global lts_lib
-    stage = lts_lib.STAGE_SERIAL_MAP[serial]
-    return lts_lib.set_stage_velocity(stage, vel)
+    stage = lts_lib.get_stage(serial)
+    velocity = lts_lib.convert_velocity_in_mm_to_device_units(vel)
+    return lts_lib.set_stage_velocity(stage, velocity)
+
 end
 
 # Get the move acceleration.
 function GetAcceleration(serial::String)
     global lts_lib
-    stage = lts_lib.STAGE_SERIAL_MAP[serial]
-    return lts_lib.get_stage_acceleration(stage)
+    stage = lts_lib.get_stage(serial)
+    stage_acceleration = lts_lib.get_stage_acceleration(stage)
+    return lts_lib.convert_acceleration_in_device_units_to_mm(stage_acceleration)
 end
 
 # Set the move acceleration.
 function SetAcceleration(serial::String, acc::Int)
     global lts_lib
-    stage = lts_lib.STAGE_SERIAL_MAP[serial]
-    return lts_lib.set_stage_acceleration(stage, acc)
+    stage = lts_lib.get_stage(serial)
+    accleration = lts_lib.convert_acceleration_in_mm_to_device_units(acc)
+    return lts_lib.set_stage_acceleration(stage, accleration)
 end
 
 # Gets the hardware information from the device. The python backend doesn't 
 # support this functionality, so we return zero.
-GetHardwareInfo(serial::String) = 0
+GetHardwareInfo(serial::String) = "LTS150", 0 
 
 # verify the conversion type.
 check_conversion_type(unit_enum::Int) = 0
@@ -220,8 +229,24 @@ end
 WaitForMessage(serial::String) = 0
 
 # resets the stage's home to be 0 at the minimum limit switch
-function ResetHomePosition(serial::String)
+function TrueHome(serial::String)
     global lts_lib
-    stage = lts_lib.STAGE_SERIAL_MAP[serial]
-    return lts_lib.find_stage_home(stage)
+    stage = lts_lib.get_stage(serial)
+    reset_home_position_done = lts_lib.find_stage_home(stage)
+    return reset_home_position_done === nothing
+end
+
+# sets the stage home velocity
+function SetHomeVelocity(serial::String, vel::Int)
+    stage = lts_lib.get_stage(serial)
+    home_offset_distance = MillimetersToDeviceUnit(serial, ustrip(0.5 * u"mm"))
+    home_velocity = lts_lib.convert_velocity_in_mm_to_device_units(vel)
+    lts_lib.set_stage_home_params(stage, home_velocity, home_offset_distance)
+end
+
+# gets the stage's home velocity
+function GetHomeVelocity(serial::String)
+    stage = lts_lib.get_stage(serial)
+    home_velocty = lts_lib.get_stage_home_velocity(stage)
+    return lts_lib.convert_velocity_in_device_units_to_mm(home_velocty)
 end

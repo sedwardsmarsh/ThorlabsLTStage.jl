@@ -5,26 +5,26 @@ using ThorlabsLTStage
 # initialize python backend
 ThorlabsLTStage.init_python_lib()
 
-# get serials of the connected stages
-serials = Vector{String}(undef, 0)
-for stage_config in ThorlabsLTStage.get_config()["ThorlabsLTS"]
-    try 
-        serial_string = string(stage_config[2]["serial"])
-        push!(serials, serial_string)
-    catch e
-        if e isa KeyError
-            continue
-        end
-    end
-end
+ps = ThorlabsLTStage.initialize(PositionerSystem)
 
 @info "these tests will only pass if .positioner_system_config.yml contains the serials of the connected stages"
 
 @testset "test messaging configuration" begin
-    for serial in serials
-        @test ThorlabsLTStage.LoadSettings(serial) == true
-        @test ThorlabsLTStage.LoadNamedSettings(serial, "stage name") == true
-        @test ThorlabsLTStage.Poll(serial, 50) == true
-        @test ThorlabsLTStage.ClearQueue(serial) == true
-    end
+    @test ThorlabsLTStage.LoadSettings(ps.x.serial) == true
+    @test ThorlabsLTStage.LoadNamedSettings(ps.x.serial, "stage name") == true
+    @test ThorlabsLTStage.Poll(ps.x.serial, 50) == true
+    @test ThorlabsLTStage.ClearQueue(ps.x.serial) == true
+
+    @test ThorlabsLTStage.LoadSettings(ps.y.serial) == true
+    @test ThorlabsLTStage.LoadNamedSettings(ps.y.serial, "stage name") == true
+    @test ThorlabsLTStage.Poll(ps.y.serial, 50) == true
+    @test ThorlabsLTStage.ClearQueue(ps.y.serial) == true
+
+    @test ThorlabsLTStage.LoadSettings(ps.z.serial) == true
+    @test ThorlabsLTStage.LoadNamedSettings(ps.z.serial, "stage name") == true
+    @test ThorlabsLTStage.Poll(ps.z.serial, 50) == true
+    @test ThorlabsLTStage.ClearQueue(ps.z.serial) == true
 end
+
+terminate(ps)
+@info "Terminated PS - end of test"

@@ -111,4 +111,7 @@ sleep_amount = 0.2
         measured_z_pos = get_pos_z(ps)
         @test Base.round(u"mm", measured_z_pos, digits=3) == Base.trunc(u"mm", 1u"mm" + get_origin(ps)[3], digits=3)
     end
+
+    terminate(ps)
+    @info "Terminated PS --- end of test"
 end

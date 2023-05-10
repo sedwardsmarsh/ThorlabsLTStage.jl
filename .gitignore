@@ -4,3 +4,5 @@
 *.jl.mem
 Manifest.toml
 /docs/build/
+/venv2/
+.vscode

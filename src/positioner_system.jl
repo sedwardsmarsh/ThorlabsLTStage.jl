@@ -145,3 +145,8 @@ home(positioner_system) = map(home, get_stages(positioner_system))
 home_x(positioner_system) = home(positioner_system.x)
 home_y(positioner_system) = home(positioner_system.y)
 home_z(positioner_system) = home(positioner_system.z)
+
+true_home(positioner_system) = map(true_home, get_stages(positioner_system))
+true_home_x(positioner_system) = true_home(positioner_system.x)
+true_home_y(positioner_system) = true_home(positioner_system.y)
+true_home_z(positioner_system) = true_home(positioner_system.z)

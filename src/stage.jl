@@ -1,7 +1,5 @@
 ## setup & teardown
 function initialize_stage(stage::Stage)
-    is_connected = check_is_connected(stage.serial)
-    println("Stage $(stage.serial) connected: $(is_connected)")
     connect_device(stage.serial)
     is_connected = check_is_connected(stage.serial)
     println("Stage $(stage.serial) connected: $(is_connected)")
@@ -326,4 +324,16 @@ end
 
 function acceleration!(stage::Stage, acc)
     return SetAcceleration(stage.serial, acc)
+end
+
+function set_home_velocity(stage::Stage, acc)
+    return SetHomeVelocity(stage.serial, acc)
+end
+
+function get_home_velocity(stage::Stage)
+    return GetHomeVelocity(stage.serial)
+end
+
+function true_home(stage::Stage)
+    return TrueHome(stage.serial)
 end

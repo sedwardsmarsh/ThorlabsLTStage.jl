@@ -5,26 +5,27 @@ using ThorlabsLTStage
 # initialize python backend
 ThorlabsLTStage.init_python_lib()
 
-# get serials of the connected stages
-serials = Vector{String}(undef, 0)
-for stage_config in ThorlabsLTStage.get_config()["ThorlabsLTS"]
-    try 
-        serial_string = string(stage_config[2]["serial"])
-        push!(serials, serial_string)
-    catch e
-        if e isa KeyError
-            continue
-        end
-    end
-end
+ps = ThorlabsLTStage.initialize(PositionerSystem)
 
 @info "check_is_connected() will only return true if .positioner_system_config.yml is configured correctly"
 
 @testset "test connection methods" begin
-    for serial in serials
-        @test ThorlabsLTStage.check_is_connected(serial) == true
-        @test ThorlabsLTStage.connect_device(serial) == 0
-        @test ThorlabsLTStage.disconnect_device(serial) == 0
-        @test ThorlabsLTStage.Enable(serial) == 0
-    end
+
+    @test ThorlabsLTStage.check_is_connected(ps.x.serial) == true
+    ThorlabsLTStage.disconnect_device(ps.x.serial)
+    @test ThorlabsLTStage.check_is_connected(ps.x.serial) == false
+    @test ThorlabsLTStage.Enable(ps.x.serial) == 0
+
+    @test ThorlabsLTStage.check_is_connected(ps.y.serial) == true
+    ThorlabsLTStage.disconnect_device(ps.y.serial)
+    @test ThorlabsLTStage.check_is_connected(ps.y.serial) == false
+    @test ThorlabsLTStage.Enable(serial) == 0
+
+    @test ThorlabsLTStage.check_is_connected(ps.z.serial) == true
+    ThorlabsLTStage.disconnect_device(ps.z.serial) == 0
+    @test ThorlabsLTStage.check_is_connected(ps.z.serial) == false
+    @test ThorlabsLTStage.Enable(ps.z.serial) == 0
 end
+
+terminate(ps)
+@info "Terminated PS - end of test"
