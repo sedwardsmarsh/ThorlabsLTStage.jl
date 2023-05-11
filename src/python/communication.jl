@@ -40,13 +40,15 @@ end
 # this function returns true if the device is connected, false if it is not 
 # connected. We can verify this by requesting the serial numbers of all 
 # connected devices.
+# TODO: change python backend to allow checking which stages are connected
 check_is_connected(serial::String) = lts_lib.is_stage_connected(serial)
 
 # this function connects to the stage with the corresponding serial number.
-connect_device(serial::String) = lts_lib.connect_to_stage(serial)
+connect_device(serial::String) = 0
 
 # this function disconnects from the stage with the corresponding serial number.
-disconnect_device(serial::String) = lts_lib.disconnect_from_stage(serial)
+disconnect_device(serial::String) = 0
 
-# 
-Enable(serial)
+# In the C backend, this function enables the channel corresponding to the 
+# serial number. However, this is handeled by the python backend for us.
+Enable(serial::String) = 0
