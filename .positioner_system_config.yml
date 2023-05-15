@@ -9,9 +9,15 @@ ThorlabsLTS:
     position_accuracy: 0.01   # [mm]
   y:
     serial: 45289034
-    max_velocity: 3           # [mm s^-1]
-    max_acceleration: 5       # [mm s^-2]
+    min_position: 0           # [mm]
+    max_position: 150         # [mm]
+    max_velocity: 20          # [mm s^-1]
+    max_acceleration: 20      # [mm s^-2]
     position_accuracy: 0.01   # [mm]
   z:
     serial: 45293664
+    min_position: 0           # [mm]
+    max_position: 150         # [mm]
+    max_velocity: 20          # [mm s^-1]
+    max_acceleration: 20      # [mm s^-2]
     position_accuracy: 0.01   # [mm]
