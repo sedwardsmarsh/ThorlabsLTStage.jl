@@ -141,3 +141,24 @@ function SetAcceleration(serial::String, acc::Int)
     stage = lts_lib.STAGE_SERIAL_MAP[serial]
     return lts_lib.set_stage_acceleration(stage, acc)
 end
+
+# Gets the hardware information from the device. The python backend doesn't 
+# support this functionality, so we return zero.
+GetHardwareInfo(serial::String) = 0
+
+# verify the conversion type.
+check_conversion_type(unit_enum::Int) = 0
+
+# converts a device unit to a real world unit.
+function GetDeviceUnitFromRealValue(serial::String, real::Float64, unit_enum::Int)
+    global lts_lib
+    if unit_enum == 0
+        return lts_lib.convert_mm_to_device_units(real)
+    elseif unit_enum == 1
+        return lts_lib.convert_velocity_in_mm_to_device_units(real)
+    elseif unit_enum == 2
+        return lts_lib.convert_acceleration_in_mm_to_device_units(real)
+    else
+        error("unit_enum must be either 0 for position, 1 for speed, 2 for acceleration")
+    end
+end
