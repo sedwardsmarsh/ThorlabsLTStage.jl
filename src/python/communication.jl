@@ -175,36 +175,46 @@ function GetRealValueFromDeviceUnit(serial::String, device_unit::Int, unit_enum:
     end
 end
 
+# converts device units to mm for position
 function DeviceUnitToMillimeters(serial::String, device_unit::Int)
     return GetRealValueFromDeviceUnit(serial, device_unit, 0)
 end
 
+# converts mm to device units for position
 function MillimetersToDeviceUnit(serial::String, mm::Float64)
     GetDeviceUnitFromRealValue(serial, mm, 0)
 end
 
+# converts m to device units for position
 function MetersToDeviceUnit(serial::String, m::Float64)
     return MillimetersToDeviceUnit(serial, m * 1000)
 end
 
+# converts device units to m for position
 function DeviceUnitToMeters(serial::String, device_unit::Int)
     return DeviceUnitToMillimeters(serial, device_unit) / 1000
 end
 
+# converts mm/s to device units/s
 function VelocityToDeviceUnit(serial::String, vel::Float64)
     return GetDeviceUnitFromRealValue(serial, vel, 1)
 end
 
+# converts device units/s to mm/s
 function DeviceUnitToVelocity(serial::String, device_unit::Int)
     return GetRealValueFromDeviceUnit(serial, device_unit, 1)
 end
 
+# converts mm/s/s to device units/s/s
 function AccelerationToDeviceUnit(serial::String, acc::Float64)
     return GetDeviceUnitFromRealValue(serial, acc, 2)
 end
 
+# converts device units/s/s to mm/s/s
 function DeviceUnitToAcceleration(serial::String, device_unit::Int)
     return GetRealValueFromDeviceUnit(serial, device_unit, 2)
 end
 
+# blocks waiting for a message to return from the stage. this is not 
+# implemented in the python backend, so we return 0.
 WaitForMessage(serial::String) = 0
