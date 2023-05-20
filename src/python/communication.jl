@@ -1,5 +1,3 @@
-using Unitful
-
 # initialize the python library
 lts_lib = nothing
 function init_python_lib()
@@ -176,3 +174,37 @@ function GetRealValueFromDeviceUnit(serial::String, device_unit::Int, unit_enum:
         error("unit_enum must be either 0 for position, 1 for speed, 2 for acceleration")
     end
 end
+
+function DeviceUnitToMillimeters(serial::String, device_unit::Int)
+    return GetRealValueFromDeviceUnit(serial, device_unit, 0)
+end
+
+function MillimetersToDeviceUnit(serial::String, mm::Float64)
+    GetDeviceUnitFromRealValue(serial, mm, 0)
+end
+
+function MetersToDeviceUnit(serial::String, m::Float64)
+    return MillimetersToDeviceUnit(serial, m * 1000)
+end
+
+function DeviceUnitToMeters(serial::String, device_unit::Int)
+    return DeviceUnitToMillimeters(serial, device_unit) / 1000
+end
+
+function VelocityToDeviceUnit(serial::String, vel::Float64)
+    return GetDeviceUnitFromRealValue(serial, vel, 1)
+end
+
+function DeviceUnitToVelocity(serial::String, device_unit::Int)
+    return GetRealValueFromDeviceUnit(serial, device_unit, 1)
+end
+
+function AccelerationToDeviceUnit(serial::String, acc::Float64)
+    return GetDeviceUnitFromRealValue(serial, acc, 2)
+end
+
+function DeviceUnitToAcceleration(serial::String, device_unit::Int)
+    return GetRealValueFromDeviceUnit(serial, device_unit, 2)
+end
+
+WaitForMessage(serial::String) = 0
