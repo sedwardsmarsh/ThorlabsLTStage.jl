@@ -162,3 +162,17 @@ function GetDeviceUnitFromRealValue(serial::String, real::Float64, unit_enum::In
         error("unit_enum must be either 0 for position, 1 for speed, 2 for acceleration")
     end
 end
+
+# converts a real world to a device unit unit.
+function GetRealValueFromDeviceUnit(serial::String, device_unit::Int, unit_enum::Int)
+    global lts_lib
+    if unit_enum == 0
+        return lts_lib.convert_device_units_to_mm(device_unit)
+    elseif unit_enum == 1
+        return lts_lib.convert_velocity_in_device_units_to_mm(device_unit)
+    elseif unit_enum == 2
+        return lts_lib.convert_acceleration_in_device_units_to_mm(device_unit)
+    else
+        error("unit_enum must be either 0 for position, 1 for speed, 2 for acceleration")
+    end
+end
