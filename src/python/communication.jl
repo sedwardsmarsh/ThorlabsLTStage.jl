@@ -218,3 +218,10 @@ end
 # blocks waiting for a message to return from the stage. this is not 
 # implemented in the python backend, so we return 0.
 WaitForMessage(serial::String) = 0
+
+# resets the stage's home to be 0 at the minimum limit switch
+function ResetHomePosition(serial::String)
+    global lts_lib
+    stage = lts_lib.STAGE_SERIAL_MAP[serial]
+    return lts_lib.find_stage_home(stage)
+end
