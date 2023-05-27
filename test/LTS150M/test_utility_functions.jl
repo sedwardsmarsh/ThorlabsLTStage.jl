@@ -50,4 +50,10 @@ end
         @test ThorlabsLTStage.GetRealValueFromDeviceUnit(test_serial, 996157535, 1) == 45.3
         @test ThorlabsLTStage.GetRealValueFromDeviceUnit(test_serial, 360639814, 1) == 16.4
     end
+
+    @testset "find stages" begin
+        for serial in serials
+            ThorlabsLTStage.ResetHomePosition(serial)
+        end
+    end
 end
