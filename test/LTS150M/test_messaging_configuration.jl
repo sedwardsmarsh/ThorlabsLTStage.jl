@@ -3,7 +3,7 @@ using Unitful
 using ThorlabsLTStage
 
 # initialize python backend
-ThorlabsLTStage.init_python_lib()
+# ThorlabsLTStage.init_python_lib()
 
 ps = ThorlabsLTStage.initialize(PositionerSystem)
 

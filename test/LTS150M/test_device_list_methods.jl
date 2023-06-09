@@ -3,7 +3,7 @@ using Unitful
 using ThorlabsLTStage
 
 # instantiate the python backend
-ThorlabsLTStage.init_python_lib()
+# ThorlabsLTStage.init_python_lib()
 
 @testset "test device list methods" begin
     @test ThorlabsLTStage.BuildDeviceList() == []

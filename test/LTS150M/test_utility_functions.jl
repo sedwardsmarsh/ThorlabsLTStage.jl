@@ -3,7 +3,7 @@ using Unitful
 using ThorlabsLTStage
 
 # initialize python backend
-ThorlabsLTStage.init_python_lib()
+# ThorlabsLTStage.init_python_lib()
 
 ps = ThorlabsLTStage.initialize(PositionerSystem)
 @info "check_is_connected() will only return true if .positioner_system_config.yml is configured correctly"

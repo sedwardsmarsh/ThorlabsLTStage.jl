@@ -1,9 +1,3 @@
-# initialize the python library
-lts_lib = nothing
-function init_python_lib()
-    global lts_lib = pyimport("ThorlabsLTStage.bindings")
-end
-
 # In the C backend, this method updates the device with stored settings. 
 # This functionality is handeled for us in the python backend. 
 LoadSettings(serial::String) = true

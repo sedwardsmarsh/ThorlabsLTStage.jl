@@ -1,10 +1,15 @@
+
 # Devpi Setup Tutorial
-* This tutorial is based on [this guide](https://devpi.net/docs/devpi/devpi/stable/+doc/quickstart-releaseprocess.html). For more information, please refer to it.
+* For more information on Devpi please refer to [this guide](https://devpi.net/docs/devpi/devpi/stable/+doc/quickstart-releaseprocess.html).
 
 ## Installation requirements:
-* **Optional (but highly recommended):** you can create a virtual python environment to isolate your devpi packages from your system's python environment with the following commands. If you are famililar with additional python virtual environments, use your preferred environment:
-    1. Create the environment: `python3 -m venv <virtual environment path>`
-    2. Activate the environment: `<virtual environment path>`
+* **Optional (but highly recommended):** you can create a virtual python environment to isolate your devpi packages from your system's python environment with the following commands. If you are familiar with python virtual environments, use your preferred environment:
+    1. Create the environment: 
+     * [Linux] `python3 -m venv <virtual environment path>`
+     * [Windows] `python -m venv <virtual environment path>`
+    2. Activate the environment: 
+     * [Linux] `source <virtual environment path>/bin/activate`
+     * [Windows] `<virtual environment path>/bin/activate`
 
 ## Setup:
 * **Open a terminal and run the following commands:**
@@ -14,17 +19,19 @@
     `devpi-init`
     3. Start devpi server in the background using supervisor 
         * Create the config file: 
-        `devpi-init`
+        `devpi-gen-config`
         * Bind the Devpi server network interface to either a specific IP address or to all network interfaces:
-            - For a specific IP address, add `--host <your ip address>` to the end of the `command=devpi-server` line in the gen-config/supervisor-devpi.conf file.
-            - For all network interfaces, add `--host 0.0.0.0` to the end of the `command=devpi-server` line in the gen-config/supervisor-devpi.conf file.
-        * Start supervisord using a config:
+            - Open gen-config/supervisor-devpi.conf file `nano gen-config/supervisor-devpi.conf`
+                * For a specific IP address, add `--host <your ip address>` to the end of the `command=devpi-server` line in the gen-config/supervisor-devpi.conf file.
+                * For all network interfaces, add `--host 0.0.0.0` to the end of the `command=devpi-server` line in the gen-config/supervisor-devpi.conf file.
+            - Close the file by pressing "Ctrl + X," then press "Y" if it prompts you to save the file. Then, hit the "Enter" key to save the file by its name. 
+        * Start supervisord: (see Server Control - Commands)
             - `supervisord -c gen-config/supervisord.conf`
             
     4. Point the devpi client to the server: 
-    `devpi use http://localhost:3141`
+    `devpi use http://<your ip address>:3141`
     
-    5. Create a user. Replace `<username>` and `<password>` with your desired username and password: 
+    5. Create a user. Replace `<username>` and `<password>` with a username and password: 
     `devpi user -c <username> password=<password>`
         
     6. Log in as the user. Replace `<username>` and `<password>` with your chosen username and password:
@@ -33,20 +40,22 @@
     7. Create a "dev" index, telling it to use the root/pypi cache as a base so that all packages from pypi.org will appear on that index:
     `devpi index -c dev bases=root/pypi`
       
-    8. Configure devpi to use the new index "dev". Replace `<username>` with your chosen username: 
+    8. Configure devpi to use the new index "dev". Replace `<username>` with your username: 
     `devpi use <username>/dev`
   
     9. Configure the firewall. This step is specific to your operating system. The following commands will work on Ubuntu Linux:
         * Allow traffic on port 3141 using the TCP protocol:
             - `sudo ufw allow 3141/tcp`
         * Restart the firewall:
+            **Notice:** this step will enable your firewall. Proceed with caution.
             - `sudo ufw disable`
             - `sudo ufw enable`
 
-## Server control
-* Start the server: `supervisord -c gen-config/supervisord.conf`
-* Stop the server: `supervisorctl -c gen-config/supervisord.conf shutdown`
-
+## Server Control - Commands
+If the server goes down, or you're done using your devpi package, use the
+following commands to start/stop the devpi server as needed.
+* Start: `supervisord -c gen-config/supervisord.conf`
+* Stop: `supervisorctl -c gen-config/supervisord.conf shutdown`
 ## Upload a package:
 1. Verify you're logged in to the correct user and index: 
     * Run: `devpi use`
@@ -79,9 +88,9 @@
         - `python3 -m pip install thorlabsltstage --extra-index-url http://10.0.0.19:3141/testuser/dev/ --trusted-host 10.0.0.19`
 3. Open a terminal and ensure you're using the appropriate Python environment, then run the assembled command:
     * `python3 -m pip install thorlabsltstage --extra-index-url http://10.0.0.19:3141/testuser/dev/ --trusted-host 10.0.0.19`
-    * This command will install the thorlabsltstage package from your devpi server.
-    * Make sure to follow the instructions carefully and replace the placeholders `(<PACKAGE NAME>, <DEVPI SERVER IP>, <DEVPI USERNAME>, <DEVPI INDEX>)` with your actual values.
-
+    * This command will install the thorlabsltstage python backend package from the given devpi server.
+    * Make sure to *follow the instructions carefully* and replace the placeholders `(<PACKAGE NAME>, <DEVPI SERVER IP>, <DEVPI USERNAME>, <DEVPI INDEX>)` with the correct values.
+    <!-- * If PyCall.jl does not build without erroring, you may have to install the thorlabsltstage python package into the path specified in PyCall.jl by adding the option `python3 -m pip install --target <path to PyCall environment>`. -->
 ## Useful resources:
 * [Devpi Quickstart: uploading, testing, pushing releases](https://devpi.net/docs/devpi/devpi/stable/+doc/quickstart-releaseprocess.html)
 * [Devpi commands reference](https://devpi.net/docs/devpi/devpi/stable/+doc/userman/devpi_commands.html#devpi-command-reference-server)

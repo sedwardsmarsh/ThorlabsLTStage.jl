@@ -31,7 +31,6 @@ export pos, reset_limits
 raw_meters(a) = Float64(ustrip(uconvert(m, a)))
 raw_millimeters(val) = Float64(ustrip(uconvert(mm, val)))
 
-
 # include("c/bindings.jl") # C API BACKEND
 
 include("config.jl")
@@ -45,6 +44,14 @@ include("emulator/fake_positioner_system.jl")
 include("emulator/fake_stage.jl")
 
 # include("dotnet/bindings.jl") # DOT NET API BACKEND
+
+using PyCall
+const lts_lib = PyNULL()
+
+# initialize the python library
+function __init__()
+    copy!(lts_lib, pyimport("ThorlabsLTStage.bindings"))
+end
 
 include("python/bindings.jl") # PYTHON API BACKEND
 

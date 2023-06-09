@@ -5,7 +5,7 @@ using ThorlabsLTStage
 @info "these tests will only pass if .positioner_system_config.yml contains the serials of the connected stages"
 
 # initialize python backend
-ThorlabsLTStage.init_python_lib()
+# ThorlabsLTStage.init_python_lib()
 
 ps = ThorlabsLTStage.initialize(PositionerSystem)
 

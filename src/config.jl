@@ -4,7 +4,7 @@ function load_config()
     positioner_system_config = get_default_config()
     InstrumentConfig.load_config(positioner_system_config)
     create_aliases(positioner_system_config; ignore=["backend"])
-    init_python_lib()
+    # init_python_lib()
 end
 
 function get_default_config()
