@@ -124,7 +124,7 @@ Windows
 ## Using this package
 
 ### Project Configuration
-* In *VSCode* edit the configuration file *`ThorlabsLTStage/.positioner_system_config.yml`* to update the stage serial numbers appropriately
+* In *VSCode* edit the configuration file *`ThorlabsLTStage/.positioner_system_config.yml`* to update the stage serial numbers and model name appropriately
 ```yml
 # Inside .positioner_system_config.yml
 
@@ -132,16 +132,20 @@ ThorlabsLTS:
   alias: positioner_system_default
   x:
     serial: 45140764 # desired serial number
+    model: LTS150
     min_position: 0       # [mm]
     max_position: 150     # [mm]
     max_velocity: 20      # [mm s^-1]
     max_acceleration: 20  # [mm s^-2]
   y:
     serial: 45146974
+    model: LTS300
     max_velocity: 3       # [mm s^-1]
     max_acceleration: 5   # [mm s^-2]
   z:
     serial: 45141924
+    model: LTS150
+
     # If no limits specified physical device limits will be used
 ```
 

@@ -7,6 +7,11 @@ using ThorlabsLTStage
 
 ps = ThorlabsLTStage.initialize(PositionerSystem)
 @info "check_is_connected() will only return true if .positioner_system_config.yml is configured correctly"
+@testset "GetHardwareInfo" begin
+    for serial in ThorlabsLTStage.GetDeviceList()
+        @test ThorlabsLTStage.GetHardwareInfo(serial) == "LTS150"
+    end
+end
 
 @testset "Velocity and accleration getters and setters" begin
     ThorlabsLTStage.SetVelParams(ps.x.serial, 5, 5)
@@ -60,7 +65,7 @@ end
         @test ThorlabsLTStage.GetRealValueFromDeviceUnit(test_serial, 996157535, 1) == 45.3
         @test ThorlabsLTStage.GetRealValueFromDeviceUnit(test_serial, 360639814, 1) == 16.4
     end
-
-    terminate(ps)
-    @info "Terminated PS - end of test"
 end
+
+terminate(ps)
+@info "Terminated PS - end of test"

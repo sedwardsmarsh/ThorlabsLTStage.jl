@@ -2,6 +2,7 @@ ThorlabsLTS:
   alias: positioner_system_default
   x:  
     serial: 45286264
+    model: LTS150
     min_position: 0           # [mm]
     max_position: 150         # [mm]
     max_velocity: 20          # [mm s^-1]
@@ -9,6 +10,7 @@ ThorlabsLTS:
     position_accuracy: 0.01   # [mm]
   y:
     serial: 45289034
+    model: LTS150
     min_position: 0           # [mm]
     max_position: 150         # [mm]
     max_velocity: 20          # [mm s^-1]
@@ -16,6 +18,7 @@ ThorlabsLTS:
     position_accuracy: 0.01   # [mm]
   z:
     serial: 45293664
+    model: LTS150
     min_position: 0           # [mm]
     max_position: 150         # [mm]
     max_velocity: 20          # [mm s^-1]

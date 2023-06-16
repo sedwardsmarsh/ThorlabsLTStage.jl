@@ -143,9 +143,22 @@ function SetAcceleration(serial::String, acc::Int)
     return lts_lib.set_stage_acceleration(stage, accleration)
 end
 
-# Gets the hardware information from the device. The python backend doesn't 
-# support this functionality, so we return zero.
-GetHardwareInfo(serial::String) = "LTS150", 0 
+# Gets the hardware information from the device.
+function GetHardwareInfo(serial::String)
+    model_string = ""
+    for stage_config in ThorlabsLTStage.get_config()["ThorlabsLTS"]
+        try
+            if string(stage_config[2]["serial"]) == serial
+                model_string = stage_config[2]["model"]
+            end
+        catch e
+            if e isa KeyError
+                continue
+            end
+        end
+    end
+    return model_string, nothing
+end
 
 # verify the conversion type.
 check_conversion_type(unit_enum::Int) = 0
