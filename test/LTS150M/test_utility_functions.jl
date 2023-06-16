@@ -9,7 +9,7 @@ ps = ThorlabsLTStage.initialize(PositionerSystem)
 @info "check_is_connected() will only return true if .positioner_system_config.yml is configured correctly"
 @testset "GetHardwareInfo" begin
     for serial in ThorlabsLTStage.GetDeviceList()
-        @test ThorlabsLTStage.GetHardwareInfo(serial) == "LTS150"
+        @test ThorlabsLTStage.GetHardwareInfo(serial)[1] == "LTS150"
     end
 end
 
