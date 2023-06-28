@@ -4,12 +4,16 @@
 
 ## Installation requirements:
 * **Optional (but highly recommended):** you can create a virtual python environment to isolate your devpi packages from your system's python environment with the following commands. If you are familiar with python virtual environments, use your preferred environment:
-    1. Create the environment: 
-     * [Linux] `python3 -m venv <virtual environment path>`
-     * [Windows] `python -m venv <virtual environment path>`
-    2. Activate the environment: 
-     * [Linux] `source <virtual environment path>/bin/activate`
-     * [Windows] `<virtual environment path>/bin/activate`
+### Linux:
+1. Create the environment: 
+    * `python3 -m venv <virtual environment path>`
+2. Activate the environment: 
+    * `source <virtual environment path>/bin/activate`
+### Windows:
+1. Create the environment: 
+    * `python -m venv <virtual environment path>`
+2. Activate the environment:
+    * `<virtual environment path>/bin/activate`
 
 ## Setup:
 * **Open a terminal and run the following commands:**
@@ -91,6 +95,15 @@ following commands to start/stop the devpi server as needed.
     * This command will install the thorlabsltstage python backend package from the given devpi server.
     * Make sure to *follow the instructions carefully* and replace the placeholders `(<PACKAGE NAME>, <DEVPI SERVER IP>, <DEVPI USERNAME>, <DEVPI INDEX>)` with the correct values.
     <!-- * If PyCall.jl does not build without erroring, you may have to install the thorlabsltstage python package into the path specified in PyCall.jl by adding the option `python3 -m pip install --target <path to PyCall environment>`. -->
+
+## Removing a package:
+* *Run `devpi list` to view the available packages.*
+1. Remove the target package from devpi.
+    * Remove a specific version of a package.
+        * Run: `devpi remove <target package>==<version>`
+    * Remove all versions of a package.
+        * Run: `devpi remove <target package>`
+
 ## Useful resources:
 * [Devpi Quickstart: uploading, testing, pushing releases](https://devpi.net/docs/devpi/devpi/stable/+doc/quickstart-releaseprocess.html)
 * [Devpi commands reference](https://devpi.net/docs/devpi/devpi/stable/+doc/userman/devpi_commands.html#devpi-command-reference-server)
