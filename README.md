@@ -114,7 +114,7 @@ Windows
 5. Use the package: 
     * Run: `julia> using ThorlabsLTStage`
 6. Initialize the Python backend:
-    * Run: `julia> ThorlabsLTStage.load_python_venv()`
+    * Run: `julia> ThorlabsLTStage.load_python()`
     * This will close the Julia REPL upon successful execution
 
 * **Proceed to the next section for usage details**
